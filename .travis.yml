@@ -8,7 +8,7 @@ install:
   
 deploy:
   provider: releases
-  api_key: "e017d6522f384051ae4407761b8a5a79cc2783fa"
+  api_key: "cbc38c7e02a336225ebc14f790303a7815fe74dd"
   file: "build/kvmtop"
   skip_cleanup: true
   on:
