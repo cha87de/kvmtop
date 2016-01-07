@@ -1,9 +1,11 @@
 language: go
 go:
   - tip 
+
 install:
   - "go get -d -v ./..."
   - "go build -v ./..."
+  
 deploy:
   provider: releases
   api_key: "e017d6522f384051ae4407761b8a5a79cc2783fa"
