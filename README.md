@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/cha87de/kvmtop.svg)](https://travis-ci.org/cha87de/kvmtop)
 # kvmtop
 
 ## What kvmtop does
