@@ -1,4 +1,6 @@
 language: go
-
 go:
   - tip 
+install:
+  - "go get -d -v ./..."
+  - "go build -v ./..."
