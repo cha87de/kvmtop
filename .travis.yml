@@ -4,3 +4,10 @@ go:
 install:
   - "go get -d -v ./..."
   - "go build -v ./..."
+deploy:
+  provider: releases
+  api_key: "e017d6522f384051ae4407761b8a5a79cc2783fa"
+  file: "build/kvmtop"
+  skip_cleanup: true
+  on:
+    tags: true
