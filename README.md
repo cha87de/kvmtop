@@ -64,3 +64,31 @@ go install github.com/cha87de/kvmtop
 The `go install` will produce a binary located at ./bin/kvmtop
 
 
+# Export Schedstat from Kernel
+
+In CENTOS7 Kernel, the schedstats are not exported any more [1][2].
+One way of installing a kernel, which exports the necessary metrics is to use the ELRepo kernel-ml:
+
+```
+# import key
+rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+# install repository
+rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm
+# install most current kernel-ml
+yum --enablerepo=elrepo-kernel install kernel-ml
+```
+
+Reboot into newly installed kernel. Then remove the old kernels!
+
+```
+yum list kernel*
+yum erase kernel
+```
+
+Take care with diskless nodes. To boot into new kernel, 
+the file pxelinux.cfg/default has to be changed on the storage node.
+
+
+[1] https://bugzilla.redhat.com/show_bug.cgi?id=1013225
+[2] https://www.centos.org/forums/viewtopic.php?f=48&t=54049
+
