@@ -1,5 +1,4 @@
-[![Build Status](https://travis-ci.org/cha87de/kvmtop.svg)](https://travis-ci.org/cha87de/kvmtop)
-# kvmtop
+# kvmtop [![Build Status](https://travis-ci.org/cha87de/kvmtop.svg)](https://travis-ci.org/cha87de/kvmtop)
 
 ## What kvmtop does
 It reads utilisation metrics about virtual machines
