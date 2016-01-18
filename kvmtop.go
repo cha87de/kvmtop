@@ -92,7 +92,7 @@ func measureVirtualMachines(runs int){
     testBufferWriter := bufio.NewWriter(&testBuffer)
 	w := new(tabwriter.Writer)
 	if OUT_BATCH {
-		w.Init(testBufferWriter, 0, 8, 0, '\t', 0)
+		w.Init(testBufferWriter, 0, 8, 1, '\t', 0)
 	}else{
 		w.Init(testBufferWriter, 0, 8, 1, ' ', 0)		
 	}
@@ -239,6 +239,7 @@ func initialize(){
 }
 
 func main() {
+	
 	defineFlags()
 	if SHOW_VERSION {
 		fmt.Println("kvmtop version " + VERSION)
