@@ -55,7 +55,9 @@ func updateVirtualMachineLists() {
 	cmd.Stdout = &pids
 	err := cmd.Run()
 	if err != nil {
-		screen.MovePrint(1, 0, fmt.Sprintf("no virtual machines for %s", QEMU_BINARY_NAME))
+		if !OUT_BATCH {
+			screen.MovePrint(1, 0, fmt.Sprintf("no virtual machines for %s", QEMU_BINARY_NAME))
+		}
 		return
 	}
 	vmPpids := strings.Split(pids.String(), " ")
