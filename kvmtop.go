@@ -24,7 +24,7 @@ import (
 
 var (
 	// COMPILE VARS
-	VERSION = "1.0"
+	VERSION = "1.2"
 	
 	// CONFIG VARS
 	FREQUENCY = 1
