@@ -53,15 +53,14 @@ vm2    4     15%   15%   0%    1%    1024MB   1024MB
 ## Setup developer workspace or compile kvmtop
 
 ```
+# create workspace
 mkdir kvmtop && cd kvmtop
+export GOPATH=$(pwd)
+# checkout sources
 go get "github.com/cha87de/kvmtop"
-go get "github.com/rthornton128/goncurses"
-export GOPATH=`pwd`
+# build binary
 go install github.com/cha87de/kvmtop
 ```
-
-The `go install` will produce a binary located at ./bin/kvmtop
-
 
 # Export Schedstat from Kernel
 
