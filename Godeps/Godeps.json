@@ -1,0 +1,12 @@
+{
+	"ImportPath": "github.com/cha87de/kvmtop",
+	"GoVersion": "go1.7",
+	"GodepVersion": "v77",
+	"Deps": [
+		{
+			"ImportPath": "github.com/rthornton128/goncurses",
+			"Comment": "0.2-46-gef16d4e",
+			"Rev": "ef16d4e36502edc58c45a2c896e00ef8d513dc78"
+		}
+	]
+}
