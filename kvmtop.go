@@ -13,7 +13,7 @@ import (
 	"os"
 	"syscall"
 	"text/tabwriter"
-	"github.com/rthornton128/goncurses"
+	"github.com/cha87de/goncurses"
 	"github.com/cha87de/kvmtop/models"
 	"github.com/cha87de/kvmtop/cpu"
 	"github.com/cha87de/kvmtop/memory"
