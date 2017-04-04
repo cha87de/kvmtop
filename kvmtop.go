@@ -240,7 +240,7 @@ func initialize(){
 	updateVirtualMachineLists()
 }
 
-func main() {
+func main_old() {
 	
 	defineFlags()
 	if SHOW_VERSION {
