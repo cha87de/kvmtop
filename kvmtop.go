@@ -6,6 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/connector"
 	"github.com/cha87de/kvmtop/runners"
 )
@@ -18,7 +19,7 @@ var (
 func main() {
 	// handle flags
 	initializeFlags()
-	if options.Version {
+	if config.Options.Version {
 		fmt.Println("kvmtop version " + versionMajor + "." + versionMinor)
 		return
 	}
@@ -33,7 +34,7 @@ func main() {
 	}()
 
 	// connect to libvirt
-	connector.Libvirt.ConnectionURI = options.LibvirtURI
+	connector.Libvirt.ConnectionURI = config.Options.LibvirtURI
 	err := connector.InitializeConnection()
 	if err != nil {
 		fmt.Println("kvmtop will terminate.")
@@ -41,11 +42,7 @@ func main() {
 	}
 
 	// start runners
-	err = runners.InitializeRunners()
-	if err != nil {
-		fmt.Println("kvmtop will terminate.")
-		shutdown(1)
-	}
+	runners.InitializeRunners()
 
 	// when runners terminate, shutdown kvmtop
 	shutdown(0)

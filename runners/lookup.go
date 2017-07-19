@@ -1,27 +1,90 @@
 package runners
 
 import (
-	"fmt"
 	"log"
+	"sync"
+	"time"
 
+	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/connector"
+	"github.com/cha87de/kvmtop/models"
 	libvirt "github.com/libvirt/libvirt-go"
 )
 
-func initializeLookup() {
+func initializeLookup(wg sync.WaitGroup) {
+	for n := -1; config.Options.Runs == -1 || n < config.Options.Runs; n++ {
+		start := time.Now()
+		lookup()
+		nextRun := start.Add(time.Duration(config.Options.Frequency) * time.Second)
+		time.Sleep(nextRun.Sub(time.Now()))
+	}
+	wg.Done()
+}
+
+func lookup() {
+	// initialize models
+	if models.Collection.Domains == nil {
+		models.Collection.Domains = make(map[string]models.Domain)
+	}
+
+	// query libvirt
 	doms, err := connector.Libvirt.Connection.ListAllDomains(libvirt.CONNECT_LIST_DOMAINS_ACTIVE)
 	if err != nil {
-		log.Fatal("Cannot get list of domains form libvirt.")
+		log.Printf("Cannot get list of domains form libvirt.")
+		return
 	}
-	//fmt.Printf("%d running domains:\n", len(doms))
 
+	// create list of cached domains
+	domIDs := make([]string, 0, len(models.Collection.Domains))
+	for id := range models.Collection.Domains {
+		domIDs = append(domIDs, id)
+	}
+
+	// update domain list
 	for _, dom := range doms {
-		// query data from libvirt
-		name, err := dom.GetName()
+		domain, err := handleDomain(dom)
 		if err != nil {
 			continue
 		}
-		fmt.Println(name)
+		domIDs = removeFromArray(domIDs, domain.UUID)
 	}
 
+	// remove cached but not existent domains
+	for _, id := range domIDs {
+		delete(models.Collection.Domains, id)
+	}
+
+}
+
+func handleDomain(dom libvirt.Domain) (models.Domain, error) {
+	uuid, err := dom.GetUUIDString()
+	if err != nil {
+		return models.Domain{}, err
+	}
+
+	name, err := dom.GetName()
+	if err != nil {
+		return models.Domain{}, err
+	}
+
+	if domain, ok := models.Collection.Domains[uuid]; ok {
+		domain.Name = name
+		models.Collection.Domains[uuid] = domain
+	} else {
+		models.Collection.Domains[uuid] = models.Domain{
+			UUID: string(uuid),
+			Name: name,
+		}
+	}
+
+	return models.Collection.Domains[uuid], nil
+}
+
+func removeFromArray(s []string, r string) []string {
+	for i, v := range s {
+		if v == r {
+			return append(s[:i], s[i+1:]...)
+		}
+	}
+	return s
 }
