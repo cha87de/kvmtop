@@ -1,0 +1,5 @@
+package runners
+
+func initializeCollect() {
+
+}
