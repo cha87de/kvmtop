@@ -7,7 +7,7 @@ import (
 	"github.com/cha87de/kvmtop/config"
 )
 
-func initializeCollect(wg sync.WaitGroup) {
+func initializeCollect(wg *sync.WaitGroup) {
 	for n := -1; config.Options.Runs == -1 || n < config.Options.Runs; n++ {
 		start := time.Now()
 		collect()

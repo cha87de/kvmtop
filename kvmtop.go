@@ -17,6 +17,23 @@ var (
 )
 
 func main() {
+
+	/*
+		list := []string{"a", "b"}
+		fmt.Printf("%+v", list)
+		fmt.Printf("%+v", len(list))
+
+		// add at beginning
+		end := len(list) - 1
+		if end <= 0 {
+			end = len(list)
+		}
+		list = append([]string{"0"}, list[0:end]...)
+		fmt.Printf("%+v", list)
+
+		os.Exit(0)
+	*/
+
 	// handle flags
 	initializeFlags()
 	if config.Options.Version {

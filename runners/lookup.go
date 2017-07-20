@@ -11,7 +11,7 @@ import (
 	libvirt "github.com/libvirt/libvirt-go"
 )
 
-func initializeLookup(wg sync.WaitGroup) {
+func initializeLookup(wg *sync.WaitGroup) {
 	for n := -1; config.Options.Runs == -1 || n < config.Options.Runs; n++ {
 		start := time.Now()
 		lookup()
@@ -24,7 +24,7 @@ func initializeLookup(wg sync.WaitGroup) {
 func lookup() {
 	// initialize models
 	if models.Collection.Domains == nil {
-		models.Collection.Domains = make(map[string]models.Domain)
+		models.Collection.Domains = make(map[string]*models.Domain)
 	}
 
 	// query libvirt
@@ -56,25 +56,31 @@ func lookup() {
 
 }
 
-func handleDomain(dom libvirt.Domain) (models.Domain, error) {
+func handleDomain(dom libvirt.Domain) (*models.Domain, error) {
 	uuid, err := dom.GetUUIDString()
 	if err != nil {
-		return models.Domain{}, err
+		return nil, err
 	}
 
 	name, err := dom.GetName()
 	if err != nil {
-		return models.Domain{}, err
+		return nil, err
 	}
 
 	if domain, ok := models.Collection.Domains[uuid]; ok {
 		domain.Name = name
 		models.Collection.Domains[uuid] = domain
 	} else {
-		models.Collection.Domains[uuid] = models.Domain{
+		models.Collection.Domains[uuid] = &models.Domain{
 			UUID: string(uuid),
 			Name: name,
 		}
+	}
+
+	// call collector lookup functions
+	domain := models.Collection.Domains[uuid]
+	for _, collector := range models.Collection.Collectors {
+		collector.Lookup(domain, dom)
 	}
 
 	return models.Collection.Domains[uuid], nil
