@@ -16,7 +16,7 @@ func (collector *CollectorDISK) Lookup(domain *models.Domain, libvirtDomain libv
 }
 
 // Collect disk collector data
-func (collector *CollectorDISK) Collect(domain *models.Domain, libvirtDomain libvirt.Domain) {
+func (collector *CollectorDISK) Collect(domain *models.Domain) {
 
 }
 

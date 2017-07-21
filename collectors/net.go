@@ -16,7 +16,7 @@ func (collector *CollectorNET) Lookup(domain *models.Domain, libvirtDomain libvi
 }
 
 // Collect network collector data
-func (collector *CollectorNET) Collect(domain *models.Domain, libvirtDomain libvirt.Domain) {
+func (collector *CollectorNET) Collect(domain *models.Domain) {
 
 }
 

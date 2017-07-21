@@ -1,18 +1,19 @@
 package runners
 
 import (
-	"bytes"
-	"encoding/gob"
 	"sync"
 	"time"
 
-	"fmt"
-
 	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
+	"github.com/cha87de/kvmtop/printers"
 )
 
 func initializePrinter(wg *sync.WaitGroup) {
+	// print header
+	// TODO
+
+	// start continuously printing values
 	for n := -1; config.Options.Runs == -1 || n < config.Options.Runs; n++ {
 		start := time.Now()
 		print()
@@ -24,27 +25,12 @@ func initializePrinter(wg *sync.WaitGroup) {
 
 func print() {
 	for _, domain := range models.Collection.Domains {
-		var cores int
-		if metric, ok := domain.Metrics["cpu_cores"]; ok {
-			if len(metric.Values) > 0 {
-				byteValue := metric.Values[0].Value
-				reader := bytes.NewReader(byteValue)
-				dec := gob.NewDecoder(reader)
-				dec.Decode(&cores)
-			}
+		var values []string
+		values = append(values, domain.UUID, domain.Name)
+		for _, collector := range models.Collection.Collectors {
+			output := collector.Print(domain)
+			values = append(values, output[0:]...)
 		}
-
-		var threadIDs []int
-		if metric, ok := domain.Metrics["cpu_threadIDs"]; ok {
-			if len(metric.Values) > 0 {
-				byteValue := metric.Values[0].Value
-				reader := bytes.NewReader(byteValue)
-				dec := gob.NewDecoder(reader)
-				dec.Decode(&threadIDs)
-			}
-		}
-
-		fmt.Printf("%s \t %s \t %d \t %v\n", domain.UUID, domain.Name, cores, threadIDs)
+		printers.Textprint(values)
 	}
-
 }

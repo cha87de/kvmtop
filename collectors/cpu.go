@@ -16,8 +16,13 @@ func (collector *CollectorCPU) Lookup(domain *models.Domain, libvirtDomain libvi
 }
 
 // Collect cpu collector data
-func (collector *CollectorCPU) Collect(domain *models.Domain, libvirtDomain libvirt.Domain) {
-	cpuCollect(domain, libvirtDomain)
+func (collector *CollectorCPU) Collect(domain *models.Domain) {
+	cpuCollect(domain)
+}
+
+// Print the collected cpu data for a domain
+func (collector *CollectorCPU) Print(domain *models.Domain) []string {
+	return cpuPrint(domain)
 }
 
 // CreateCollectorCPU creates a new cpu collector

@@ -16,7 +16,7 @@ func (collector *CollectorMEM) Lookup(domain *models.Domain, libvirtDomain libvi
 }
 
 // Collect memory collector data
-func (collector *CollectorMEM) Collect(domain *models.Domain, libvirtDomain libvirt.Domain) {
+func (collector *CollectorMEM) Collect(domain *models.Domain) {
 
 }
 

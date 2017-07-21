@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/cha87de/kvmtop/config"
+	"github.com/cha87de/kvmtop/models"
 )
 
 func initializeCollect(wg *sync.WaitGroup) {
@@ -18,5 +19,15 @@ func initializeCollect(wg *sync.WaitGroup) {
 }
 
 func collect() {
-	// todo
+	// initialize models
+	if models.Collection.Domains == nil {
+		// wait for lookup to create domains
+		return
+	}
+
+	for _, domain := range models.Collection.Domains {
+		for _, collector := range models.Collection.Collectors {
+			go collector.Collect(domain)
+		}
+	}
 }

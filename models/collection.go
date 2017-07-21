@@ -50,7 +50,8 @@ func (domain *Domain) AddMetricMeasurement(metricName string, measurement Measur
 // Collector defines a collector for a metric (e.g. CPU)
 type Collector interface {
 	Lookup(domain *Domain, libvirtDomain libvirt.Domain)
-	Collect(domain *Domain, libvirtDomain libvirt.Domain)
+	Collect(domain *Domain)
+	Print(domain *Domain) []string
 }
 
 // Metric contains a monitoring metric value with current and previous
