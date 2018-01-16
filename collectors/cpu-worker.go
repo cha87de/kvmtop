@@ -43,7 +43,7 @@ func cpuLookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
 func cpuCollect(domain *models.Domain) {
 	// get threadIDs
 	var threadIDs []int
-	if metric, ok := domain.Metrics["cpu_threadIDs"]; ok {
+	if metric, ok := domain.GetMetric("cpu_threadIDs"); ok {
 		if len(metric.Values) > 0 {
 			byteValue := metric.Values[0].Value
 			reader := bytes.NewReader(byteValue)
@@ -81,7 +81,7 @@ func cpuCollect(domain *models.Domain) {
 
 func cpuPrint(domain *models.Domain) []string {
 	var cores string
-	if metric, ok := domain.Metrics["cpu_cores"]; ok {
+	if metric, ok := domain.GetMetric("cpu_cores"); ok {
 		if len(metric.Values) > 0 {
 			byteValue := metric.Values[0].Value
 			reader := bytes.NewReader(byteValue)
@@ -95,7 +95,7 @@ func cpuPrint(domain *models.Domain) []string {
 
 	var cputimes []string
 	var cputimeAllCores string
-	if metric, ok := domain.Metrics["cpu_times"]; ok {
+	if metric, ok := domain.GetMetric("cpu_times"); ok {
 		if len(metric.Values) > 1 {
 			byteValue1 := metric.Values[0].Value
 			reader1 := bytes.NewReader(byteValue1)
@@ -131,7 +131,7 @@ func cpuPrint(domain *models.Domain) []string {
 
 	var queuetimes []string
 	var queuetimeAllCores string
-	if metric, ok := domain.Metrics["cpu_runqueues"]; ok {
+	if metric, ok := domain.GetMetric("cpu_runqueues"); ok {
 		if len(metric.Values) > 1 {
 			byteValue1 := metric.Values[0].Value
 			reader1 := bytes.NewReader(byteValue1)

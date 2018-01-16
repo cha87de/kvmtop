@@ -8,9 +8,16 @@ import (
 	"github.com/cha87de/kvmtop/models"
 )
 
+var collectors []string
+
 func initializePrinter(wg *sync.WaitGroup) {
 	// open configured printer
 	models.Collection.Printer.Open()
+
+	// define collectors and their order
+	for collectorName := range models.Collection.Collectors {
+		collectors = append(collectors, collectorName)
+	}
 
 	// start continuously printing values
 	for n := -1; config.Options.Runs == -1 || n < config.Options.Runs; n++ {
@@ -42,7 +49,8 @@ func handleRun() {
 	for _, domain := range models.Collection.Domains {
 		var domvalues []string
 		domvalues = append(domvalues, domain.UUID, domain.Name)
-		for _, collector := range models.Collection.Collectors {
+		for _, collectorName := range collectors {
+			collector := models.Collection.Collectors[collectorName]
 			output := collector.PrintValues(domain)
 			domvalues = append(domvalues, output[0:]...)
 		}

@@ -3,6 +3,7 @@ package models
 import (
 	"bytes"
 	"encoding/gob"
+	"sync"
 	"time"
 
 	libvirt "github.com/libvirt/libvirt-go"
@@ -17,27 +18,24 @@ var Collection struct {
 
 // Domain defines a domain in libvirt
 type Domain struct {
-	Name    string
-	UUID    string
-	Metrics map[string]*Metric
+	Name string
+	UUID string
+	//Metrics map[string]*Metric
+	Metrics sync.Map
 }
 
 // AddMetricMeasurement adds a metric measurement to the domain
 func (domain *Domain) AddMetricMeasurement(metricName string, measurement Measurement) {
-	// create empty metrics map if not existent
-	if domain.Metrics == nil {
-		domain.Metrics = make(map[string]*Metric)
-	}
 
 	// create empty metric if not existent
-	if _, ok := domain.Metrics[metricName]; !ok {
-
-		domain.Metrics[metricName] = &Metric{
+	if _, ok := domain.Metrics.Load(metricName); !ok {
+		domain.Metrics.Store(metricName, &Metric{
 			Name:   metricName,
 			Values: []Measurement{},
-		}
+		})
 	}
-	metrics := domain.Metrics[metricName]
+	rawmetrics, _ := domain.Metrics.Load(metricName)
+	metrics := rawmetrics.(*Metric)
 
 	// add measurement as value to metric
 	end := len(metrics.Values) - 1
@@ -46,6 +44,19 @@ func (domain *Domain) AddMetricMeasurement(metricName string, measurement Measur
 	}
 	//domain.Metrics[metricName].Values =
 	metrics.Values = append([]Measurement{measurement}, metrics.Values[0:end]...)
+
+	// store back
+	//domain.Metrics.Store(metricName, metrics)
+}
+
+// GetMetric reads and returns the metric values by metric name
+func (domain *Domain) GetMetric(metricName string) (*Metric, bool) {
+	rawmetric, exists := domain.Metrics.Load(metricName)
+	if !exists {
+		return &Metric{}, false
+	}
+	metric := rawmetric.(*Metric)
+	return metric, true
 }
 
 // Collector defines a collector for a metric (e.g. CPU)
