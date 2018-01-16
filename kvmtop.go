@@ -8,6 +8,7 @@ import (
 
 	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/connector"
+	"github.com/cha87de/kvmtop/models"
 	"github.com/cha87de/kvmtop/runners"
 )
 
@@ -66,13 +67,15 @@ func main() {
 }
 
 func shutdown(exitcode int) {
-	// todo close libvirt connection
+	// close libvirt connection
 	err := connector.CloseConnection()
 	if err != nil {
 		exitcode = 1
 	}
 
-	// todo close printer
+	// close printer
+	models.Collection.Printer.Close()
 
+	// return exit code
 	os.Exit(exitcode)
 }

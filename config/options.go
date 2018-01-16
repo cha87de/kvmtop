@@ -11,4 +11,6 @@ var Options struct {
 	EnableMEM  bool `long:"mem" description:"enable memory metrics"`
 	EnableDISK bool `long:"disk" description:"enable disk metrics"`
 	EnableNET  bool `long:"net" description:"enable network metrics"`
+
+	PrintBatch bool `short:"b" long:"batch" description:"use simple output e.g. for scripts"`
 }

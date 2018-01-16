@@ -8,6 +8,7 @@ import (
 	"github.com/cha87de/kvmtop/collectors"
 	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
+	"github.com/cha87de/kvmtop/printers"
 	flags "github.com/jessevdk/go-flags"
 )
 
@@ -48,6 +49,15 @@ func initializeFlags() {
 	if config.Options.EnableNET {
 		collector := collectors.CreateCollectorNET()
 		models.Collection.Collectors["net"] = &collector
+	}
+
+	// select printer, ncurse as default.
+	if config.Options.PrintBatch {
+		printer := printers.CreateText()
+		models.Collection.Printer = &printer
+	} else {
+		printer := printers.CreateNcurses()
+		models.Collection.Printer = &printer
 	}
 
 }

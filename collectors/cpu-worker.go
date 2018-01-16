@@ -94,7 +94,7 @@ func cpuPrint(domain *models.Domain) []string {
 	}
 
 	var cputimes []string
-	var cputime string
+	var cputimeAllCores string
 	if metric, ok := domain.Metrics["cpu_times"]; ok {
 		if len(metric.Values) > 1 {
 			byteValue1 := metric.Values[0].Value
@@ -125,11 +125,47 @@ func cpuPrint(domain *models.Domain) []string {
 				cputimes = append(cputimes, fmt.Sprintf("%.0f", cputime*100))
 			}
 
-			cputime = fmt.Sprintf("%.0f", cputimeSum/float64(len(cputimesRaw1))*100)
+			cputimeAllCores = fmt.Sprintf("%.0f", cputimeSum/float64(len(cputimesRaw1))*100)
 		}
 	}
 
-	result := append([]string{cores}, cputime)
-	result = append(result, cputimes[0:]...)
+	var queuetimes []string
+	var queuetimeAllCores string
+	if metric, ok := domain.Metrics["cpu_runqueues"]; ok {
+		if len(metric.Values) > 1 {
+			byteValue1 := metric.Values[0].Value
+			reader1 := bytes.NewReader(byteValue1)
+			dec1 := gob.NewDecoder(reader1)
+
+			byteValue2 := metric.Values[1].Value
+			reader2 := bytes.NewReader(byteValue2)
+			dec2 := gob.NewDecoder(reader2)
+
+			var timesRaw1 []int64
+			var timesRaw2 []int64
+			dec1.Decode(&timesRaw1)
+			dec2.Decode(&timesRaw2)
+
+			timeDiff := metric.Values[0].Timestamp.Sub(metric.Values[1].Timestamp).Seconds()
+			timeConversionFactor := 1000000000 / timeDiff
+
+			// for each core ...
+			var timeSum float64
+			for i, time1 := range timesRaw1 {
+				if len(timesRaw2) <= i {
+					continue
+				}
+				time2 := timesRaw2[i]
+				time := float64(time1-time2) / timeConversionFactor
+				timeSum = timeSum + time
+				queuetimes = append(queuetimes, fmt.Sprintf("%.0f", time*100))
+			}
+
+			queuetimeAllCores = fmt.Sprintf("%.0f", timeSum/float64(len(timesRaw1))*100)
+		}
+	}
+
+	result := append([]string{cores}, cputimeAllCores)
+	result = append(result, queuetimeAllCores)
 	return result
 }

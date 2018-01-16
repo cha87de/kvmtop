@@ -12,6 +12,7 @@ import (
 var Collection struct {
 	Domains    map[string]*Domain
 	Collectors map[string]Collector
+	Printer    Printer
 }
 
 // Domain defines a domain in libvirt
@@ -51,7 +52,8 @@ func (domain *Domain) AddMetricMeasurement(metricName string, measurement Measur
 type Collector interface {
 	Lookup(domain *Domain, libvirtDomain libvirt.Domain)
 	Collect(domain *Domain)
-	Print(domain *Domain) []string
+	PrintFields() []string
+	PrintValues(domain *Domain) []string
 }
 
 // Metric contains a monitoring metric value with current and previous
@@ -78,4 +80,11 @@ func CreateMeasurement(value interface{}) Measurement {
 		Value:     buffer.Bytes(),
 		Timestamp: time.Now(),
 	}
+}
+
+// Printer defines a printer for output
+type Printer interface {
+	Open()
+	Screen(fields []string, values [][]string)
+	Close()
 }

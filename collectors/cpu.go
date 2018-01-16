@@ -20,9 +20,18 @@ func (collector *CollectorCPU) Collect(domain *models.Domain) {
 	cpuCollect(domain)
 }
 
-// Print the collected cpu data for a domain
-func (collector *CollectorCPU) Print(domain *models.Domain) []string {
+// PrintValues the collected cpu data for a domain
+func (collector *CollectorCPU) PrintValues(domain *models.Domain) []string {
 	return cpuPrint(domain)
+}
+
+// PrintFields the collected cpu data for a domain
+func (collector *CollectorCPU) PrintFields() []string {
+	return []string{
+		"cpu_cores",
+		"cpu_total",
+		"cpu_steal",
+	}
 }
 
 // CreateCollectorCPU creates a new cpu collector
