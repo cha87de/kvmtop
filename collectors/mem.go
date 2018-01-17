@@ -20,12 +20,12 @@ func (collector *CollectorMEM) Collect(domain *models.Domain) {
 	memCollect(domain)
 }
 
-// PrintValues the collected cpu data for a domain
+// PrintValues the collected data for a domain
 func (collector *CollectorMEM) PrintValues(domain *models.Domain) []string {
 	return memPrint(domain)
 }
 
-// PrintFields the collected cpu data for a domain
+// PrintFields the collected data for a domain
 func (collector *CollectorMEM) PrintFields() []string {
 	return []string{
 		"ram_total",

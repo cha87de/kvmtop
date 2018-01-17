@@ -39,7 +39,7 @@ func memPrint(domain *models.Domain) []string {
 	var total, used string
 
 	if metric, ok := domain.GetMetric("ram_total"); ok {
-		if len(metric.Values) > 1 {
+		if len(metric.Values) > 0 {
 			byteValue := metric.Values[0].Value
 			reader := bytes.NewReader(byteValue)
 			decoder := gob.NewDecoder(reader)
@@ -50,7 +50,7 @@ func memPrint(domain *models.Domain) []string {
 	}
 
 	if metric, ok := domain.GetMetric("ram_used"); ok {
-		if len(metric.Values) > 1 {
+		if len(metric.Values) > 0 {
 			byteValue := metric.Values[0].Value
 			reader := bytes.NewReader(byteValue)
 			decoder := gob.NewDecoder(reader)
