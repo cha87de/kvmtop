@@ -30,7 +30,7 @@ type stats struct {
 
 func netLookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
 	// get list of network interfaces
-	rawinterfaces, err := libvirtDomain.ListAllInterfaceAddresses(uint(libvirt.DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE))
+	rawinterfaces, err := libvirtDomain.ListAllInterfaceAddresses(libvirt.DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE)
 	if err != nil {
 		return
 	}
