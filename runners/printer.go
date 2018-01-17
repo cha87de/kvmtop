@@ -40,7 +40,8 @@ func handleRun() {
 
 	// collect fields for each collector
 	fields = append(fields, "UUID", "name")
-	for _, collector := range models.Collection.Collectors {
+	for _, collectorName := range collectors {
+		collector := models.Collection.Collectors[collectorName]
 		output := collector.PrintFields()
 		fields = append(fields, output[0:]...)
 	}
