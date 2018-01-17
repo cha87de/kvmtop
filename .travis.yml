@@ -6,7 +6,7 @@ before_install:
   - sudo apt-get install -y libvirt-dev
 install:
   - "go get -d -v ./..."
-  - "go build -v"
+  //- "go build -v"
 after_success:
   - test -n "$TRAVIS_TAG" && curl -sL https://git.io/goreleaser | bash  
 deploy:
