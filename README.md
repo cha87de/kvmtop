@@ -4,7 +4,7 @@
 It reads utilisation metrics about virtual machines
 running on the KVM hypervisor from different sources:
  - the Linux /proc filesystem
- - using the virsh [1] tool
+ - the libvirtd socket
 
 Why yet another monitoring tool for virtual machines?
 
@@ -14,41 +14,37 @@ which will differ e.g. in cases of cpu over provisioning. kvmtop also collects
 utilisation values of the hypervisor for virtual machines, to measure the overhead needed
 to run a virtual machine.
 
-[1] http://linux.die.net/man/1/virsh
-
 ## Usage
 
 ```
-kvmtop --help
-Usage of bin/kvmtop:
-  -batch
-    	use simple output e.g. for scripts (default: false)
-  -cpu
-    	show cpu (default: true) (default true)
-  -disk
-    	show disk  (default: false)
-  -memory
-    	show memory (default: false)
-  -network
-    	show network (default: false)
-  -qemu-binary-name string
-    	binary name of qemu driver. default qemu-kvm (default "qemu-kvm")
-  -r int
-    	runs x times then terminates. default -1 (runs forever) (default -1)
-  -s int
-    	sleep n seconds between runs. default 1s (default 1)
-  -uuid
-    	show uuid  (default: false)
-  -version
-    	show version
+Usage:
+  kvmtop [OPTIONS]
+
+Monitor virtual machine experience from outside on KVM hypervisor level
+
+Application Options:
+  -v, --version     Show version
+  -f, --frequency=  Frequency (in seconds) for collecting metrics (default: 1)
+  -r, --runs=       Amount of collection runs (default: -1)
+  -c, --connection= connection uri to libvirt daemon (default: qemu:///system)
+      --cpu         enable cpu metrics
+      --mem         enable memory metrics
+      --disk        enable disk metrics
+      --net         enable network metrics
+  -b, --batch       use simple output e.g. for scripts
+
+Help Options:
+  -h, --help        Show this help message
+
 ```
 
 Exemplary output
 ```
-vmname CpuCS CpuVM CpuPM CpuST CpuIO ram-used ram-total
-vm1    2     5%    5%    0%    1%    1024MB   1024MB
-vm2    4     15%   15%   0%    1%    1024MB   1024MB
+UUID                                 name          cpu_cores cpu_total cpu_steal disk_read disk_write net_tx net_rx
+0dbe2ae8-1ee4-4b43-bdf3-b533dfe75486 ubuntu14.04-2 2         53        0         0.00      0.00       0.00   0.00
 ```
+
+With `disk_read, disk_write, net_tx, net_rx` in MB/s.
 
 ## Setup developer workspace or compile kvmtop
 
@@ -62,7 +58,9 @@ go get "github.com/cha87de/kvmtop"
 go install github.com/cha87de/kvmtop
 ```
 
-# Export Schedstat from Kernel
+# Known Bugs & Issues
+
+## No Export of Schedstat from Kernel
 
 In CENTOS7 Kernel, the schedstats are not exported any more [1][2].
 One way of installing a kernel, which exports the necessary metrics is to use the ELRepo kernel-ml:
@@ -89,4 +87,3 @@ the file pxelinux.cfg/default has to be changed on the storage node.
 
 [1] https://bugzilla.redhat.com/show_bug.cgi?id=1013225
 [2] https://www.centos.org/forums/viewtopic.php?f=48&t=54049
-
