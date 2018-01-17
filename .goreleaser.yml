@@ -1,0 +1,8 @@
+# Build customization
+builds:
+  - main: main.go
+    binary: kvmtop
+    goos:
+      - linux
+    goarch:
+      - amd64
