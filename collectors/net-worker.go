@@ -9,7 +9,7 @@ import (
 	libvirt "github.com/libvirt/libvirt-go"
 )
 
-type stats struct {
+type netstats struct {
 	RxBytesSet   bool
 	RxBytes      int64
 	RxPacketsSet bool
@@ -42,7 +42,7 @@ func netLookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
 	domain.AddMetricMeasurement("net_ifs", newMeasurementInterfaces)
 
 	// query stats for each interface
-	var sums stats
+	var sums netstats
 	for _, ifx := range ifs {
 		stats, err := libvirtDomain.InterfaceStats(ifx)
 		if err != nil {
@@ -122,7 +122,7 @@ func netPrint(domain *models.Domain) []string {
 func getIn(byteValue []byte) int64 {
 	reader := bytes.NewReader(byteValue)
 	decoder := gob.NewDecoder(reader)
-	var stats stats
+	var stats netstats
 	decoder.Decode(&stats)
 	return stats.RxBytes
 }
@@ -130,7 +130,7 @@ func getIn(byteValue []byte) int64 {
 func getOut(byteValue []byte) int64 {
 	reader := bytes.NewReader(byteValue)
 	decoder := gob.NewDecoder(reader)
-	var stats stats
+	var stats netstats
 	decoder.Decode(&stats)
 	return stats.TxBytes
 }
