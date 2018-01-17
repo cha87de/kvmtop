@@ -12,12 +12,25 @@ type CollectorNET struct {
 
 // Lookup network collector data
 func (collector *CollectorNET) Lookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
-
+	netLookup(domain, libvirtDomain)
 }
 
 // Collect network collector data
 func (collector *CollectorNET) Collect(domain *models.Domain) {
+	netCollect(domain)
+}
 
+// PrintValues the collected data for a domain
+func (collector *CollectorNET) PrintValues(domain *models.Domain) []string {
+	return netPrint(domain)
+}
+
+// PrintFields the collected data for a domain
+func (collector *CollectorNET) PrintFields() []string {
+	return []string{
+		"net_tx",
+		"net_rx",
+	}
 }
 
 // CreateCollectorNET creates a new network collector
