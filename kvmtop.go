@@ -12,10 +12,7 @@ import (
 	"github.com/cha87de/kvmtop/runners"
 )
 
-var (
-	versionMajor = "2"
-	versionMinor string // will be set by go linker
-)
+var version = "devbuild"
 
 func main() {
 
@@ -38,7 +35,7 @@ func main() {
 	// handle flags
 	initializeFlags()
 	if config.Options.Version {
-		fmt.Println("kvmtop version " + versionMajor + "." + versionMinor)
+		fmt.Println("kvmtop version " + version)
 		return
 	}
 
