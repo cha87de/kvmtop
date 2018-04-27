@@ -5,3 +5,24 @@ builds:
       - linux
     goarch:
       - amd64
+
+nfpm:
+  name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+  vendor: Christopher B. Hauser
+  homepage: https://cha87de.github.io/kvmtop/
+  maintainer: Christopher B. Hauser <post@c-ha.de>
+  description: Monitor virtual machine experience from outside on KVM hypervisor level
+  license: GPL-3.0
+
+  # Formats to be generated.
+  formats:
+    - deb
+    - rpm
+
+  # Packages your package depends on.
+  dependencies:
+    - libvirt-bin
+
+  # Override default /usr/local/bin destination for binaries
+  bindir: /usr/bin
