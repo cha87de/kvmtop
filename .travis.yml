@@ -12,7 +12,6 @@ install:
 
 deploy:
   - provider: script
-    skip_cleanup: true
     script: curl -sL https://git.io/goreleaser | bash
     on:
       tags: true
