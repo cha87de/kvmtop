@@ -1,10 +1,7 @@
 # Build customization
 builds:
-  - main: kvmtop.go
-    binary: kvmtop
+  - binary: kvmtop
     goos:
       - linux
     goarch:
       - amd64
-      - arm
-      - arm64
