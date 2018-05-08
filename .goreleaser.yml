@@ -21,8 +21,8 @@ nfpm:
     - rpm
 
   # Packages your package depends on.
-  dependencies:
-    - libvirt-bin
+  #dependencies:
+  #  - libvirt-bin
 
   # Override default /usr/local/bin destination for binaries
   bindir: /usr/bin
