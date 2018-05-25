@@ -26,3 +26,16 @@ nfpm:
 
   # Override default /usr/local/bin destination for binaries
   bindir: /usr/bin
+
+dockers:
+  -
+    goos: linux
+    goarch: amd64
+    goarm: ''
+    binary: kvmtop
+    image: cha87de/kvmtop
+    tag_templates:
+    - "{{ .Tag }}"
+    - "{{ .Tag }}-{{ .Env.GO_VERSION }}"
+    - "v{{ .Major }}"
+    - latest
