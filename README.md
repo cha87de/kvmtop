@@ -1,18 +1,38 @@
 # kvmtop [![Build Status](https://travis-ci.org/cha87de/kvmtop.svg)](https://travis-ci.org/cha87de/kvmtop)
 
 ## What kvmtop does
-It reads utilisation metrics about virtual machines
-running on the KVM hypervisor from different sources:
- - the Linux /proc filesystem
- - the libvirtd socket
+kvmtop reads utilisation metrics about virtual machines running on a KVM
+hypervisor from the /proc filesystem and from the libvirtd socket.
 
 Why yet another monitoring tool for virtual machines?
 
-The CPU measurements are read directly from the hypervisors Linux kernel. kvmtop takes
-into account the difference between CPU utilisation inside and outside the virtual machine,
-which will differ e.g. in cases of cpu over provisioning. kvmtop also collects 
-utilisation values of the hypervisor for virtual machines, to measure the overhead needed
-to run a virtual machine.
+The CPU measurements are read directly from the hypervisors' Linux kernel.
+kvmtop takes into account the difference between utilisation inside and
+outside the virtual machine, which will differ e.g. in cases of cpu over
+provisioning. kvmtop also collects utilisation values of the hypervisor for
+virtual machines, to measure the overhead needed to run a virtual machine.
+
+## Installation
+
+Download and install the [latest version of the kvmtop
+build](https://github.com/cha87de/kvmtop/releases/latest). Available formats are
+the binary, Deb or Rpm packages.
+
+Installation of kvmtop 2.0 on a Debian based system (e.g. Debian or Ubuntu):
+
+```
+wget -O /tmp/kvmtop.deb https://github.com/cha87de/kvmtop/releases/download/2.0/kvmtop_2.0_linux_amd64.deb
+apt-get install -y libvirt-bin  # required dependency
+dpkg -i /tmp/kvmtop.deb
+```
+
+Installation on a Rpm based system (e.g. Centos 7):
+
+```
+wget -O /tmp/kvmtop.rpm https://github.com/cha87de/kvmtop/releases/download/2.0/kvmtop_2.0_linux_amd64.rpm
+yum install -y libvirt  # required dependency
+rpm -Uvh /tmp/kvmtop.rpm
+```
 
 ## Usage
 
@@ -46,44 +66,4 @@ UUID                                 name          cpu_cores cpu_total cpu_steal
 
 With `disk_read, disk_write, net_tx, net_rx` in MB/s.
 
-## Setup developer workspace or compile kvmtop
-
-```
-# create workspace
-mkdir kvmtop && cd kvmtop
-export GOPATH=$(pwd)
-# checkout sources
-go get "github.com/cha87de/kvmtop"
-# build binary
-go install github.com/cha87de/kvmtop
-```
-
-# Known Bugs & Issues
-
-## No Export of Schedstat from Kernel
-
-In CENTOS7 Kernel, the schedstats are not exported any more [1][2].
-One way of installing a kernel, which exports the necessary metrics is to use the ELRepo kernel-ml:
-
-```
-# import key
-rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
-# install repository
-rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm
-# install most current kernel-ml
-yum --enablerepo=elrepo-kernel install kernel-ml
-```
-
-Reboot into newly installed kernel. Then remove the old kernels!
-
-```
-yum list kernel*
-yum erase kernel
-```
-
-Take care with diskless nodes. To boot into new kernel, 
-the file pxelinux.cfg/default has to be changed on the storage node.
-
-
-[1] https://bugzilla.redhat.com/show_bug.cgi?id=1013225
-[2] https://www.centos.org/forums/viewtopic.php?f=48&t=54049
+Please note: although the connection to libvirt may work remote (e.g. via ssh), kvmtop requires access to the /proc file system of the hypervisor's operating system.
