@@ -22,7 +22,7 @@ func cpuLookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
 		return
 	}
 	cores := len(vcpus)
-	newMeasurementCores := models.CreateMeasurement(cores)
+	newMeasurementCores := models.CreateMeasurement(uint64(cores))
 	domain.AddMetricMeasurement("cpu_cores", newMeasurementCores)
 
 	// get core thread IDs
@@ -90,18 +90,7 @@ func cpuCollectMeasurements(domain *models.Domain, metricName string, measuremen
 }
 
 func cpuPrint(domain *models.Domain) []string {
-	var cores string
-	if metric, ok := domain.GetMetric("cpu_cores"); ok {
-		if len(metric.Values) > 0 {
-			byteValue := metric.Values[0].Value
-			reader := bytes.NewReader(byteValue)
-			dec := gob.NewDecoder(reader)
-
-			var coresRaw int
-			dec.Decode(&coresRaw)
-			cores = fmt.Sprintf("%d", coresRaw)
-		}
-	}
+	cores := getMetricUint64(domain, "cpu_cores", 0)
 
 	// cpu util for vcores
 	cputimeAllCores := cpuPrintThreadMetric(domain, "cpu_times")

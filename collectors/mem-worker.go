@@ -51,7 +51,6 @@ func memPrint(domain *models.Domain) []string {
 	vsize := getMetricUint64(domain, "ram_vsize", 0)
 	rss := getMetricUint64(domain, "ram_rss", 0)
 
-	// TODO the following are counters !!
 	minflt := getMetricDiffUint64(domain, "ram_minflt", false)
 	cminflt := getMetricDiffUint64(domain, "ram_cminflt", false)
 	majflt := getMetricDiffUint64(domain, "ram_majflt", false)
