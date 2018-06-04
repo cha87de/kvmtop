@@ -1,10 +1,6 @@
 package collectors
 
 import (
-	"bytes"
-	"encoding/gob"
-	"fmt"
-
 	"github.com/cha87de/kvmtop/models"
 	"github.com/cha87de/kvmtop/util"
 	libvirt "github.com/libvirt/libvirt-go"
@@ -41,6 +37,7 @@ func memCollect(domain *models.Domain) {
 	// fmt.Printf("MinFlt: %d, CMinFlt: %d, MajFlt: %d, CMajFlt: %d\n", stats.MinFlt, stats.CMinFlt, stats.MajFlt, stats.CMajFlt)
 	domain.AddMetricMeasurement("ram_vsize", models.CreateMeasurement(uint64(stats.VSize)))
 	domain.AddMetricMeasurement("ram_rss", models.CreateMeasurement(uint64(stats.RSS*PAGESIZE)))
+
 	domain.AddMetricMeasurement("ram_minflt", models.CreateMeasurement(uint64(stats.MinFlt)))
 	domain.AddMetricMeasurement("ram_cminflt", models.CreateMeasurement(uint64(stats.CMinFlt)))
 	domain.AddMetricMeasurement("ram_majflt", models.CreateMeasurement(uint64(stats.MajFlt)))
@@ -48,31 +45,18 @@ func memCollect(domain *models.Domain) {
 }
 
 func memPrint(domain *models.Domain) []string {
-	total := memPrintMetric(domain, "ram_total")
-	used := memPrintMetric(domain, "ram_used")
+	total := getMetricUint64(domain, "ram_total", 0)
+	used := getMetricUint64(domain, "ram_used", 0)
 
-	vsize := memPrintMetric(domain, "ram_vsize")
-	rss := memPrintMetric(domain, "ram_rss")
-	minflt := memPrintMetric(domain, "ram_minflt")
-	cminflt := memPrintMetric(domain, "ram_cminflt")
-	majflt := memPrintMetric(domain, "ram_majflt")
-	cmajflt := memPrintMetric(domain, "ram_cmajflt")
+	vsize := getMetricUint64(domain, "ram_vsize", 0)
+	rss := getMetricUint64(domain, "ram_rss", 0)
+
+	// TODO the following are counters !!
+	minflt := getMetricDiffUint64(domain, "ram_minflt", false)
+	cminflt := getMetricDiffUint64(domain, "ram_cminflt", false)
+	majflt := getMetricDiffUint64(domain, "ram_majflt", false)
+	cmajflt := getMetricDiffUint64(domain, "ram_cmajflt", false)
 
 	result := append([]string{total}, used, vsize, rss, minflt, cminflt, majflt, cmajflt)
 	return result
-}
-
-func memPrintMetric(domain *models.Domain, metric string) string {
-	var output string
-	if metric, ok := domain.GetMetric(metric); ok {
-		if len(metric.Values) > 0 {
-			byteValue := metric.Values[0].Value
-			reader := bytes.NewReader(byteValue)
-			decoder := gob.NewDecoder(reader)
-			var value uint64
-			decoder.Decode(&value)
-			output = fmt.Sprintf("%d", value/1024)
-		}
-	}
-	return output
 }
