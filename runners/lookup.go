@@ -2,14 +2,20 @@ package runners
 
 import (
 	"log"
+	"strings"
 	"sync"
 	"time"
+
+	"github.com/mitchellh/go-ps"
 
 	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/connector"
 	"github.com/cha87de/kvmtop/models"
+	"github.com/cha87de/kvmtop/util"
 	libvirt "github.com/libvirt/libvirt-go"
 )
+
+var processes []ps.Process
 
 func initializeLookup(wg *sync.WaitGroup) {
 	for n := -1; config.Options.Runs == -1 || n < config.Options.Runs; n++ {
@@ -39,6 +45,9 @@ func lookup() {
 	for id := range models.Collection.Domains {
 		domIDs = append(domIDs, id)
 	}
+
+	// update process list
+	processes, _ = ps.Processes()
 
 	// update domain list
 	for _, dom := range doms {
@@ -76,6 +85,17 @@ func handleDomain(dom libvirt.Domain) (*models.Domain, error) {
 			Name: name,
 		}
 	}
+
+	// lookup PID
+	var pid int
+	for _, process := range processes {
+		cmdline := util.GetCmdLine(process.Pid())
+		if strings.Contains(cmdline, name) {
+			pid = process.Pid()
+			break
+		}
+	}
+	models.Collection.Domains[uuid].PID = pid
 
 	// call collector lookup functions
 	domain := models.Collection.Domains[uuid]

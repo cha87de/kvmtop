@@ -39,8 +39,8 @@ func cpuLookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
 	newMeasurementThreads := models.CreateMeasurement(threadIDs)
 	domain.AddMetricMeasurement("cpu_threadIDs", newMeasurementThreads)
 
-	// get additional thread IDs (using the first vcpu task)
-	tasksFolder := fmt.Sprint("/proc/", threadIDs[0], "/task/*")
+	// get additional thread IDs
+	tasksFolder := fmt.Sprint("/proc/", domain.PID, "/task/*")
 	files, err := filepath.Glob(tasksFolder)
 	if err != nil {
 		return

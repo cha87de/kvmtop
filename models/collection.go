@@ -20,6 +20,7 @@ var Collection struct {
 type Domain struct {
 	Name string
 	UUID string
+	PID  int
 	//Metrics map[string]*Metric
 	Metrics sync.Map
 }

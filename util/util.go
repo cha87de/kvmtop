@@ -154,3 +154,10 @@ func GetProcSchedStat(pid int) ProcSchedStat {
 
 	return stats
 }
+
+// GetCmdLine reads the cmdline for a process from /proc
+func GetCmdLine(pid int) string {
+	filepath := fmt.Sprint("/proc/", strconv.Itoa(pid), "/cmdline")
+	filecontent, _ := ioutil.ReadFile(filepath)
+	return string(filecontent)
+}
