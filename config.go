@@ -52,12 +52,25 @@ func initializeFlags() {
 	}
 
 	// select printer, ncurse as default.
-	if config.Options.PrintBatch {
+	if config.Options.PrintBatch { // DEPRECATED remove PrintBatch in future
 		printer := printers.CreateText()
 		models.Collection.Printer = &printer
 	} else {
-		printer := printers.CreateNcurses()
-		models.Collection.Printer = &printer
+		switch config.Options.Printer {
+		case "ncurses":
+			printer := printers.CreateNcurses()
+			models.Collection.Printer = &printer
+		case "text":
+			printer := printers.CreateText()
+			models.Collection.Printer = &printer
+		case "json":
+			printer := printers.CreateJSON()
+			models.Collection.Printer = &printer
+		default:
+			fmt.Println("unknown printer")
+			os.Exit(1)
+		}
+
 	}
 
 }
