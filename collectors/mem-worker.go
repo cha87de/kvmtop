@@ -6,7 +6,7 @@ import (
 	libvirt "github.com/libvirt/libvirt-go"
 )
 
-var PAGESIZE = 4096
+const pagesize = 4096
 
 func memLookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
 	memStats, err := libvirtDomain.MemoryStats(uint32(libvirt.DOMAIN_MEMORY_STAT_NR), 0)
@@ -36,7 +36,7 @@ func memCollect(domain *models.Domain) {
 	// fmt.Printf("vsize: %d, rss: %d\n", stats.VSize/1024/1024, stats.RSS*4096/1024/1024)
 	// fmt.Printf("MinFlt: %d, CMinFlt: %d, MajFlt: %d, CMajFlt: %d\n", stats.MinFlt, stats.CMinFlt, stats.MajFlt, stats.CMajFlt)
 	domain.AddMetricMeasurement("ram_vsize", models.CreateMeasurement(uint64(stats.VSize)))
-	domain.AddMetricMeasurement("ram_rss", models.CreateMeasurement(uint64(stats.RSS*PAGESIZE)))
+	domain.AddMetricMeasurement("ram_rss", models.CreateMeasurement(uint64(stats.RSS*pagesize)))
 
 	domain.AddMetricMeasurement("ram_minflt", models.CreateMeasurement(uint64(stats.MinFlt)))
 	domain.AddMetricMeasurement("ram_cminflt", models.CreateMeasurement(uint64(stats.CMinFlt)))
