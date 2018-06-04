@@ -30,6 +30,12 @@ func (collector *CollectorMEM) PrintFields() []string {
 	return []string{
 		"ram_total",
 		"ram_used",
+		"ram_vsize",
+		"ram_rss",
+		"ram_minflt",
+		"ram_cminflt",
+		"ram_majflt",
+		"ram_cmajflt",
 	}
 }
 
