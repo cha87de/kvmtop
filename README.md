@@ -63,8 +63,8 @@ Help Options:
 
 Exemplary output
 ```
-UUID                                 name          cpu_cores cpu_total cpu_steal disk_read disk_write net_tx net_rx
-0dbe2ae8-1ee4-4b43-bdf3-b533dfe75486 ubuntu14.04-2 2         53        0         0.00      0.00       0.00   0.00
+UUID                                 name          cpu_cores cpu_total cpu_steal cpu_other_total cpu_other_steal
+0dbe2ae8-1ee4-4b43-bdf3-b533dfe75486 ubuntu14.04-2 2         53        0         5               1
 ```
 
 With `disk_read, disk_write, net_tx, net_rx` in MB/s.

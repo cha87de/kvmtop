@@ -59,6 +59,19 @@ func (domain *Domain) GetMetric(metricName string) (*Metric, bool) {
 	return metric, true
 }
 
+func (domain *Domain) GetMetricIntArray(metricName string) []int {
+	var array []int
+	if metric, ok := domain.GetMetric(metricName); ok {
+		if len(metric.Values) > 0 {
+			byteValue := metric.Values[0].Value
+			reader := bytes.NewReader(byteValue)
+			dec := gob.NewDecoder(reader)
+			dec.Decode(&array)
+		}
+	}
+	return array
+}
+
 // Collector defines a collector for a metric (e.g. CPU)
 type Collector interface {
 	Lookup(domain *Domain, libvirtDomain libvirt.Domain)

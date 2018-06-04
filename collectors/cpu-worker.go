@@ -3,17 +3,17 @@ package collectors
 import (
 	"bytes"
 	"encoding/gob"
-	"io/ioutil"
+	"path"
+	"path/filepath"
 	"regexp"
 	"strconv"
 
 	"fmt"
 
 	"github.com/cha87de/kvmtop/models"
+	"github.com/cha87de/kvmtop/util"
 	libvirt "github.com/libvirt/libvirt-go"
 )
-
-var regSchedStat *regexp.Regexp
 
 func cpuLookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
 	// get amount of cores
@@ -38,45 +38,55 @@ func cpuLookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
 	}
 	newMeasurementThreads := models.CreateMeasurement(threadIDs)
 	domain.AddMetricMeasurement("cpu_threadIDs", newMeasurementThreads)
+
+	// get additional thread IDs (using the first vcpu task)
+	tasksFolder := fmt.Sprint("/proc/", threadIDs[0], "/task/*")
+	files, err := filepath.Glob(tasksFolder)
+	if err != nil {
+		return
+	}
+	otherThreadIDs := make([]int, len(files)-len(threadIDsRaw))
+	i := 0
+	for _, f := range files {
+		taskID, _ := strconv.Atoi(path.Base(f))
+		found := false
+		for _, n := range threadIDs {
+			if taskID == n {
+				// taskID is for vCPU core. skip.
+				found = true
+				break
+			}
+		}
+		if found {
+			// taskID is for vCPU core. skip.
+			continue
+		}
+		// taskID is not for a vCPU core
+		otherThreadIDs[i] = taskID
+		i++
+	}
+	newMeasurementOtherThreads := models.CreateMeasurement(otherThreadIDs)
+	domain.AddMetricMeasurement("cpu_otherThreadIDs", newMeasurementOtherThreads)
 }
 
 func cpuCollect(domain *models.Domain) {
-	// get threadIDs
-	var threadIDs []int
-	if metric, ok := domain.GetMetric("cpu_threadIDs"); ok {
-		if len(metric.Values) > 0 {
-			byteValue := metric.Values[0].Value
-			reader := bytes.NewReader(byteValue)
-			dec := gob.NewDecoder(reader)
-			dec.Decode(&threadIDs)
-		}
-	}
+	// PART A: stats for VCORES from threadIDs
+	cpuCollectMeasurements(domain, "cpu_threadIDs", "cpu_")
+	// PART B: stats for other threads (i/o or emulation)
+	cpuCollectMeasurements(domain, "cpu_otherThreadIDs", "cpu_other_")
+}
 
-	// get statistics for threadIDs
-	if regSchedStat == nil {
-		regSchedStat = regexp.MustCompile("[0-9]*")
-	}
-	var cputimes []int64
-	var runqueues []int64
+func cpuCollectMeasurements(domain *models.Domain, metricName string, measurementPrefix string) {
+	threadIDs := domain.GetMetricIntArray(metricName)
+	var cputimes []uint64
+	var runqueues []uint64
 	for _, threadID := range threadIDs {
-		schedstatFile := fmt.Sprint("/proc/", threadID, "/schedstat")
-		schedstatFileContent, _ := ioutil.ReadFile(schedstatFile)
-		schedStatCounters := regSchedStat.FindAllStringSubmatch(string(schedstatFileContent), -1)
-		if len(schedStatCounters) < 2 {
-			// schedstat file unreadable
-			continue
-		}
-		cputime, _ := strconv.ParseInt(schedStatCounters[0][0], 10, 64)
-		runqueue, _ := strconv.ParseInt(schedStatCounters[1][0], 10, 64)
-		cputimes = append(cputimes, cputime)
-		runqueues = append(runqueues, runqueue)
+		schedstat := util.GetProcSchedStat(threadID)
+		cputimes = append(cputimes, schedstat.Cputime)
+		runqueues = append(runqueues, schedstat.Runqueue)
 	}
-
-	// store cputimes and runqueues as metrics
-	newMeasurementCputimes := models.CreateMeasurement(cputimes)
-	newMeasurementRunqueues := models.CreateMeasurement(runqueues)
-	domain.AddMetricMeasurement("cpu_times", newMeasurementCputimes)
-	domain.AddMetricMeasurement("cpu_runqueues", newMeasurementRunqueues)
+	domain.AddMetricMeasurement(fmt.Sprint(measurementPrefix, "times"), models.CreateMeasurement(cputimes))
+	domain.AddMetricMeasurement(fmt.Sprint(measurementPrefix, "runqueues"), models.CreateMeasurement(runqueues))
 }
 
 func cpuPrint(domain *models.Domain) []string {
@@ -93,9 +103,27 @@ func cpuPrint(domain *models.Domain) []string {
 		}
 	}
 
-	var cputimes []string
-	var cputimeAllCores string
-	if metric, ok := domain.GetMetric("cpu_times"); ok {
+	// cpu util for vcores
+	cputimeAllCores := cpuPrintThreadMetric(domain, "cpu_times")
+	queuetimeAllCores := cpuPrintThreadMetric(domain, "cpu_runqueues")
+
+	// cpu util for for other threads (i/o or emulation)
+	otherCputimeAllCores := cpuPrintThreadMetric(domain, "cpu_other_times")
+	otherQueuetimeAllCores := cpuPrintThreadMetric(domain, "cpu_other_runqueues")
+
+	// put results together
+	result := append([]string{cores}, cputimeAllCores)
+	result = append(result, queuetimeAllCores)
+	result = append(result, otherCputimeAllCores)
+	result = append(result, otherQueuetimeAllCores)
+
+	return result
+}
+
+func cpuPrintThreadMetric(domain *models.Domain, metric string) string {
+	var times []string
+	var timeAllCores string
+	if metric, ok := domain.GetMetric(metric); ok {
 		if len(metric.Values) > 1 {
 			byteValue1 := metric.Values[0].Value
 			reader1 := bytes.NewReader(byteValue1)
@@ -105,67 +133,31 @@ func cpuPrint(domain *models.Domain) []string {
 			reader2 := bytes.NewReader(byteValue2)
 			dec2 := gob.NewDecoder(reader2)
 
-			var cputimesRaw1 []int64
-			var cputimesRaw2 []int64
-			dec1.Decode(&cputimesRaw1)
-			dec2.Decode(&cputimesRaw2)
-
-			timeDiff := metric.Values[0].Timestamp.Sub(metric.Values[1].Timestamp).Seconds()
-			timeConversionFactor := 1000000000 / timeDiff
-
-			// for each core ...
-			var cputimeSum float64
-			for i, cputime1 := range cputimesRaw1 {
-				if len(cputimesRaw2) <= i {
-					continue
-				}
-				cputime2 := cputimesRaw2[i]
-				cputime := float64(cputime1-cputime2) / timeConversionFactor
-				cputimeSum = cputimeSum + cputime
-				cputimes = append(cputimes, fmt.Sprintf("%.0f", cputime*100))
-			}
-
-			cputimeAllCores = fmt.Sprintf("%.0f", cputimeSum/float64(len(cputimesRaw1))*100)
-		}
-	}
-
-	var queuetimes []string
-	var queuetimeAllCores string
-	if metric, ok := domain.GetMetric("cpu_runqueues"); ok {
-		if len(metric.Values) > 1 {
-			byteValue1 := metric.Values[0].Value
-			reader1 := bytes.NewReader(byteValue1)
-			dec1 := gob.NewDecoder(reader1)
-
-			byteValue2 := metric.Values[1].Value
-			reader2 := bytes.NewReader(byteValue2)
-			dec2 := gob.NewDecoder(reader2)
-
-			var timesRaw1 []int64
-			var timesRaw2 []int64
+			var timesRaw1 []uint64
+			var timesRaw2 []uint64
 			dec1.Decode(&timesRaw1)
 			dec2.Decode(&timesRaw2)
 
 			timeDiff := metric.Values[0].Timestamp.Sub(metric.Values[1].Timestamp).Seconds()
 			timeConversionFactor := 1000000000 / timeDiff
 
-			// for each core ...
+			// for each thread ...
 			var timeSum float64
 			for i, time1 := range timesRaw1 {
 				if len(timesRaw2) <= i {
 					continue
 				}
 				time2 := timesRaw2[i]
+				if time1 < time2 {
+					// unexpected case, since dealing with counters
+					time2 = time1
+				}
 				time := float64(time1-time2) / timeConversionFactor
 				timeSum = timeSum + time
-				queuetimes = append(queuetimes, fmt.Sprintf("%.0f", time*100))
+				times = append(times, fmt.Sprintf("%.0f", time*100))
 			}
-
-			queuetimeAllCores = fmt.Sprintf("%.0f", timeSum/float64(len(timesRaw1))*100)
+			timeAllCores = fmt.Sprintf("%.0f", timeSum/float64(len(timesRaw1))*100)
 		}
 	}
-
-	result := append([]string{cores}, cputimeAllCores)
-	result = append(result, queuetimeAllCores)
-	return result
+	return timeAllCores
 }

@@ -31,6 +31,8 @@ func (collector *CollectorCPU) PrintFields() []string {
 		"cpu_cores",
 		"cpu_total",
 		"cpu_steal",
+		"cpu_other_total",
+		"cpu_other_steal",
 	}
 }
 
