@@ -51,7 +51,10 @@ Application Options:
       --mem         enable memory metrics
       --disk        enable disk metrics
       --net         enable network metrics
-  -b, --batch       use simple output e.g. for scripts
+  -b, --batch       [DEPRECATED: use --printer=text instead] use simple output
+                    e.g. for scripts
+  -p, --printer=    the output printer to use (valid printers: ncurses, text,
+                    json) (default: ncurses)
 
 Help Options:
   -h, --help        Show this help message
