@@ -1,0 +1,13 @@
+#!/bin/bash
+cd $(dirname $0)
+function error(){
+	echo "ERROR: $(date) $1" >&2
+}
+
+if [ -z $GOPATH ]; then
+	error "GOPATH is not defined. Please set GOPATH and retry."
+	exit 1
+fi
+docker build -t gobuilder .
+echo "start build ..."
+docker run --rm --name=gobuilder -v $GOPATH:/opt/gopath gobuilder
