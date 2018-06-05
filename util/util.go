@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"strconv"
 
@@ -332,4 +333,26 @@ func GetProcIO(pid int) ProcIO {
 	}
 
 	return stats
+}
+
+// GetProcessList reads and returns all PIDs from the proc filesystem
+func GetProcessList() []int {
+	files, err := ioutil.ReadDir(config.Options.ProcFS)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var processes []int
+	for _, f := range files {
+		// is it a folder?
+		if !f.IsDir() {
+			continue
+		}
+		// is the name a number?
+		if pid, err := strconv.Atoi(f.Name()); err == nil {
+			processes = append(processes, pid)
+		}
+	}
+
+	return processes
 }

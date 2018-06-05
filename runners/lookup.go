@@ -6,8 +6,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mitchellh/go-ps"
-
 	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/connector"
 	"github.com/cha87de/kvmtop/models"
@@ -15,7 +13,7 @@ import (
 	libvirt "github.com/libvirt/libvirt-go"
 )
 
-var processes []ps.Process
+var processes []int
 
 func initializeLookup(wg *sync.WaitGroup) {
 	for n := -1; config.Options.Runs == -1 || n < config.Options.Runs; n++ {
@@ -47,7 +45,7 @@ func lookup() {
 	}
 
 	// update process list
-	processes, _ = ps.Processes()
+	processes = util.GetProcessList()
 
 	// update domain list
 	for _, dom := range doms {
@@ -89,9 +87,9 @@ func handleDomain(dom libvirt.Domain) (*models.Domain, error) {
 	// lookup PID
 	var pid int
 	for _, process := range processes {
-		cmdline := util.GetCmdLine(process.Pid())
+		cmdline := util.GetCmdLine(process)
 		if strings.Contains(cmdline, name) {
-			pid = process.Pid()
+			pid = process
 			break
 		}
 	}
