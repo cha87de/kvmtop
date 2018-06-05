@@ -36,6 +36,3 @@ dockers:
     image: cha87de/kvmtop
     tag_templates:
     - "{{ .Tag }}"
-    - "{{ .Tag }}-{{ .Env.GO_VERSION }}"
-    - "v{{ .Major }}"
-    - latest
