@@ -2,6 +2,9 @@ language: go
 go:
   - '1.9' 
 
+services:
+  - docker
+
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get install -y libvirt-dev rpm
@@ -12,7 +15,7 @@ install:
 
 deploy:
   - provider: script
-    script: curl -sL https://git.io/goreleaser | bash
+    script: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin ; curl -sL https://git.io/goreleaser | bash
     on:
       tags: true
       condition: $TRAVIS_OS_NAME = linux
