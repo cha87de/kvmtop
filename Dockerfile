@@ -1,4 +1,4 @@
-FROM centos:7
-RUN yum install -y libvirt-libs && yum clean all && rm -rf /var/cache/yum
+FROM ubuntu:18.04
+RUN apt-get update && apt-get install -y libvirt-bin
 ADD kvmtop /bin/kvmtop
 CMD [ "/bin/kvmtop" ]
