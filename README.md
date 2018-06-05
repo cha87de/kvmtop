@@ -70,3 +70,17 @@ UUID                                 name          cpu_cores cpu_total cpu_steal
 With `disk_read, disk_write, net_tx, net_rx` in MB/s.
 
 Please note: although the connection to libvirt may work remote (e.g. via ssh), kvmtop requires access to the /proc file system of the hypervisor's operating system.
+
+### Use Docker container
+
+To use the kvmtop docker image, the libvirt and procfs must be known inside the container. 
+
+Example:
+
+```
+docker run --rm \
+  -v /var/run/libvirt/libvirt-sock:/var/run/libvirt/libvirt-sock \
+  -v /proc/:/proc-host/ \
+  cha87de/kvmtop \
+  kvmtop --printer text --procfs /proc-host --cpu --mem
+```
