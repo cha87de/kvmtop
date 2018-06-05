@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"os"
 	"strconv"
+
+	"github.com/cha87de/kvmtop/config"
 )
 
 // ProcStat defines the fields of a /proc/[pid]/stat file
@@ -161,7 +163,7 @@ type ProcStat struct {
 // GetProcStat reads and returns the stat for a process from the proc fs
 func GetProcStat(pid int) ProcStat {
 	stats := ProcStat{PID: pid}
-	filepath := fmt.Sprint("/proc/", strconv.Itoa(pid), "/stat")
+	filepath := fmt.Sprint(config.Options.ProcFS, "/", strconv.Itoa(pid), "/stat")
 	filecontent, _ := ioutil.ReadFile(filepath)
 	// fmt.Printf("%s", filecontent)
 
@@ -254,7 +256,7 @@ type ProcSchedStat struct {
 // GetProcSchedStat reads and returns the schedstat for a process from the proc fs
 func GetProcSchedStat(pid int) ProcSchedStat {
 	stats := ProcSchedStat{PID: pid}
-	filepath := fmt.Sprint("/proc/", strconv.Itoa(pid), "/schedstat")
+	filepath := fmt.Sprint(config.Options.ProcFS, "/", strconv.Itoa(pid), "/schedstat")
 	filecontent, _ := ioutil.ReadFile(filepath)
 
 	_, err := fmt.Fscan(
@@ -273,7 +275,7 @@ func GetProcSchedStat(pid int) ProcSchedStat {
 
 // GetCmdLine reads the cmdline for a process from /proc
 func GetCmdLine(pid int) string {
-	filepath := fmt.Sprint("/proc/", strconv.Itoa(pid), "/cmdline")
+	filepath := fmt.Sprint(config.Options.ProcFS, "/", strconv.Itoa(pid), "/cmdline")
 	filecontent, _ := ioutil.ReadFile(filepath)
 	return string(filecontent)
 }
@@ -302,10 +304,10 @@ type ProcIO struct {
 // GetProcIO reads and returns the io for a process from the proc fs
 func GetProcIO(pid int) ProcIO {
 	stats := ProcIO{PID: pid}
-	filepath := fmt.Sprint("/proc/", strconv.Itoa(pid), "/io")
+	filepath := fmt.Sprint(config.Options.ProcFS, "/", strconv.Itoa(pid), "/io")
 	filecontent, err := ioutil.ReadFile(filepath)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Cannot read /proc/pid/io: %s\n", err)
+		fmt.Fprintf(os.Stderr, "Cannot read proc io: %s\n", err)
 		return ProcIO{}
 	}
 
@@ -325,7 +327,7 @@ func GetProcIO(pid int) ProcIO {
 	)
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Cannot parse /proc/pid/io: %s\n", err)
+		fmt.Fprintf(os.Stderr, "Cannot parse proc io: %s\n", err)
 		return ProcIO{}
 	}
 

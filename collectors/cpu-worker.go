@@ -10,6 +10,7 @@ import (
 
 	"fmt"
 
+	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
 	"github.com/cha87de/kvmtop/util"
 	libvirt "github.com/libvirt/libvirt-go"
@@ -40,7 +41,7 @@ func cpuLookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
 	domain.AddMetricMeasurement("cpu_threadIDs", newMeasurementThreads)
 
 	// get additional thread IDs
-	tasksFolder := fmt.Sprint("/proc/", domain.PID, "/task/*")
+	tasksFolder := fmt.Sprint(config.Options.ProcFS, "/", domain.PID, "/task/*")
 	files, err := filepath.Glob(tasksFolder)
 	if err != nil {
 		return
