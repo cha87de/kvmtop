@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"strconv"
 )
 
@@ -65,9 +66,96 @@ type ProcStat struct {
 	// in clock ticks.
 	Starttime uint64
 	// Virtual memory size in bytes.
-	VSize int
+	VSize uint64
 	// Resident set size in pages.
 	RSS int
+
+	// Current soft limit in bytes on the rss of the process; see the description of RLIMIT_RSS in	getrlimit(2).
+	RSSLim uint64
+	// The address above which program text can run.
+	Startcode uint64
+	// The address below which program text can run.
+	Endcode uint64
+	// The address of the start (i.e., bottom) of the stack.
+	Startstack uint64
+	// The current value of ESP (stack pointer), as found in the kernel stack page for the process.
+	Kstkesp uint64
+	// The current EIP (instruction pointer).
+	Kstkeip uint64
+	// The bitmap of pending signals, displayed as a deci‐
+	// mal number.  Obsolete, because it does not provide
+	// information on real-time signals; use
+	// /proc/[pid]/status instead.
+	Signal uint64
+	// The bitmap of blocked signals, displayed as a deci‐
+	// mal number.  Obsolete, because it does not provide
+	// information on real-time signals; use
+	// /proc/[pid]/status instead.
+	Blocked uint64
+	// The bitmap of ignored signals, displayed as a deci‐
+	// mal number.  Obsolete, because it does not provide
+	// information on real-time signals; use
+	// /proc/[pid]/status instead.
+	Sigignore uint64
+	// The bitmap of caught signals, displayed as a decimal
+	// number.  Obsolete, because it does not provide
+	// information on real-time signals; use
+	// /proc/[pid]/status instead.
+	Sigcatch uint64
+	// This is the "channel" in which the process is wait‐
+	// ing.  It is the address of a location in the kernel
+	// where the process is sleeping.  The corresponding
+	// symbolic name can be found in /proc/[pid]/wchan.
+	Wchan uint64
+	// Number of pages swapped (not maintained).
+	Nswap uint64
+	// Cumulative nswap for child processes (not main‐
+	// tained).
+	Cnswap uint64
+	// Signal to be sent to parent when we die.
+	ExitSignal int
+	// CPU number last executed on.
+	Processor int
+	// Real-time scheduling priority, a number in the range
+	// 1 to 99 for processes scheduled under a real-time
+	// policy, or 0, for non-real-time processes (see
+	// sched_setscheduler(2)).
+	RtPriority uint
+	// Scheduling policy (see sched_setscheduler(2)).
+	// Decode using the SCHED_* constants in linux/sched.h.
+	Policy uint
+	// Aggregated block I/O delays, measured in clock ticks
+	// (centiseconds).
+	DelayacctBlkioTicks uint64
+	// Guest time of the process (time spent running a vir‐
+	// tual CPU for a guest operating system), measured in
+	// clock ticks (divide by sysconf(_SC_CLK_TCK)).
+	GuestTime uint64
+	// Guest time of the process's children, measured in
+	// clock ticks (divide by sysconf(_SC_CLK_TCK)).
+	CGuestTime uint64
+	// Address above which program initialized and unini‐
+	// tialized (BSS) data are placed.
+	StartData uint64
+	// Address below which program initialized and unini‐
+	// tialized (BSS) data are placed.
+	EndData uint64
+	// Address above which program heap can be expanded
+	// with brk(2).
+	StartBrk uint64
+	// Address above which program command-line arguments
+	// (argv) are placed.
+	ArgStart uint64
+	// Address below program command-line arguments (argv)
+	// are placed.
+	ArgEnd uint64
+	// Address above which program environment is placed.
+	EnvStart uint64
+	// Address below which program environment is placed.
+	EnvEnd uint64
+	// The thread's exit status in the form reported by
+	// waitpid(2).
+	ExitCode uint64
 }
 
 // GetProcStat reads and returns the stat for a process from the proc fs
@@ -113,6 +201,34 @@ func GetProcStat(pid int) ProcStat {
 		&stats.Starttime,
 		&stats.VSize,
 		&stats.RSS,
+		&stats.RSSLim,
+		&stats.Startcode,
+		&stats.Endcode,
+		&stats.Startstack,
+		&stats.Kstkesp,
+		&stats.Kstkeip,
+		&stats.Signal,
+		&stats.Blocked,
+		&stats.Sigignore,
+		&stats.Sigcatch,
+		&stats.Wchan,
+		&stats.Nswap,
+		&stats.Cnswap,
+		&stats.ExitSignal,
+		&stats.Processor,
+		&stats.RtPriority,
+		&stats.Policy,
+		&stats.DelayacctBlkioTicks,
+		&stats.GuestTime,
+		&stats.CGuestTime,
+		&stats.StartData,
+		&stats.EndData,
+		&stats.StartBrk,
+		&stats.ArgStart,
+		&stats.ArgEnd,
+		&stats.EnvStart,
+		&stats.EnvEnd,
+		&stats.ExitCode,
 	)
 
 	if err != nil {
@@ -160,4 +276,58 @@ func GetCmdLine(pid int) string {
 	filepath := fmt.Sprint("/proc/", strconv.Itoa(pid), "/cmdline")
 	filecontent, _ := ioutil.ReadFile(filepath)
 	return string(filecontent)
+}
+
+// ProcIO defines the fields of a /proc/[pid]/io file
+// cf. https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/filesystems/proc.txt?id=HEAD
+type ProcIO struct {
+	// The process ID.
+	PID int
+	//  number of bytes the process read, using any read-like system call (from files, pipes, tty...).
+	Rchar uint64
+	// number of bytes the process wrote using any write-like system call.
+	Wchar uint64
+	// number of read-like system call invocations that the process performed.
+	Syscr uint64
+	// number of write-like system call invocations that the process performed.
+	Syscw uint64
+	// number of bytes the process directly read from disk.
+	Read_bytes uint64
+	// number of bytes the process originally dirtied in the page-cache (assuming they will go to disk later).
+	Write_bytes uint64
+	// number of bytes the process "un-dirtied" - e.g. using an "ftruncate" call that truncated pages from the page-cache.
+	Cancelled_write_bytes uint64
+}
+
+// GetProcIO reads and returns the io for a process from the proc fs
+func GetProcIO(pid int) ProcIO {
+	stats := ProcIO{PID: pid}
+	filepath := fmt.Sprint("/proc/", strconv.Itoa(pid), "/io")
+	filecontent, err := ioutil.ReadFile(filepath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Cannot read /proc/pid/io: %s\n", err)
+		return ProcIO{}
+	}
+
+	ioFormat := "rchar: %d\nwchar: %d\nsyscr: %d\nsyscw: %d\n" +
+		"read_bytes: %d\nwrite_bytes: %d\n" +
+		"cancelled_write_bytes: %d\n"
+
+	_, err = fmt.Sscanf(
+		string(filecontent), ioFormat,
+		&stats.Rchar,
+		&stats.Wchar,
+		&stats.Syscr,
+		&stats.Syscw,
+		&stats.Read_bytes,
+		&stats.Write_bytes,
+		&stats.Cancelled_write_bytes,
+	)
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Cannot parse /proc/pid/io: %s\n", err)
+		return ProcIO{}
+	}
+
+	return stats
 }

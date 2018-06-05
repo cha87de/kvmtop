@@ -1,6 +1,7 @@
 package collectors
 
 import (
+	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
 	libvirt "github.com/libvirt/libvirt-go"
 )
@@ -27,9 +28,24 @@ func (collector *CollectorDISK) PrintValues(domain *models.Domain) []string {
 
 // PrintFields the collected data for a domain
 func (collector *CollectorDISK) PrintFields() []string {
+	if config.Options.Verbose {
+		return []string{
+			"disk_stats_errs",
+			"disk_stats_flushreq",
+			"disk_stats_flushtotaltimes",
+			"disk_stats_rdbytes",
+			"disk_stats_rdreq",
+			"disk_stats_rdtotaltimes",
+			"disk_stats_wrbytes",
+			"disk_stats_wrreq",
+			"disk_stats_wrtotaltimes",
+			"disk_delayblkio",
+		}
+	}
 	return []string{
-		"disk_read",
-		"disk_write",
+		"disk_stats_rdbytes",
+		"disk_stats_wrbytes",
+		"disk_delayblkio",
 	}
 }
 

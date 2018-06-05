@@ -50,6 +50,10 @@ func initializeFlags() {
 		collector := collectors.CreateCollectorNET()
 		models.Collection.Collectors["net"] = &collector
 	}
+	if config.Options.EnableIO {
+		collector := collectors.CreateCollectorIO()
+		models.Collection.Collectors["io"] = &collector
+	}
 
 	// select printer, ncurse as default.
 	if config.Options.PrintBatch { // DEPRECATED remove PrintBatch in future

@@ -42,13 +42,12 @@ func getMetricDiffUint64(domain *models.Domain, metric string, perTime bool) str
 			decoder2.Decode(&value2)
 
 			// calculate value diff per time
-			value := float64(value1 - value2) // / timeConversionFactor
+			value := float64(value1 - value2)
 
 			// get time diff
 			if perTime {
 				timeDiff := metric.Values[0].Timestamp.Sub(metric.Values[1].Timestamp).Seconds()
-				timeConversionFactor := 1000000000 / timeDiff
-				value = value / timeConversionFactor
+				value = value / timeDiff
 			}
 
 			output = fmt.Sprintf("%.0f", value)

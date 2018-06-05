@@ -1,11 +1,9 @@
 package collectors
 
 import (
-	"bytes"
-	"encoding/gob"
-	"fmt"
-
+	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
+	"github.com/cha87de/kvmtop/util"
 	libvirt "github.com/libvirt/libvirt-go"
 	libvirtxml "github.com/libvirt/libvirt-go-xml"
 )
@@ -37,13 +35,15 @@ func diskLookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
 	domcfg := &libvirtxml.Domain{}
 	domcfg.Unmarshal(xmldoc)
 
-	var disks []string
-	for _, disk := range domcfg.Devices.Disks {
-		disks = append(disks, disk.Target.Dev)
-	}
-	newMeasurementDisks := models.CreateMeasurement(disks)
-	domain.AddMetricMeasurement("disk_disks", newMeasurementDisks)
+	// generate list of virtual disks
+	// var disks []string
+	// for _, disk := range domcfg.Devices.Disks {
+	//	disks = append(disks, disk.Target.Dev)
+	// }
+	// newMeasurementDisks := models.CreateMeasurement(disks)
+	// domain.AddMetricMeasurement("disk_disks", newMeasurementDisks)
 
+	// sum up stats from virtual disks
 	var sums diskstats
 	for _, disk := range domcfg.Devices.Disks {
 		dev := disk.Target.Dev
@@ -96,51 +96,40 @@ func diskLookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
 			sums.WrTotalTimes += ioStats.WrTotalTimes
 		}
 	}
-	newMeasurementStats := models.CreateMeasurement(sums)
-	domain.AddMetricMeasurement("disk_stats", newMeasurementStats)
+	domain.AddMetricMeasurement("disk_stats_errs", models.CreateMeasurement(uint64(sums.Errs)))
+	domain.AddMetricMeasurement("disk_stats_flushreq", models.CreateMeasurement(uint64(sums.FlushReq)))
+	domain.AddMetricMeasurement("disk_stats_flushtotaltimes", models.CreateMeasurement(uint64(sums.FlushTotalTimes)))
+	domain.AddMetricMeasurement("disk_stats_rdbytes", models.CreateMeasurement(uint64(sums.RdBytes)))
+	domain.AddMetricMeasurement("disk_stats_rdreq", models.CreateMeasurement(uint64(sums.RdReq)))
+	domain.AddMetricMeasurement("disk_stats_rdtotaltimes", models.CreateMeasurement(uint64(sums.RdTotalTimes)))
+	domain.AddMetricMeasurement("disk_stats_wrbytes", models.CreateMeasurement(uint64(sums.WrBytes)))
+	domain.AddMetricMeasurement("disk_stats_wrreq", models.CreateMeasurement(uint64(sums.WrReq)))
+	domain.AddMetricMeasurement("disk_stats_wrtotaltimes", models.CreateMeasurement(uint64(sums.WrTotalTimes)))
 }
 
 func diskCollect(domain *models.Domain) {
-	// TODO
+	pid := domain.PID
+	stats := util.GetProcStat(pid)
+	// fmt.Printf("\n%v\n", stats)
+	domain.AddMetricMeasurement("disk_delayblkio", models.CreateMeasurement(uint64(stats.DelayacctBlkioTicks)))
 }
 
 func diskPrint(domain *models.Domain) []string {
-	var thrpR, thrpW string
-	if metric, ok := domain.GetMetric("disk_stats"); ok {
-		if len(metric.Values) > 1 {
+	errs := getMetricDiffUint64(domain, "disk_stats_errs", true)
+	flushreq := getMetricDiffUint64(domain, "disk_stats_flushreq", true)
+	flushtotaltimes := getMetricDiffUint64(domain, "disk_stats_flushtotaltimes", true)
+	rdbytes := getMetricDiffUint64(domain, "disk_stats_rdbytes", true)
+	rdreq := getMetricDiffUint64(domain, "disk_stats_rdreq", true)
+	rdtotaltimes := getMetricDiffUint64(domain, "disk_stats_rdtotaltimes", true)
+	wrbytes := getMetricDiffUint64(domain, "disk_stats_wrbytes", true)
+	wrreq := getMetricDiffUint64(domain, "disk_stats_wrreq", true)
+	wrtotaltimes := getMetricDiffUint64(domain, "disk_stats_wrtotaltimes", true)
 
-			r1 := getRead(metric.Values[0].Value)
-			r2 := getRead(metric.Values[1].Value)
-			w1 := getWrite(metric.Values[0].Value)
-			w2 := getWrite(metric.Values[1].Value)
+	delayblkio := getMetricDiffUint64(domain, "disk_delayblkio", true)
 
-			timeDiff := metric.Values[0].Timestamp.Sub(metric.Values[1].Timestamp).Seconds()
-			timeConversionFactor := timeDiff
-
-			fracR := float64(r1-r2) / timeConversionFactor
-			fracW := float64(w1-w2) / timeConversionFactor
-
-			thrpR = fmt.Sprintf("%.2f", fracR/1024/1024)
-			thrpW = fmt.Sprintf("%.2f", fracW/1024/1024)
-		}
+	result := append([]string{rdbytes}, wrbytes, delayblkio)
+	if config.Options.Verbose {
+		result = append([]string{errs}, flushreq, flushtotaltimes, rdbytes, rdreq, rdtotaltimes, wrbytes, wrreq, wrtotaltimes, delayblkio)
 	}
-
-	result := append([]string{thrpR}, thrpW)
 	return result
-}
-
-func getRead(byteValue []byte) int64 {
-	reader := bytes.NewReader(byteValue)
-	decoder := gob.NewDecoder(reader)
-	var stats diskstats
-	decoder.Decode(&stats)
-	return stats.RdBytes
-}
-
-func getWrite(byteValue []byte) int64 {
-	reader := bytes.NewReader(byteValue)
-	decoder := gob.NewDecoder(reader)
-	var stats diskstats
-	decoder.Decode(&stats)
-	return stats.WrBytes
 }
