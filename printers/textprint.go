@@ -15,7 +15,7 @@ type TextPrinter struct {
 
 // Open opens the printer
 func (printer *TextPrinter) Open() {
-	// nothing to open
+	outputOpen()
 }
 
 // Screen prints the measurements on the screen
@@ -23,9 +23,9 @@ func (printer *TextPrinter) Screen(fields []string, values [][]string) {
 	if showheader {
 		// iterate over fields
 		for _, field := range fields {
-			fmt.Printf("%s\t", field)
+			output(fmt.Sprintf("%s\t", field))
 		}
-		fmt.Print("\n")
+		output(fmt.Sprint("\n"))
 
 		// deactivate header
 		showheader = false
@@ -34,15 +34,15 @@ func (printer *TextPrinter) Screen(fields []string, values [][]string) {
 	// iterate over domains
 	for _, domvalue := range values {
 		for _, value := range domvalue {
-			fmt.Printf("%s\t", value)
+			output(fmt.Sprintf("%s\t", value))
 		}
-		fmt.Print("\n")
+		output(fmt.Sprint("\n"))
 	}
 }
 
 // Close terminates the printer
 func (printer *TextPrinter) Close() {
-	// nothing to close
+	outputClose()
 }
 
 // CreateText creates a new simple text printer

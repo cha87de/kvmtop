@@ -47,14 +47,17 @@ Application Options:
   -f, --frequency=  Frequency (in seconds) for collecting metrics (default: 1)
   -r, --runs=       Amount of collection runs (default: -1)
   -c, --connection= connection uri to libvirt daemon (default: qemu:///system)
+      --procfs=     path to the proc filesystem (default: /proc)
+      --verbose     Verbose output, adds more detailed fields
       --cpu         enable cpu metrics
       --mem         enable memory metrics
       --disk        enable disk metrics
       --net         enable network metrics
-  -b, --batch       [DEPRECATED: use --printer=text instead] use simple output
-                    e.g. for scripts
-  -p, --printer=    the output printer to use (valid printers: ncurses, text,
-                    json) (default: ncurses)
+      --io          enable io metrics (requires root)
+  -b, --batch       [DEPRECATED: use --printer=text instead] use simple output e.g. for scripts
+  -p, --printer=    the output printer to use (valid printers: ncurses, text, json) (default: ncurses)
+  -o, --output=     the output channel to send printer output (valid output: stdout, file, tcp) (default: stdout)
+      --target=     for output 'file' the location, for 'tcp' the url to the tcp server
 
 Help Options:
   -h, --help        Show this help message
@@ -71,6 +74,23 @@ With `disk_read, disk_write, net_tx, net_rx` in MB/s.
 
 Please note: although the connection to libvirt may work remote (e.g. via ssh), kvmtop requires access to the /proc file system of the hypervisor's operating system.
 
+### Printers and Outputs
+
+Printers are define the representation of the monitoring data. This can be for humans in ncurses, or for further processing text (space separated) or json.
+
+Outputs define the location where the printers send data to. Output works for text and json printers, yet not for ncurses. The output may be a file or a remote tcp server.
+
+Example scenarios:
+
+```
+# write monitoring data to log file
+kvmtop --cpu --printer=text --output=file --target=/var/log/kvmtop.log
+
+# send mointoring data to tcp server (e.g. logstash with tcp input)
+kvmtop --cpu --printer=json --output=tcp --target=127.0.0.1:12345
+```
+
+
 ### Use Docker container
 
 To use the kvmtop docker image, the libvirt and procfs must be known inside the container. 
@@ -83,4 +103,14 @@ docker run --rm \
   -v /proc/:/proc-host/ \
   cha87de/kvmtop \
   kvmtop --printer text --procfs /proc-host --cpu --mem
+```
+
+Example with logstash:
+
+```
+docker run --rm \
+  -v /var/run/libvirt/libvirt-sock:/var/run/libvirt/libvirt-sock \
+  -v /proc/:/proc-host/ \
+  cha87de/kvmtop \
+  kvmtop --printer json --output=tcp --target=127.0.0.1:12345 --procfs /proc-host --cpu --mem --disk --net --io
 ```

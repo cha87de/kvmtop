@@ -17,4 +17,7 @@ var Options struct {
 
 	PrintBatch bool   `short:"b" long:"batch" description:"[DEPRECATED: use --printer=text instead] use simple output e.g. for scripts"`
 	Printer    string `short:"p" long:"printer" description:"the output printer to use (valid printers: ncurses, text, json)" default:"ncurses"`
+
+	Output       string `short:"o" long:"output" description:"the output channel to send printer output (valid output: stdout, file, tcp)" default:"stdout"`
+	OutputTarget string `long:"target" description:"for output 'file' the location, for 'tcp' the url to the tcp server"`
 }
