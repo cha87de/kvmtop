@@ -36,3 +36,4 @@ dockers:
     image: cha87de/kvmtop
     tag_templates:
     - "{{ .Tag }}"
+    - latest

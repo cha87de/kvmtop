@@ -13,9 +13,16 @@ install:
   - "go get -d -v ./..."
   - "go build -v"
 
+before_deploy:
+ - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
 deploy:
   - provider: script
-    script: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin ; curl -sL https://git.io/goreleaser | bash
+    script: docker build -t cha87de/kvmtop:master . ; docker push cha87de/kvmtop:master
+    on:
+      branch: master
+  - provider: script
+    script: curl -sL https://git.io/goreleaser | bash
     on:
       tags: true
       condition: $TRAVIS_OS_NAME = linux
