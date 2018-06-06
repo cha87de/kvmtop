@@ -2,6 +2,7 @@ package printers
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/cha87de/kvmtop/models"
 )
@@ -28,7 +29,15 @@ func (printer *JSONPrinter) Screen(fields []string, values [][]string) {
 			if j > 0 {
 				output(fmt.Sprintf(","))
 			}
-			output(fmt.Sprintf("\"%s\": \"%s\"", fields[j], value))
+
+			// but """ only for strings
+			if _, err := strconv.ParseInt(value, 10, 64); err == nil {
+				output(fmt.Sprintf("\"%s\": %s", fields[j], value))
+			} else if _, err := strconv.ParseFloat(value, 64); err == nil {
+				output(fmt.Sprintf("\"%s\": %s", fields[j], value))
+			} else {
+				output(fmt.Sprintf("\"%s\": \"%s\"", fields[j], value))
+			}
 		}
 		output(fmt.Sprintf("}"))
 	}
