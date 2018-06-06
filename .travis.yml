@@ -18,6 +18,7 @@ before_deploy:
 
 deploy:
   - provider: script
+    skip_cleanup: true
     script: docker build -t cha87de/kvmtop:master . ; docker push cha87de/kvmtop:master
     on:
       branch: master
