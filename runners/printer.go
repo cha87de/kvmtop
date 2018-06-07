@@ -8,7 +8,7 @@ import (
 	"github.com/cha87de/kvmtop/models"
 )
 
-var collectors []string
+var domainCollectors []string
 
 func initializePrinter(wg *sync.WaitGroup) {
 	// open configured printer
@@ -16,7 +16,7 @@ func initializePrinter(wg *sync.WaitGroup) {
 
 	// define collectors and their order
 	for collectorName := range models.Collection.Collectors {
-		collectors = append(collectors, collectorName)
+		domainCollectors = append(domainCollectors, collectorName)
 	}
 
 	// start continuously printing values
@@ -40,7 +40,7 @@ func handleRun() {
 
 	// collect fields for each collector
 	fields = append(fields, "UUID", "name")
-	for _, collectorName := range collectors {
+	for _, collectorName := range domainCollectors {
 		collector := models.Collection.Collectors[collectorName]
 		output := collector.PrintFields()
 		fields = append(fields, output[0:]...)
@@ -50,7 +50,7 @@ func handleRun() {
 	for _, domain := range models.Collection.Domains {
 		var domvalues []string
 		domvalues = append(domvalues, domain.UUID, domain.Name)
-		for _, collectorName := range collectors {
+		for _, collectorName := range domainCollectors {
 			collector := models.Collection.Collectors[collectorName]
 			output := collector.PrintValues(domain)
 			domvalues = append(domvalues, output[0:]...)

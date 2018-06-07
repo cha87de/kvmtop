@@ -23,6 +23,21 @@ func getMetricUint64(domain *models.Domain, metric string, measurementIndex int)
 	return output
 }
 
+func getMetricString(domain *models.Domain, metric string, measurementIndex int) string {
+	var output string
+	if metric, ok := domain.GetMetric(metric); ok {
+		if len(metric.Values) > measurementIndex {
+			byteValue := metric.Values[measurementIndex].Value
+			reader := bytes.NewReader(byteValue)
+			decoder := gob.NewDecoder(reader)
+			var valuetype string
+			decoder.Decode(&valuetype)
+			output = fmt.Sprintf("%s", valuetype)
+		}
+	}
+	return output
+}
+
 func getMetricDiffUint64(domain *models.Domain, metric string, perTime bool) string {
 	var output string
 	if metric, ok := domain.GetMetric(metric); ok {

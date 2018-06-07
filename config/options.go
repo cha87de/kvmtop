@@ -14,6 +14,7 @@ var Options struct {
 	EnableDISK bool `long:"disk" description:"enable disk metrics"`
 	EnableNET  bool `long:"net" description:"enable network metrics"`
 	EnableIO   bool `long:"io" description:"enable io metrics (requires root)"`
+	EnableHost bool `long:"host" description:"enable host metrics"`
 
 	PrintBatch bool   `short:"b" long:"batch" description:"[DEPRECATED: use --printer=text instead] use simple output e.g. for scripts"`
 	Printer    string `short:"p" long:"printer" description:"the output printer to use (valid printers: ncurses, text, json)" default:"ncurses"`

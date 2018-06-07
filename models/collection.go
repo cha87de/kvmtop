@@ -60,6 +60,7 @@ func (domain *Domain) GetMetric(metricName string) (*Metric, bool) {
 	return metric, true
 }
 
+// GetMetricIntArray reads and returns a metric int array by metric name
 func (domain *Domain) GetMetricIntArray(metricName string) []int {
 	var array []int
 	if metric, ok := domain.GetMetric(metricName); ok {
@@ -73,7 +74,7 @@ func (domain *Domain) GetMetricIntArray(metricName string) []int {
 	return array
 }
 
-// Collector defines a collector for a metric (e.g. CPU)
+// Collector defines a collector for a domain specific metric (e.g. CPU)
 type Collector interface {
 	Lookup(domain *Domain, libvirtDomain libvirt.Domain)
 	Collect(domain *Domain)
