@@ -88,7 +88,8 @@ func handleDomain(dom libvirt.Domain) (*models.Domain, error) {
 	var pid int
 	for _, process := range processes {
 		cmdline := util.GetCmdLine(process)
-		if strings.Contains(cmdline, name) {
+		if cmdline != "" && strings.Contains(cmdline, name) {
+			// fmt.Printf("Found PID %d for instance %s (cmdline: %s)", process, name, cmdline)
 			pid = process
 			break
 		}
