@@ -1,8 +1,9 @@
-package collectors
+package hostcollector
 
 import (
 	"os"
 
+	"github.com/cha87de/kvmtop/collectors"
 	"github.com/cha87de/kvmtop/models"
 	libvirt "github.com/libvirt/libvirt-go"
 )
@@ -20,7 +21,7 @@ func hostCollect(domain *models.Domain) {
 }
 
 func hostPrint(domain *models.Domain) []string {
-	host := getMetricString(domain, "host_name", 0)
+	host := collectors.GetMetricString(domain, "host_name", 0)
 	result := append([]string{host})
 	return result
 }

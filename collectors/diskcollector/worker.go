@@ -1,6 +1,7 @@
-package collectors
+package diskcollector
 
 import (
+	"github.com/cha87de/kvmtop/collectors"
 	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
 	"github.com/cha87de/kvmtop/util"
@@ -115,17 +116,17 @@ func diskCollect(domain *models.Domain) {
 }
 
 func diskPrint(domain *models.Domain) []string {
-	errs := getMetricDiffUint64(domain, "disk_stats_errs", true)
-	flushreq := getMetricDiffUint64(domain, "disk_stats_flushreq", true)
-	flushtotaltimes := getMetricDiffUint64(domain, "disk_stats_flushtotaltimes", true)
-	rdbytes := getMetricDiffUint64(domain, "disk_stats_rdbytes", true)
-	rdreq := getMetricDiffUint64(domain, "disk_stats_rdreq", true)
-	rdtotaltimes := getMetricDiffUint64(domain, "disk_stats_rdtotaltimes", true)
-	wrbytes := getMetricDiffUint64(domain, "disk_stats_wrbytes", true)
-	wrreq := getMetricDiffUint64(domain, "disk_stats_wrreq", true)
-	wrtotaltimes := getMetricDiffUint64(domain, "disk_stats_wrtotaltimes", true)
+	errs := collectors.GetMetricDiffUint64(domain, "disk_stats_errs", true)
+	flushreq := collectors.GetMetricDiffUint64(domain, "disk_stats_flushreq", true)
+	flushtotaltimes := collectors.GetMetricDiffUint64(domain, "disk_stats_flushtotaltimes", true)
+	rdbytes := collectors.GetMetricDiffUint64(domain, "disk_stats_rdbytes", true)
+	rdreq := collectors.GetMetricDiffUint64(domain, "disk_stats_rdreq", true)
+	rdtotaltimes := collectors.GetMetricDiffUint64(domain, "disk_stats_rdtotaltimes", true)
+	wrbytes := collectors.GetMetricDiffUint64(domain, "disk_stats_wrbytes", true)
+	wrreq := collectors.GetMetricDiffUint64(domain, "disk_stats_wrreq", true)
+	wrtotaltimes := collectors.GetMetricDiffUint64(domain, "disk_stats_wrtotaltimes", true)
 
-	delayblkio := getMetricDiffUint64(domain, "disk_delayblkio", true)
+	delayblkio := collectors.GetMetricDiffUint64(domain, "disk_delayblkio", true)
 
 	result := append([]string{rdbytes}, wrbytes, delayblkio)
 	if config.Options.Verbose {

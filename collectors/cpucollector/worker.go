@@ -1,4 +1,4 @@
-package collectors
+package cpucollector
 
 import (
 	"bytes"
@@ -10,6 +10,7 @@ import (
 
 	"fmt"
 
+	"github.com/cha87de/kvmtop/collectors"
 	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
 	"github.com/cha87de/kvmtop/util"
@@ -59,6 +60,9 @@ func cpuCollect(domain *models.Domain) {
 	cpuCollectMeasurements(domain, "cpu_threadIDs", "cpu_")
 	// PART B: stats for other threads (i/o or emulation)
 	cpuCollectMeasurements(domain, "cpu_otherThreadIDs", "cpu_other_")
+
+	// PART C: collect frequencies
+
 }
 
 func cpuCollectMeasurements(domain *models.Domain, metricName string, measurementPrefix string) {
@@ -75,7 +79,7 @@ func cpuCollectMeasurements(domain *models.Domain, metricName string, measuremen
 }
 
 func cpuPrint(domain *models.Domain) []string {
-	cores := getMetricUint64(domain, "cpu_cores", 0)
+	cores := collectors.GetMetricUint64(domain, "cpu_cores", 0)
 
 	// cpu util for vcores
 	cputimeAllCores := cpuPrintThreadMetric(domain, "cpu_times")

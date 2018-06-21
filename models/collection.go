@@ -76,7 +76,7 @@ func (domain *Domain) GetMetricIntArray(metricName string) []int {
 
 // Collector defines a collector for a domain specific metric (e.g. CPU)
 type Collector interface {
-	Lookup(domain *Domain, libvirtDomain libvirt.Domain)
+	Lookup(domains map[string]*Domain, libvirtDomains map[string]libvirt.Domain)
 	Collect(domain *Domain)
 	PrintFields() []string
 	PrintValues(domain *Domain) []string

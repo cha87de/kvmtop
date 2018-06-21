@@ -8,7 +8,7 @@ import (
 	"github.com/cha87de/kvmtop/models"
 )
 
-func getMetricUint64(domain *models.Domain, metric string, measurementIndex int) string {
+func GetMetricUint64(domain *models.Domain, metric string, measurementIndex int) string {
 	var output string
 	if metric, ok := domain.GetMetric(metric); ok {
 		if len(metric.Values) > measurementIndex {
@@ -23,7 +23,7 @@ func getMetricUint64(domain *models.Domain, metric string, measurementIndex int)
 	return output
 }
 
-func getMetricString(domain *models.Domain, metric string, measurementIndex int) string {
+func GetMetricString(domain *models.Domain, metric string, measurementIndex int) string {
 	var output string
 	if metric, ok := domain.GetMetric(metric); ok {
 		if len(metric.Values) > measurementIndex {
@@ -38,7 +38,7 @@ func getMetricString(domain *models.Domain, metric string, measurementIndex int)
 	return output
 }
 
-func getMetricDiffUint64(domain *models.Domain, metric string, perTime bool) string {
+func GetMetricDiffUint64(domain *models.Domain, metric string, perTime bool) string {
 	var output string
 	if metric, ok := domain.GetMetric(metric); ok {
 		if len(metric.Values) >= 2 {

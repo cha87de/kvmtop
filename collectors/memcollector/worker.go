@@ -1,6 +1,7 @@
-package collectors
+package memcollector
 
 import (
+	"github.com/cha87de/kvmtop/collectors"
 	"github.com/cha87de/kvmtop/models"
 	"github.com/cha87de/kvmtop/util"
 	libvirt "github.com/libvirt/libvirt-go"
@@ -45,16 +46,16 @@ func memCollect(domain *models.Domain) {
 }
 
 func memPrint(domain *models.Domain) []string {
-	total := getMetricUint64(domain, "ram_total", 0)
-	used := getMetricUint64(domain, "ram_used", 0)
+	total := collectors.GetMetricUint64(domain, "ram_total", 0)
+	used := collectors.GetMetricUint64(domain, "ram_used", 0)
 
-	vsize := getMetricUint64(domain, "ram_vsize", 0)
-	rss := getMetricUint64(domain, "ram_rss", 0)
+	vsize := collectors.GetMetricUint64(domain, "ram_vsize", 0)
+	rss := collectors.GetMetricUint64(domain, "ram_rss", 0)
 
-	minflt := getMetricDiffUint64(domain, "ram_minflt", false)
-	cminflt := getMetricDiffUint64(domain, "ram_cminflt", false)
-	majflt := getMetricDiffUint64(domain, "ram_majflt", false)
-	cmajflt := getMetricDiffUint64(domain, "ram_cmajflt", false)
+	minflt := collectors.GetMetricDiffUint64(domain, "ram_minflt", false)
+	cminflt := collectors.GetMetricDiffUint64(domain, "ram_cminflt", false)
+	majflt := collectors.GetMetricDiffUint64(domain, "ram_majflt", false)
+	cmajflt := collectors.GetMetricDiffUint64(domain, "ram_cmajflt", false)
 
 	result := append([]string{total}, used, vsize, rss, minflt, cminflt, majflt, cmajflt)
 	return result

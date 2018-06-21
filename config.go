@@ -5,7 +5,12 @@ import (
 
 	"fmt"
 
-	"github.com/cha87de/kvmtop/collectors"
+	"github.com/cha87de/kvmtop/collectors/cpucollector"
+	"github.com/cha87de/kvmtop/collectors/diskcollector"
+	"github.com/cha87de/kvmtop/collectors/hostcollector"
+	"github.com/cha87de/kvmtop/collectors/iocollector"
+	"github.com/cha87de/kvmtop/collectors/memcollector"
+	"github.com/cha87de/kvmtop/collectors/netcollector"
 	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
 	"github.com/cha87de/kvmtop/printers"
@@ -35,27 +40,27 @@ func initializeFlags() {
 		models.Collection.Collectors = make(map[string]models.Collector)
 	}
 	if config.Options.EnableCPU {
-		collector := collectors.CreateCollectorCPU()
+		collector := cpucollector.CreateCollector()
 		models.Collection.Collectors["cpu"] = &collector
 	}
 	if config.Options.EnableMEM {
-		collector := collectors.CreateCollectorMEM()
+		collector := memcollector.CreateCollector()
 		models.Collection.Collectors["mem"] = &collector
 	}
 	if config.Options.EnableDISK {
-		collector := collectors.CreateCollectorDISK()
+		collector := diskcollector.CreateCollector()
 		models.Collection.Collectors["disk"] = &collector
 	}
 	if config.Options.EnableNET {
-		collector := collectors.CreateCollectorNET()
+		collector := netcollector.CreateCollector()
 		models.Collection.Collectors["net"] = &collector
 	}
 	if config.Options.EnableIO {
-		collector := collectors.CreateCollectorIO()
+		collector := iocollector.CreateCollector()
 		models.Collection.Collectors["io"] = &collector
 	}
 	if config.Options.EnableHost {
-		collector := collectors.CreateCollectorHOST()
+		collector := hostcollector.CreateCollector()
 		models.Collection.Collectors["host"] = &collector
 	}
 

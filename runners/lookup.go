@@ -33,6 +33,7 @@ func lookup() {
 
 	// query libvirt
 	doms, err := connector.Libvirt.Connection.ListAllDomains(libvirt.CONNECT_LIST_DOMAINS_ACTIVE)
+	libvirtDomains := make(map[string]libvirt.Domain)
 	if err != nil {
 		log.Printf("Cannot get list of domains form libvirt.")
 		return
@@ -50,6 +51,7 @@ func lookup() {
 	// update domain list
 	for _, dom := range doms {
 		domain, err := handleDomain(dom)
+		libvirtDomains[domain.UUID] = dom
 		if err != nil {
 			continue
 		}
@@ -59,6 +61,11 @@ func lookup() {
 	// remove cached but not existent domains
 	for _, id := range domIDs {
 		delete(models.Collection.Domains, id)
+	}
+
+	// call collector lookup functions
+	for _, collector := range models.Collection.Collectors {
+		collector.Lookup(models.Collection.Domains, libvirtDomains)
 	}
 
 }
@@ -95,12 +102,6 @@ func handleDomain(dom libvirt.Domain) (*models.Domain, error) {
 		}
 	}
 	models.Collection.Domains[uuid].PID = pid
-
-	// call collector lookup functions
-	domain := models.Collection.Domains[uuid]
-	for _, collector := range models.Collection.Collectors {
-		collector.Lookup(domain, dom)
-	}
 
 	return models.Collection.Domains[uuid], nil
 }

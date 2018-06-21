@@ -1,4 +1,4 @@
-package collectors
+package diskcollector
 
 import (
 	"github.com/cha87de/kvmtop/config"
@@ -6,28 +6,30 @@ import (
 	libvirt "github.com/libvirt/libvirt-go"
 )
 
-// CollectorDISK describes the disk collector
-type CollectorDISK struct {
+// Collector describes the disk collector
+type Collector struct {
 	models.Collector
 }
 
 // Lookup disk collector data
-func (collector *CollectorDISK) Lookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
-	diskLookup(domain, libvirtDomain)
+func (collector *Collector) Lookup(domains map[string]*models.Domain, libvirtDomains map[string]libvirt.Domain) {
+	for uuid := range domains {
+		diskLookup(domains[uuid], libvirtDomains[uuid])
+	}
 }
 
 // Collect disk collector data
-func (collector *CollectorDISK) Collect(domain *models.Domain) {
+func (collector *Collector) Collect(domain *models.Domain) {
 	diskCollect(domain)
 }
 
 // PrintValues the collected data for a domain
-func (collector *CollectorDISK) PrintValues(domain *models.Domain) []string {
+func (collector *Collector) PrintValues(domain *models.Domain) []string {
 	return diskPrint(domain)
 }
 
 // PrintFields the collected data for a domain
-func (collector *CollectorDISK) PrintFields() []string {
+func (collector *Collector) PrintFields() []string {
 	if config.Options.Verbose {
 		return []string{
 			"disk_stats_errs",
@@ -49,7 +51,7 @@ func (collector *CollectorDISK) PrintFields() []string {
 	}
 }
 
-// CreateCollectorDISK creates a new cpu collector
-func CreateCollectorDISK() CollectorDISK {
-	return CollectorDISK{}
+// CreateCollector creates a new disk collector
+func CreateCollector() Collector {
+	return Collector{}
 }

@@ -1,6 +1,7 @@
-package collectors
+package iocollector
 
 import (
+	"github.com/cha87de/kvmtop/collectors"
 	"github.com/cha87de/kvmtop/models"
 	"github.com/cha87de/kvmtop/util"
 	libvirt "github.com/libvirt/libvirt-go"
@@ -22,13 +23,13 @@ func ioCollect(domain *models.Domain) {
 }
 
 func ioPrint(domain *models.Domain) []string {
-	rchar := getMetricDiffUint64(domain, "io_rchar", true)
-	wchar := getMetricDiffUint64(domain, "io_wchar", true)
-	syscr := getMetricDiffUint64(domain, "io_syscr", true)
-	syscw := getMetricDiffUint64(domain, "io_syscw", true)
-	read_bytes := getMetricDiffUint64(domain, "io_read_bytes", true)
-	write_bytes := getMetricDiffUint64(domain, "io_write_bytes", true)
-	cancelled_write_bytes := getMetricDiffUint64(domain, "io_cancelled_write_bytes", true)
+	rchar := collectors.GetMetricDiffUint64(domain, "io_rchar", true)
+	wchar := collectors.GetMetricDiffUint64(domain, "io_wchar", true)
+	syscr := collectors.GetMetricDiffUint64(domain, "io_syscr", true)
+	syscw := collectors.GetMetricDiffUint64(domain, "io_syscw", true)
+	read_bytes := collectors.GetMetricDiffUint64(domain, "io_read_bytes", true)
+	write_bytes := collectors.GetMetricDiffUint64(domain, "io_write_bytes", true)
+	cancelled_write_bytes := collectors.GetMetricDiffUint64(domain, "io_cancelled_write_bytes", true)
 
 	result := append([]string{rchar}, wchar, syscr, syscw, read_bytes, write_bytes, cancelled_write_bytes)
 	return result
