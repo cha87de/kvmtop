@@ -5,8 +5,8 @@ import (
 	"encoding/gob"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strconv"
-	"strings"
 
 	"fmt"
 
@@ -27,31 +27,46 @@ func cpuLookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
 	newMeasurementCores := models.CreateMeasurement(uint64(cores))
 	domain.AddMetricMeasurement("cpu_cores", newMeasurementCores)
 
+	// get core thread IDs
+	vCPUThreads, err := libvirtDomain.QemuMonitorCommand("info cpus", libvirt.DOMAIN_QEMU_MONITOR_COMMAND_HMP)
+	if err != nil {
+		return
+	}
+	regThreadID := regexp.MustCompile("thread_id=([0-9]*)\\s")
+	threadIDsRaw := regThreadID.FindAllStringSubmatch(vCPUThreads, -1)
+	coreThreadIDs := make([]int, len(threadIDsRaw))
+	for i, thread := range threadIDsRaw {
+		coreThreadIDs[i], _ = strconv.Atoi(thread[1])
+	}
+	newMeasurementThreads := models.CreateMeasurement(coreThreadIDs)
+	domain.AddMetricMeasurement("cpu_threadIDs", newMeasurementThreads)
+
 	// get thread IDs
 	tasksFolder := fmt.Sprint(config.Options.ProcFS, "/", domain.PID, "/task/*")
 	files, err := filepath.Glob(tasksFolder)
 	if err != nil {
 		return
 	}
-	coreThreadIDs := make([]int, cores)
 	otherThreadIDs := make([]int, len(files)-cores)
 	i := 0
-	j := 0
 	for _, f := range files {
 		taskID, _ := strconv.Atoi(path.Base(f))
-		stat := util.GetProcStat(taskID)
-		if strings.Contains(stat.Comm, "CPU") {
-			// taskID is for a vCPU core
-			coreThreadIDs[i] = taskID
-			i++
-		} else {
-			// taskID is not for a vCPU core
-			otherThreadIDs[j] = taskID
-			j++
+		found := false
+		for _, n := range coreThreadIDs {
+			if taskID == n {
+				// taskID is for vCPU core. skip.
+				found = true
+				break
+			}
 		}
+		if found {
+			// taskID is for vCPU core. skip.
+			continue
+		}
+		// taskID is not for a vCPU core
+		otherThreadIDs[i] = taskID
+		i++
 	}
-	// fmt.Printf("coreThreadIDs: %v \notherThreadIDs: %v", coreThreadIDs, otherThreadIDs)
-	domain.AddMetricMeasurement("cpu_threadIDs", models.CreateMeasurement(coreThreadIDs))
 	domain.AddMetricMeasurement("cpu_otherThreadIDs", models.CreateMeasurement(otherThreadIDs))
 }
 
