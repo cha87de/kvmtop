@@ -42,7 +42,10 @@ func (printer *NcursesPrinter) Open() {
 }
 
 // Screen prints the measurements on the screen
-func (printer *NcursesPrinter) Screen(fields []string, values [][]string) {
+func (printer *NcursesPrinter) Screen(printable models.Printable) {
+
+	fields := printable.DomainFields
+	values := printable.DomainValues
 
 	var buffer bytes.Buffer
 	var rawline string
@@ -57,9 +60,9 @@ func (printer *NcursesPrinter) Screen(fields []string, values [][]string) {
 	outputHelpers.tabwriter.Write([]byte(rawline))
 
 	// iterate over domains
-	for _, domvalue := range values {
+	for domvalue := range values {
 		buffer.Reset()
-		for _, value := range domvalue {
+		for _, value := range values[domvalue] {
 			buffer.WriteString(value)
 			buffer.WriteString("\t")
 		}

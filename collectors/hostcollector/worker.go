@@ -21,7 +21,7 @@ func hostCollect(domain *models.Domain) {
 }
 
 func hostPrint(domain *models.Domain) []string {
-	host := collectors.GetMetricString(domain, "host_name", 0)
+	host := collectors.GetMetricString(domain.Measurable, "host_name", 0)
 	result := append([]string{host})
 	return result
 }

@@ -8,7 +8,7 @@ import (
 	"github.com/cha87de/kvmtop/models"
 )
 
-var domainCollectors []string
+var collectors []string
 
 func initializePrinter(wg *sync.WaitGroup) {
 	// open configured printer
@@ -16,7 +16,7 @@ func initializePrinter(wg *sync.WaitGroup) {
 
 	// define collectors and their order
 	for collectorName := range models.Collection.Collectors {
-		domainCollectors = append(domainCollectors, collectorName)
+		collectors = append(collectors, collectorName)
 	}
 
 	// start continuously printing values
@@ -35,28 +35,33 @@ func initializePrinter(wg *sync.WaitGroup) {
 }
 
 func handleRun() {
-	var fields []string
-	var values [][]string
+	printable := models.Printable{}
 
-	// collect fields for each collector
-	fields = append(fields, "UUID", "name")
-	for _, collectorName := range domainCollectors {
-		collector := models.Collection.Collectors[collectorName]
-		output := collector.PrintFields()
-		fields = append(fields, output[0:]...)
-	}
-
-	// collect values for each domain
-	for _, domain := range models.Collection.Domains {
-		var domvalues []string
-		domvalues = append(domvalues, domain.UUID, domain.Name)
-		for _, collectorName := range domainCollectors {
-			collector := models.Collection.Collectors[collectorName]
-			output := collector.PrintValues(domain)
-			domvalues = append(domvalues, output[0:]...)
+	// add general domain fields first
+	printable.DomainFields = []string{"UUID", "name"}
+	printable.DomainValues = make(map[string][]string)
+	for uuid := range models.Collection.Domains {
+		printable.DomainValues[uuid] = []string{
+			uuid,
+			models.Collection.Domains[uuid].Name,
 		}
-		values = append(values, domvalues)
 	}
 
-	models.Collection.Printer.Screen(fields, values)
+	// collect fields for each collector and merge together
+	for _, collectorName := range collectors {
+		collector := models.Collection.Collectors[collectorName]
+		collectorPrintable := collector.Print(models.Collection.Host, models.Collection.Domains)
+
+		// merge host data
+		printable.HostFields = append(printable.HostFields, collectorPrintable.HostFields[0:]...)
+		printable.HostValues = append(printable.HostValues, collectorPrintable.HostValues[0:]...)
+
+		// merge domain data
+		printable.DomainFields = append(printable.DomainFields, collectorPrintable.DomainFields[0:]...)
+		for uuid := range collectorPrintable.DomainValues {
+			printable.DomainValues[uuid] = append(printable.DomainValues[uuid], collectorPrintable.DomainValues[uuid][0:]...)
+		}
+	}
+
+	models.Collection.Printer.Screen(printable)
 }

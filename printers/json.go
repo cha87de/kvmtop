@@ -18,14 +18,18 @@ func (printer *JSONPrinter) Open() {
 }
 
 // Screen prints the measurements on the screen
-func (printer *JSONPrinter) Screen(fields []string, values [][]string) {
+func (printer *JSONPrinter) Screen(printable models.Printable) {
+	fields := printable.DomainFields
+	values := printable.DomainValues
+
 	output(fmt.Sprintf("["))
-	for i, domvalue := range values {
+	i := 0
+	for domvalue := range values {
 		if i > 0 {
 			output(fmt.Sprintf(","))
 		}
 		output(fmt.Sprintf("{"))
-		for j, value := range domvalue {
+		for j, value := range values[domvalue] {
 			if j > 0 {
 				output(fmt.Sprintf(","))
 			}
@@ -40,6 +44,7 @@ func (printer *JSONPrinter) Screen(fields []string, values [][]string) {
 			}
 		}
 		output(fmt.Sprintf("}"))
+		i++
 	}
 	output(fmt.Sprintf("]\n"))
 }

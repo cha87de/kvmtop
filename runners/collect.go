@@ -25,10 +25,8 @@ func collect() {
 		return
 	}
 
-	// run domain collectors for each domain
-	for _, domain := range models.Collection.Domains {
-		for _, collector := range models.Collection.Collectors {
-			go collector.Collect(domain)
-		}
+	// run collectors
+	for _, collector := range models.Collection.Collectors {
+		go collector.Collect(models.Collection.Host, models.Collection.Domains)
 	}
 }

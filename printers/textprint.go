@@ -19,7 +19,10 @@ func (printer *TextPrinter) Open() {
 }
 
 // Screen prints the measurements on the screen
-func (printer *TextPrinter) Screen(fields []string, values [][]string) {
+func (printer *TextPrinter) Screen(printable models.Printable) {
+	fields := printable.DomainFields
+	values := printable.DomainValues
+
 	if showheader {
 		// iterate over fields
 		for _, field := range fields {

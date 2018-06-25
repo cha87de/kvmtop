@@ -96,6 +96,13 @@ func diskLookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
 			sums.WrTotalTimesSet = true
 			sums.WrTotalTimes += ioStats.WrTotalTimes
 		}
+
+		// find source path
+		// sourcefile := disk.Source.File
+		// sourcedir := filepath.Dir(sourcefile.File)
+		// fmt.Printf("%s", sourcedir)
+		// TODO find block device for sourcedir
+
 	}
 	domain.AddMetricMeasurement("disk_stats_errs", models.CreateMeasurement(uint64(sums.Errs)))
 	domain.AddMetricMeasurement("disk_stats_flushreq", models.CreateMeasurement(uint64(sums.FlushReq)))
@@ -116,17 +123,17 @@ func diskCollect(domain *models.Domain) {
 }
 
 func diskPrint(domain *models.Domain) []string {
-	errs := collectors.GetMetricDiffUint64(domain, "disk_stats_errs", true)
-	flushreq := collectors.GetMetricDiffUint64(domain, "disk_stats_flushreq", true)
-	flushtotaltimes := collectors.GetMetricDiffUint64(domain, "disk_stats_flushtotaltimes", true)
-	rdbytes := collectors.GetMetricDiffUint64(domain, "disk_stats_rdbytes", true)
-	rdreq := collectors.GetMetricDiffUint64(domain, "disk_stats_rdreq", true)
-	rdtotaltimes := collectors.GetMetricDiffUint64(domain, "disk_stats_rdtotaltimes", true)
-	wrbytes := collectors.GetMetricDiffUint64(domain, "disk_stats_wrbytes", true)
-	wrreq := collectors.GetMetricDiffUint64(domain, "disk_stats_wrreq", true)
-	wrtotaltimes := collectors.GetMetricDiffUint64(domain, "disk_stats_wrtotaltimes", true)
+	errs := collectors.GetMetricDiffUint64(domain.Measurable, "disk_stats_errs", true)
+	flushreq := collectors.GetMetricDiffUint64(domain.Measurable, "disk_stats_flushreq", true)
+	flushtotaltimes := collectors.GetMetricDiffUint64(domain.Measurable, "disk_stats_flushtotaltimes", true)
+	rdbytes := collectors.GetMetricDiffUint64(domain.Measurable, "disk_stats_rdbytes", true)
+	rdreq := collectors.GetMetricDiffUint64(domain.Measurable, "disk_stats_rdreq", true)
+	rdtotaltimes := collectors.GetMetricDiffUint64(domain.Measurable, "disk_stats_rdtotaltimes", true)
+	wrbytes := collectors.GetMetricDiffUint64(domain.Measurable, "disk_stats_wrbytes", true)
+	wrreq := collectors.GetMetricDiffUint64(domain.Measurable, "disk_stats_wrreq", true)
+	wrtotaltimes := collectors.GetMetricDiffUint64(domain.Measurable, "disk_stats_wrtotaltimes", true)
 
-	delayblkio := collectors.GetMetricDiffUint64(domain, "disk_delayblkio", true)
+	delayblkio := collectors.GetMetricDiffUint64(domain.Measurable, "disk_delayblkio", true)
 
 	result := append([]string{rdbytes}, wrbytes, delayblkio)
 	if config.Options.Verbose {

@@ -11,31 +11,47 @@ import (
 
 // Collection of domains and other stuff
 var Collection struct {
+	Host       *Host
 	Domains    map[string]*Domain
 	Collectors map[string]Collector
 	Printer    Printer
 }
 
-// Domain defines a domain in libvirt
-type Domain struct {
-	Name string
-	UUID string
-	PID  int
-	//Metrics map[string]*Metric
+type Measurable struct {
 	Metrics sync.Map
 }
 
-// AddMetricMeasurement adds a metric measurement to the domain
-func (domain *Domain) AddMetricMeasurement(metricName string, measurement Measurement) {
+// Domain defines a domain in libvirt
+type Domain struct {
+	*Measurable
+	Name string
+	UUID string
+	PID  int
+}
 
+// Host defines the local host libvirt runs on
+type Host struct {
+	*Measurable
+}
+
+// Printable represents a set of fields and values to be printed
+type Printable struct {
+	HostFields   []string
+	DomainFields []string
+	HostValues   []string
+	DomainValues map[string][]string
+}
+
+// AddMetricMeasurement adds a metric measurement
+func (measurable *Measurable) AddMetricMeasurement(metricName string, measurement Measurement) {
 	// create empty metric if not existent
-	if _, ok := domain.Metrics.Load(metricName); !ok {
-		domain.Metrics.Store(metricName, &Metric{
+	if _, ok := measurable.Metrics.Load(metricName); !ok {
+		measurable.Metrics.Store(metricName, &Metric{
 			Name:   metricName,
 			Values: []Measurement{},
 		})
 	}
-	rawmetrics, _ := domain.Metrics.Load(metricName)
+	rawmetrics, _ := measurable.Metrics.Load(metricName)
 	metrics := rawmetrics.(*Metric)
 
 	// add measurement as value to metric
@@ -51,8 +67,8 @@ func (domain *Domain) AddMetricMeasurement(metricName string, measurement Measur
 }
 
 // GetMetric reads and returns the metric values by metric name
-func (domain *Domain) GetMetric(metricName string) (*Metric, bool) {
-	rawmetric, exists := domain.Metrics.Load(metricName)
+func (measurable *Measurable) GetMetric(metricName string) (*Metric, bool) {
+	rawmetric, exists := measurable.Metrics.Load(metricName)
 	if !exists {
 		return &Metric{}, false
 	}
@@ -61,9 +77,9 @@ func (domain *Domain) GetMetric(metricName string) (*Metric, bool) {
 }
 
 // GetMetricIntArray reads and returns a metric int array by metric name
-func (domain *Domain) GetMetricIntArray(metricName string) []int {
+func (measurable *Measurable) GetMetricIntArray(metricName string) []int {
 	var array []int
-	if metric, ok := domain.GetMetric(metricName); ok {
+	if metric, ok := measurable.GetMetric(metricName); ok {
 		if len(metric.Values) > 0 {
 			byteValue := metric.Values[0].Value
 			reader := bytes.NewReader(byteValue)
@@ -76,10 +92,9 @@ func (domain *Domain) GetMetricIntArray(metricName string) []int {
 
 // Collector defines a collector for a domain specific metric (e.g. CPU)
 type Collector interface {
-	Lookup(domains map[string]*Domain, libvirtDomains map[string]libvirt.Domain)
-	Collect(domain *Domain)
-	PrintFields() []string
-	PrintValues(domain *Domain) []string
+	Lookup(host *Host, domains map[string]*Domain, libvirtDomains map[string]libvirt.Domain)
+	Collect(host *Host, domains map[string]*Domain)
+	Print(host *Host, domains map[string]*Domain) Printable
 }
 
 // Metric contains a monitoring metric value with current and previous
@@ -111,6 +126,6 @@ func CreateMeasurement(value interface{}) Measurement {
 // Printer defines a printer for output
 type Printer interface {
 	Open()
-	Screen(fields []string, values [][]string)
+	Screen(Printable)
 	Close()
 }

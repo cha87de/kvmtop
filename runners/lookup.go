@@ -65,7 +65,7 @@ func lookup() {
 
 	// call collector lookup functions
 	for _, collector := range models.Collection.Collectors {
-		collector.Lookup(models.Collection.Domains, libvirtDomains)
+		collector.Lookup(models.Collection.Host, models.Collection.Domains, libvirtDomains)
 	}
 
 }
@@ -86,8 +86,9 @@ func handleDomain(dom libvirt.Domain) (*models.Domain, error) {
 		models.Collection.Domains[uuid] = domain
 	} else {
 		models.Collection.Domains[uuid] = &models.Domain{
-			UUID: string(uuid),
-			Name: name,
+			UUID:       string(uuid),
+			Name:       name,
+			Measurable: &models.Measurable{},
 		}
 	}
 

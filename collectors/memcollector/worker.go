@@ -46,16 +46,16 @@ func memCollect(domain *models.Domain) {
 }
 
 func memPrint(domain *models.Domain) []string {
-	total := collectors.GetMetricUint64(domain, "ram_total", 0)
-	used := collectors.GetMetricUint64(domain, "ram_used", 0)
+	total := collectors.GetMetricUint64(domain.Measurable, "ram_total", 0)
+	used := collectors.GetMetricUint64(domain.Measurable, "ram_used", 0)
 
-	vsize := collectors.GetMetricUint64(domain, "ram_vsize", 0)
-	rss := collectors.GetMetricUint64(domain, "ram_rss", 0)
+	vsize := collectors.GetMetricUint64(domain.Measurable, "ram_vsize", 0)
+	rss := collectors.GetMetricUint64(domain.Measurable, "ram_rss", 0)
 
-	minflt := collectors.GetMetricDiffUint64(domain, "ram_minflt", false)
-	cminflt := collectors.GetMetricDiffUint64(domain, "ram_cminflt", false)
-	majflt := collectors.GetMetricDiffUint64(domain, "ram_majflt", false)
-	cmajflt := collectors.GetMetricDiffUint64(domain, "ram_cmajflt", false)
+	minflt := collectors.GetMetricDiffUint64(domain.Measurable, "ram_minflt", false)
+	cminflt := collectors.GetMetricDiffUint64(domain.Measurable, "ram_cminflt", false)
+	majflt := collectors.GetMetricDiffUint64(domain.Measurable, "ram_majflt", false)
+	cmajflt := collectors.GetMetricDiffUint64(domain.Measurable, "ram_cmajflt", false)
 
 	result := append([]string{total}, used, vsize, rss, minflt, cminflt, majflt, cmajflt)
 	return result

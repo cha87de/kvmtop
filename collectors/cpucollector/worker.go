@@ -94,7 +94,7 @@ func cpuCollectMeasurements(domain *models.Domain, metricName string, measuremen
 }
 
 func cpuPrint(domain *models.Domain) []string {
-	cores := collectors.GetMetricUint64(domain, "cpu_cores", 0)
+	cores := collectors.GetMetricUint64(domain.Measurable, "cpu_cores", 0)
 
 	// cpu util for vcores
 	cputimeAllCores := cpuPrintThreadMetric(domain, "cpu_times")
@@ -105,11 +105,7 @@ func cpuPrint(domain *models.Domain) []string {
 	otherQueuetimeAllCores := cpuPrintThreadMetric(domain, "cpu_other_runqueues")
 
 	// put results together
-	result := append([]string{cores}, cputimeAllCores)
-	result = append(result, queuetimeAllCores)
-	result = append(result, otherCputimeAllCores)
-	result = append(result, otherQueuetimeAllCores)
-
+	result := append([]string{cores}, cputimeAllCores, queuetimeAllCores, otherCputimeAllCores, otherQueuetimeAllCores)
 	return result
 }
 

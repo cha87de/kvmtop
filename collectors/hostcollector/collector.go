@@ -11,27 +11,39 @@ type Collector struct {
 }
 
 // Lookup host collector data
-func (collector *Collector) Lookup(domains map[string]*models.Domain, libvirtDomains map[string]libvirt.Domain) {
+func (collector *Collector) Lookup(host *models.Host, domains map[string]*models.Domain, libvirtDomains map[string]libvirt.Domain) {
 	for uuid := range domains {
 		hostLookup(domains[uuid], libvirtDomains[uuid])
 	}
 }
 
 // Collect host collector data
-func (collector *Collector) Collect(domain *models.Domain) {
-	hostCollect(domain)
-}
-
-// PrintValues the collected data for a domain
-func (collector *Collector) PrintValues(domain *models.Domain) []string {
-	return hostPrint(domain)
-}
-
-// PrintFields the collected data for a domain
-func (collector *Collector) PrintFields() []string {
-	return []string{
-		"host_name",
+func (collector *Collector) Collect(host *models.Host, domains map[string]*models.Domain) {
+	// lookup for each domain
+	for uuid := range domains {
+		hostCollect(domains[uuid])
 	}
+}
+
+// Print returns the collectors measurements in a Printable struct
+func (collector *Collector) Print(host *models.Host, domains map[string]*models.Domain) models.Printable {
+	printable := models.Printable{
+		HostFields: []string{},
+		DomainFields: []string{
+			"host_name",
+		},
+	}
+
+	// lookup for each domain
+	printable.DomainValues = make(map[string][]string)
+	for uuid := range domains {
+		printable.DomainValues[uuid] = hostPrint(domains[uuid])
+	}
+
+	// lookup for host
+	// printable.HostValues = cpuPrintHost(host)
+
+	return printable
 }
 
 // CreateCollector creates a new host collector

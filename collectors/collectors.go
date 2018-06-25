@@ -8,9 +8,9 @@ import (
 	"github.com/cha87de/kvmtop/models"
 )
 
-func GetMetricUint64(domain *models.Domain, metric string, measurementIndex int) string {
+func GetMetricUint64(measurable *models.Measurable, metric string, measurementIndex int) string {
 	var output string
-	if metric, ok := domain.GetMetric(metric); ok {
+	if metric, ok := measurable.GetMetric(metric); ok {
 		if len(metric.Values) > measurementIndex {
 			byteValue := metric.Values[measurementIndex].Value
 			reader := bytes.NewReader(byteValue)
@@ -23,9 +23,24 @@ func GetMetricUint64(domain *models.Domain, metric string, measurementIndex int)
 	return output
 }
 
-func GetMetricString(domain *models.Domain, metric string, measurementIndex int) string {
+func GetMetricFloat64(measurable *models.Measurable, metric string, measurementIndex int) string {
 	var output string
-	if metric, ok := domain.GetMetric(metric); ok {
+	if metric, ok := measurable.GetMetric(metric); ok {
+		if len(metric.Values) > measurementIndex {
+			byteValue := metric.Values[measurementIndex].Value
+			reader := bytes.NewReader(byteValue)
+			decoder := gob.NewDecoder(reader)
+			var valuetype float64
+			decoder.Decode(&valuetype)
+			output = fmt.Sprintf("%d", valuetype)
+		}
+	}
+	return output
+}
+
+func GetMetricString(measurable *models.Measurable, metric string, measurementIndex int) string {
+	var output string
+	if metric, ok := measurable.GetMetric(metric); ok {
 		if len(metric.Values) > measurementIndex {
 			byteValue := metric.Values[measurementIndex].Value
 			reader := bytes.NewReader(byteValue)
@@ -38,9 +53,9 @@ func GetMetricString(domain *models.Domain, metric string, measurementIndex int)
 	return output
 }
 
-func GetMetricDiffUint64(domain *models.Domain, metric string, perTime bool) string {
+func GetMetricDiffUint64(measurable *models.Measurable, metric string, perTime bool) string {
 	var output string
-	if metric, ok := domain.GetMetric(metric); ok {
+	if metric, ok := measurable.GetMetric(metric); ok {
 		if len(metric.Values) >= 2 {
 			// get first value
 			byteValue1 := metric.Values[0].Value

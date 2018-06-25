@@ -23,13 +23,13 @@ func ioCollect(domain *models.Domain) {
 }
 
 func ioPrint(domain *models.Domain) []string {
-	rchar := collectors.GetMetricDiffUint64(domain, "io_rchar", true)
-	wchar := collectors.GetMetricDiffUint64(domain, "io_wchar", true)
-	syscr := collectors.GetMetricDiffUint64(domain, "io_syscr", true)
-	syscw := collectors.GetMetricDiffUint64(domain, "io_syscw", true)
-	read_bytes := collectors.GetMetricDiffUint64(domain, "io_read_bytes", true)
-	write_bytes := collectors.GetMetricDiffUint64(domain, "io_write_bytes", true)
-	cancelled_write_bytes := collectors.GetMetricDiffUint64(domain, "io_cancelled_write_bytes", true)
+	rchar := collectors.GetMetricDiffUint64(domain.Measurable, "io_rchar", true)
+	wchar := collectors.GetMetricDiffUint64(domain.Measurable, "io_wchar", true)
+	syscr := collectors.GetMetricDiffUint64(domain.Measurable, "io_syscr", true)
+	syscw := collectors.GetMetricDiffUint64(domain.Measurable, "io_syscw", true)
+	read_bytes := collectors.GetMetricDiffUint64(domain.Measurable, "io_read_bytes", true)
+	write_bytes := collectors.GetMetricDiffUint64(domain.Measurable, "io_write_bytes", true)
+	cancelled_write_bytes := collectors.GetMetricDiffUint64(domain.Measurable, "io_cancelled_write_bytes", true)
 
 	result := append([]string{rchar}, wchar, syscr, syscw, read_bytes, write_bytes, cancelled_write_bytes)
 	return result
