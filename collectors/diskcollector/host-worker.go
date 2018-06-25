@@ -1,85 +1,84 @@
 package diskcollector
 
 import (
-	"path/filepath"
-	"strings"
-
 	"github.com/cha87de/kvmtop/collectors"
+	"github.com/cha87de/kvmtop/util"
 
 	"github.com/cha87de/kvmtop/models"
-
-	"github.com/cha87de/kvmtop/util"
 )
 
 func diskHostLookup(host *models.Host) {
 
-	// find relevant devices
-	devices := []string{}
-	mounts := util.GetProcMounts()
-	diskSources := strings.Split(collectors.GetMetricString(host.Measurable, "disk_sources", 0), ",")
-	for _, source := range diskSources {
-		// find best matching mountpoint
-		var bestMount util.ProcMount
-		for _, mount := range mounts {
-			// matches at all?
-			if !strings.HasPrefix(source, mount.Mountpoint) {
-				continue
+	/*
+		// find relevant devices
+		devices := []string{}
+		mounts := util.GetProcMounts()
+		diskSources := strings.Split(collectors.GetMetricString(host.Measurable, "disk_sources", 0), ",")
+		for _, source := range diskSources {
+			// find best matching mountpoint
+			var bestMount util.ProcMount
+			for _, mount := range mounts {
+				// matches at all?
+				if !strings.HasPrefix(source, mount.Mountpoint) {
+					continue
+				}
+				// matches better than already found one?
+				if len(bestMount.Mountpoint) < len(mount.Mountpoint) {
+					bestMount = mount
+				}
 			}
-			// matches better than already found one?
-			if len(bestMount.Mountpoint) < len(mount.Mountpoint) {
-				bestMount = mount
+			// add bestMount to devices, if not contained
+			found := false
+			for _, device := range devices {
+				if device == bestMount.Device {
+					found = true
+					break
+				}
+			}
+			if !found {
+				device := filepath.Base(bestMount.Device)
+				devices = append(devices, device)
 			}
 		}
-		// add bestMount to devices, if not contained
-		found := false
-		for _, device := range devices {
-			if device == bestMount.Device {
-				found = true
-				break
-			}
-		}
-		if !found {
-			device := filepath.Base(bestMount.Device)
-			devices = append(devices, device)
-		}
-	}
-
+	*/
 	// lookup diskstats for relevant devices
 	diskstats := util.GetProcDiskstats()
 	combinedDiskstat := util.ProcDiskstat{}
-	if len(devices) > 0 {
-		// consider only relevant devices
-		for _, device := range devices {
-			if stats, ok := diskstats[device]; ok {
-				combinedDiskstat.Reads += stats.Reads
-				combinedDiskstat.ReadsMerged += stats.ReadsMerged
-				combinedDiskstat.SectorsRead += stats.SectorsRead
-				combinedDiskstat.TimeReading += stats.TimeReading
-				combinedDiskstat.Writes += stats.Writes
-				combinedDiskstat.WritesMerged += stats.WritesMerged
-				combinedDiskstat.SectorsWritten += stats.SectorsWritten
-				combinedDiskstat.TimeWriting += stats.TimeWriting
-				combinedDiskstat.CurrentOps += stats.CurrentOps
-				combinedDiskstat.TimeForOps += stats.TimeForOps
-				combinedDiskstat.WeightedTimeForOps += stats.WeightedTimeForOps
+	/*
+		if len(devices) > 0 {
+			// consider only relevant devices
+			for _, device := range devices {
+				if stats, ok := diskstats[device]; ok {
+					combinedDiskstat.Reads += stats.Reads
+					combinedDiskstat.ReadsMerged += stats.ReadsMerged
+					combinedDiskstat.SectorsRead += stats.SectorsRead
+					combinedDiskstat.TimeReading += stats.TimeReading
+					combinedDiskstat.Writes += stats.Writes
+					combinedDiskstat.WritesMerged += stats.WritesMerged
+					combinedDiskstat.SectorsWritten += stats.SectorsWritten
+					combinedDiskstat.TimeWriting += stats.TimeWriting
+					combinedDiskstat.CurrentOps += stats.CurrentOps
+					combinedDiskstat.TimeForOps += stats.TimeForOps
+					combinedDiskstat.WeightedTimeForOps += stats.WeightedTimeForOps
+				}
 			}
-		}
-	} else {
-		// consider all available devices
-		for _, stats := range diskstats {
-			combinedDiskstat.Reads += stats.Reads
-			combinedDiskstat.ReadsMerged += stats.ReadsMerged
-			combinedDiskstat.SectorsRead += stats.SectorsRead
-			combinedDiskstat.TimeReading += stats.TimeReading
-			combinedDiskstat.Writes += stats.Writes
-			combinedDiskstat.WritesMerged += stats.WritesMerged
-			combinedDiskstat.SectorsWritten += stats.SectorsWritten
-			combinedDiskstat.TimeWriting += stats.TimeWriting
-			combinedDiskstat.CurrentOps += stats.CurrentOps
-			combinedDiskstat.TimeForOps += stats.TimeForOps
-			combinedDiskstat.WeightedTimeForOps += stats.WeightedTimeForOps
-		}
+		} else {
+	*/
+	// consider all available devices
+	for _, stats := range diskstats {
+		combinedDiskstat.Reads += stats.Reads
+		combinedDiskstat.ReadsMerged += stats.ReadsMerged
+		combinedDiskstat.SectorsRead += stats.SectorsRead
+		combinedDiskstat.TimeReading += stats.TimeReading
+		combinedDiskstat.Writes += stats.Writes
+		combinedDiskstat.WritesMerged += stats.WritesMerged
+		combinedDiskstat.SectorsWritten += stats.SectorsWritten
+		combinedDiskstat.TimeWriting += stats.TimeWriting
+		combinedDiskstat.CurrentOps += stats.CurrentOps
+		combinedDiskstat.TimeForOps += stats.TimeForOps
+		combinedDiskstat.WeightedTimeForOps += stats.WeightedTimeForOps
 	}
+	// }
 
 	host.AddMetricMeasurement("disk_device_reads", models.CreateMeasurement(combinedDiskstat.Reads))
 	host.AddMetricMeasurement("disk_device_readsmerged", models.CreateMeasurement(combinedDiskstat.ReadsMerged))
