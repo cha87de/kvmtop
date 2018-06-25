@@ -1,6 +1,8 @@
 package hostcollector
 
 import (
+	"os"
+
 	"github.com/cha87de/kvmtop/models"
 	libvirt "github.com/libvirt/libvirt-go"
 )
@@ -28,7 +30,9 @@ func (collector *Collector) Collect(host *models.Host, domains map[string]*model
 // Print returns the collectors measurements in a Printable struct
 func (collector *Collector) Print(host *models.Host, domains map[string]*models.Domain) models.Printable {
 	printable := models.Printable{
-		HostFields: []string{},
+		HostFields: []string{
+			"host_name",
+		},
 		DomainFields: []string{
 			"host_name",
 		},
@@ -42,6 +46,8 @@ func (collector *Collector) Print(host *models.Host, domains map[string]*models.
 
 	// lookup for host
 	// printable.HostValues = cpuPrintHost(host)
+	hostname, _ := os.Hostname()
+	printable.HostValues = append(printable.HostValues, hostname)
 
 	return printable
 }
