@@ -66,7 +66,7 @@ func (printer *JSONPrinter) Screen(printable models.Printable) {
 		output(fmt.Sprintf("}"))
 		i++
 	}
-	output(fmt.Sprintf("]\n"))
+	output(fmt.Sprintf("]}\n"))
 }
 
 // Close terminates the printer
