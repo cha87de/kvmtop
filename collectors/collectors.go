@@ -32,7 +32,7 @@ func GetMetricFloat64(measurable *models.Measurable, metric string, measurementI
 			decoder := gob.NewDecoder(reader)
 			var valuetype float64
 			decoder.Decode(&valuetype)
-			output = fmt.Sprintf("%d", valuetype)
+			output = fmt.Sprintf("%f", valuetype)
 		}
 	}
 	return output
