@@ -1,6 +1,9 @@
 package diskcollector
 
 import (
+	"strings"
+
+	"github.com/cha87de/kvmtop/collectors"
 	"github.com/cha87de/kvmtop/models"
 	libvirt "github.com/libvirt/libvirt-go"
 )
@@ -12,10 +15,24 @@ type Collector struct {
 
 // Lookup disk collector data
 func (collector *Collector) Lookup(host *models.Host, domains map[string]*models.Domain, libvirtDomains map[string]libvirt.Domain) {
+	hostDiskSources := ""
 	for uuid := range domains {
 		diskLookup(domains[uuid], libvirtDomains[uuid])
+
+		// merge sourcedir metrics from domains to one metric for host
+		disksources := strings.Split(collectors.GetMetricString(domains[uuid].Measurable, "disk_sources", 0), ",")
+		for _, disksource := range disksources {
+			if !strings.Contains(hostDiskSources, disksource) {
+				if hostDiskSources != "" {
+					hostDiskSources += ","
+				}
+				hostDiskSources += disksource
+			}
+		}
 	}
-	diskHostLookup()
+	host.AddMetricMeasurement("disk_sources", models.CreateMeasurement(hostDiskSources))
+
+	diskHostLookup(host)
 }
 
 // Collect disk collector data
@@ -24,12 +41,25 @@ func (collector *Collector) Collect(host *models.Host, domains map[string]*model
 	for uuid := range domains {
 		diskCollect(domains[uuid])
 	}
+	diskHostCollect(host)
 }
 
 // Print returns the collectors measurements in a Printable struct
 func (collector *Collector) Print(host *models.Host, domains map[string]*models.Domain) models.Printable {
 	printable := models.Printable{
-		HostFields: []string{},
+		HostFields: []string{
+			"disk_device_reads",
+			"disk_device_readsmerged",
+			"disk_device_sectorsread",
+			"disk_device_timereading",
+			"disk_device_writes",
+			"disk_device_writesmerged",
+			"disk_device_sectorswritten",
+			"disk_device_timewriting",
+			"disk_device_currentops",
+			"disk_device_timeforops",
+			"disk_device_weightedtimeforops",
+		},
 		DomainFields: []string{
 			"disk_stats_errs",
 			"disk_stats_flushreq",
@@ -51,7 +81,7 @@ func (collector *Collector) Print(host *models.Host, domains map[string]*models.
 	}
 
 	// lookup for host
-	// printable.HostValues = cpuPrintHost(host)
+	printable.HostValues = diskPrintHost(host)
 
 	return printable
 }

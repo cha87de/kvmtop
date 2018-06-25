@@ -1,8 +1,8 @@
 package util
 
 import (
+	"bufio"
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/cha87de/kvmtop/config"
@@ -10,7 +10,7 @@ import (
 
 // ProcDiskstats defines the fields of one row (one block device) of a /proc/diskstats file
 // cf. https://www.kernel.org/doc/Documentation/ABI/testing/procfs-diskstats
-type ProcDiskstats struct {
+type ProcDiskstat struct {
 
 	// 1 - major number
 	Majornumber int
@@ -55,22 +55,43 @@ type ProcDiskstats struct {
 	WeightedTimeForOps uint64
 }
 
-// GetProcDiskstats reads and returns the diskstats for a block device from the proc fs
-func GetProcDiskstats(device string) ProcDiskstats {
-	stats := ProcDiskstats{Devicename: device}
+// GetProcDiskstats reads and returns the diskstats from the proc fs
+func GetProcDiskstats() map[string]ProcDiskstat {
+	stats := make(map[string]ProcDiskstat)
+
 	filepath := fmt.Sprint(config.Options.ProcFS, "/diskstats")
-	filecontent, err := ioutil.ReadFile(filepath)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Cannot read proc diskstats: %s\n", err)
-		return ProcDiskstats{}
-	}
+	file, _ := os.Open(filepath)
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanLines)
 
-	fmt.Fprintf(os.Stderr, string(filecontent))
-	// TODO
+	format := "%d %d %s %d %d %d %d %d %d %d %d %d %d %d"
 
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Cannot parse proc diskstats: %s\n", err)
-		return ProcDiskstats{}
+	for scanner.Scan() {
+		row := scanner.Text()
+		diskstat := ProcDiskstat{}
+
+		_, err := fmt.Sscanf(
+			string(row), format,
+			&diskstat.Majornumber,
+			&diskstat.Minornumber,
+			&diskstat.Devicename,
+			&diskstat.Reads,
+			&diskstat.ReadsMerged,
+			&diskstat.SectorsRead,
+			&diskstat.TimeReading,
+			&diskstat.Writes,
+			&diskstat.WritesMerged,
+			&diskstat.SectorsWritten,
+			&diskstat.TimeWriting,
+			&diskstat.CurrentOps,
+			&diskstat.TimeForOps,
+			&diskstat.WeightedTimeForOps,
+		)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Cannot parse row in proc diskstats: %s\n", err)
+			continue
+		}
+		stats[diskstat.Devicename] = diskstat
 	}
 
 	return stats

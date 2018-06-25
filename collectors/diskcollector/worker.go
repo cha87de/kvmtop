@@ -1,6 +1,9 @@
 package diskcollector
 
 import (
+	"path/filepath"
+	"strings"
+
 	"github.com/cha87de/kvmtop/collectors"
 	"github.com/cha87de/kvmtop/models"
 	"github.com/cha87de/kvmtop/util"
@@ -45,6 +48,7 @@ func diskLookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
 
 	// sum up stats from virtual disks
 	var sums diskstats
+	disksources := ""
 	for _, disk := range domcfg.Devices.Disks {
 		dev := disk.Target.Dev
 		//sizeStats, _ := libvirtDomain.GetBlockInfo(dev, 0)
@@ -97,11 +101,14 @@ func diskLookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
 		}
 
 		// find source path
-		// sourcefile := disk.Source.File
-		// sourcedir := filepath.Dir(sourcefile.File)
-		// fmt.Printf("%s", sourcedir)
-		// TODO find block device for sourcedir
-
+		sourcefile := disk.Source.File
+		sourcedir := filepath.Dir(sourcefile.File)
+		if !strings.Contains(disksources, sourcedir) {
+			if disksources != "" {
+				disksources += ","
+			}
+			disksources += sourcedir
+		}
 	}
 	domain.AddMetricMeasurement("disk_stats_errs", models.CreateMeasurement(uint64(sums.Errs)))
 	domain.AddMetricMeasurement("disk_stats_flushreq", models.CreateMeasurement(uint64(sums.FlushReq)))
@@ -112,6 +119,7 @@ func diskLookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
 	domain.AddMetricMeasurement("disk_stats_wrbytes", models.CreateMeasurement(uint64(sums.WrBytes)))
 	domain.AddMetricMeasurement("disk_stats_wrreq", models.CreateMeasurement(uint64(sums.WrReq)))
 	domain.AddMetricMeasurement("disk_stats_wrtotaltimes", models.CreateMeasurement(uint64(sums.WrTotalTimes)))
+	domain.AddMetricMeasurement("disk_sources", models.CreateMeasurement(disksources))
 }
 
 func diskCollect(domain *models.Domain) {
@@ -134,9 +142,6 @@ func diskPrint(domain *models.Domain) []string {
 
 	delayblkio := collectors.GetMetricDiffUint64(domain.Measurable, "disk_delayblkio", true)
 
-	result := append([]string{rdbytes}, wrbytes, delayblkio)
-	// if config.Options.Verbose {
-	result = append([]string{errs}, flushreq, flushtotaltimes, rdbytes, rdreq, rdtotaltimes, wrbytes, wrreq, wrtotaltimes, delayblkio)
-	// }
+	result := append([]string{errs}, flushreq, flushtotaltimes, rdbytes, rdreq, rdtotaltimes, wrbytes, wrreq, wrtotaltimes, delayblkio)
 	return result
 }
