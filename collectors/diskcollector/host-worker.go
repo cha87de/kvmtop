@@ -47,8 +47,26 @@ func diskHostLookup(host *models.Host) {
 	// lookup diskstats for relevant devices
 	diskstats := util.GetProcDiskstats()
 	combinedDiskstat := util.ProcDiskstat{}
-	for _, device := range devices {
-		if stats, ok := diskstats[device]; ok {
+	if len(devices) > 0 {
+		// consider only relevant devices
+		for _, device := range devices {
+			if stats, ok := diskstats[device]; ok {
+				combinedDiskstat.Reads += stats.Reads
+				combinedDiskstat.ReadsMerged += stats.ReadsMerged
+				combinedDiskstat.SectorsRead += stats.SectorsRead
+				combinedDiskstat.TimeReading += stats.TimeReading
+				combinedDiskstat.Writes += stats.Writes
+				combinedDiskstat.WritesMerged += stats.WritesMerged
+				combinedDiskstat.SectorsWritten += stats.SectorsWritten
+				combinedDiskstat.TimeWriting += stats.TimeWriting
+				combinedDiskstat.CurrentOps += stats.CurrentOps
+				combinedDiskstat.TimeForOps += stats.TimeForOps
+				combinedDiskstat.WeightedTimeForOps += stats.WeightedTimeForOps
+			}
+		}
+	} else {
+		// consider all available devices
+		for _, stats := range diskstats {
 			combinedDiskstat.Reads += stats.Reads
 			combinedDiskstat.ReadsMerged += stats.ReadsMerged
 			combinedDiskstat.SectorsRead += stats.SectorsRead
