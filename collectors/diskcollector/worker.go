@@ -2,7 +2,6 @@ package diskcollector
 
 import (
 	"github.com/cha87de/kvmtop/collectors"
-	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
 	"github.com/cha87de/kvmtop/util"
 	libvirt "github.com/libvirt/libvirt-go"
@@ -136,8 +135,8 @@ func diskPrint(domain *models.Domain) []string {
 	delayblkio := collectors.GetMetricDiffUint64(domain.Measurable, "disk_delayblkio", true)
 
 	result := append([]string{rdbytes}, wrbytes, delayblkio)
-	if config.Options.Verbose {
-		result = append([]string{errs}, flushreq, flushtotaltimes, rdbytes, rdreq, rdtotaltimes, wrbytes, wrreq, wrtotaltimes, delayblkio)
-	}
+	// if config.Options.Verbose {
+	result = append([]string{errs}, flushreq, flushtotaltimes, rdbytes, rdreq, rdtotaltimes, wrbytes, wrreq, wrtotaltimes, delayblkio)
+	// }
 	return result
 }
