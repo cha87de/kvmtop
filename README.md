@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/cha87de/kvmtop.svg)](https://travis-ci.org/cha87de/kvmtop)
-[![GitHub stars](https://img.shields.io/github/stars/badges/shields.svg?style=social&label=Stars)](https://github.com/cha87de/kvmtop)
+[![GitHub stars](https://img.shields.io/github/stars/cha87de/kvmtop.svg?style=social&label=Stars)](https://github.com/cha87de/kvmtop)
 [![Docker Pulls](https://img.shields.io/docker/pulls/cha87de/kvmtop.svg)](https://hub.docker.com/r/cha87de/kvmtop/)
 
 ## What kvmtop does
