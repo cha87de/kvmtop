@@ -33,7 +33,7 @@ func (collector *Collector) Collect(host *models.Host, domains map[string]*model
 func (collector *Collector) Print(host *models.Host, domains map[string]*models.Domain) models.Printable {
 	printable := models.Printable{
 		HostFields: []string{
-			// "cpu_cores",
+			"cpu_cores",
 			"cpu_meanfreq",
 		},
 		DomainFields: []string{
