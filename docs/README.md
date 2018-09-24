@@ -17,7 +17,7 @@ missing: architecture
 
 ### CPU Virtual Machine Metrics
 
-| Metric | Description |
+| Metric | Source | Description |
 | --- | --- | --- |
 | cpu_cores | proc | |
 | cpu_total | proc | |
