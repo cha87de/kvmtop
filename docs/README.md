@@ -74,9 +74,9 @@ missing: total bandwidth, overall utilisation, errors, losses, queue sizes, ?
 | net_tx | libvirt | |
 | net_rx | libvirt | |
 
-missing: queue sizes, errors, losses, ?
+missing: wait times / latencies, queue sizes, errors, losses, ?
 
-TODO: change source to proc!
+**TODO:** change source to proc! see issue #9
 
 ## Disk Collector
 
@@ -119,9 +119,11 @@ missing: capacity, used capacity, fs cache misses, disk scheduler infos?, max ba
 
 missing: capacity, used capacity, ?
 
+**TODO:** change source to proc! see issue #8
+
 ## IO Collector
 
-TODO:  explain the difference to Disk collector.
+**TODO:** explain the difference to Disk collector.
 
 Enable with parameter `--io`.
 
