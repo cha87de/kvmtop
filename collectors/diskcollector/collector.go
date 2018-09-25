@@ -61,6 +61,9 @@ func (collector *Collector) Print(host *models.Host, domains map[string]*models.
 			"disk_device_weightedtimeforops",
 		},
 		DomainFields: []string{
+			"disk_size_capacity",
+			"disk_size_allocation",
+			"disk_size_physical",
 			"disk_stats_errs",
 			"disk_stats_flushreq",
 			"disk_stats_flushtotaltimes",
