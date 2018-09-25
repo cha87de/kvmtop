@@ -87,17 +87,17 @@ Enable with parameter `--disk`.
 | Metric | Source | Description |
 | --- | --- | --- |
 | disk_sources ? | | |
-| disk_device_reads | proc | |
-| disk_device_readsmerged | proc | |
-| disk_device_sectorsread | proc | |
-| disk_device_timereading | proc | |
-| disk_device_writes | proc | |
-| disk_device_writesmerged | proc | |
-| disk_device_sectorswritten | proc | |
-| disk_device_timewriting | proc | |
-| disk_device_currentops | proc | |
-| disk_device_timeforops | proc | |
-| disk_device_weightedtimeforops | proc | |
+| disk_device_reads | proc | reads completed successfully |
+| disk_device_readsmerged | proc | reads merged |
+| disk_device_sectorsread | proc | sectors read |
+| disk_device_timereading | proc | time spent reading (ms) |
+| disk_device_writes | proc | writes completed |
+| disk_device_writesmerged | proc | writes merged |
+| disk_device_sectorswritten | proc | sectors written |
+| disk_device_timewriting | proc | time spent writing (ms) |
+| disk_device_currentops | proc | I/Os currently in progress |
+| disk_device_timeforops | proc | time spent doing I/Os (ms) |
+| disk_device_weightedtimeforops | proc | weighted time spent doing I/Os (ms) |
 
 missing: capacity, used capacity, fs cache misses, disk scheduler infos?, max bandwidth, ?
 
@@ -106,16 +106,16 @@ missing: capacity, used capacity, fs cache misses, disk scheduler infos?, max ba
 | Metric | Source | Description |
 | --- | --- | --- |
 | disks_disks | libvirt | |
-| disk_stats_errs | libvirt | |
-| disk_stats_flushreq | libvirt | |
-| disk_stats_flushtotaltimes | libvirt | |
-| disk_stats_rdbytes | libvirt | |
-| disk_stats_rdreq | libvirt | |
-| disk_stats_rdtotaltimes | libvirt | |
-| disk_stats_wrbytes | libvirt | |
-| disk_stats_wrreq | libvirt | |
-| disk_stats_wrtotaltimes | libvirt | |
-| disk_delayblkio | proc | |
+| disk_stats_errs | libvirt | only for Xen Hypervisor - needs to be removed |
+| disk_stats_flushreq | libvirt | represents the total flush requests of the block device |
+| disk_stats_flushtotaltimes | libvirt | represents the total time spend on cache flushing in nano-seconds of the block device |
+| disk_stats_rdbytes | libvirt | represents the total number of read bytes of the block device |
+| disk_stats_rdreq | libvirt | represents the total read requests of the block device |
+| disk_stats_rdtotaltimes | libvirt | represents the total time spend on cache reads in nano-seconds of the block device |
+| disk_stats_wrbytes | libvirt | represents the total number of write bytes of the block device |
+| disk_stats_wrreq | libvirt | represents the total write requests of the block device |
+| disk_stats_wrtotaltimes | libvirt | represents the total time spend on cache writes in nano-seconds of the block device |
+| disk_delayblkio | proc | aggregated block I/O delays, measured in clock ticks (centiseconds) |
 
 missing: capacity, used capacity, ?
 
@@ -139,10 +139,10 @@ Enable with parameter `--io`.
 
 | Metric | Source | Description |
 | --- | --- | --- |
-| io_rchar | proc | |
-| io_wchar | proc | |
-| io_syscr | proc | |
-| io_syscw | proc | |
-| io_read_bytes | proc | |
-| io_write_bytes | proc | |
-| io_cancelled_write_bytes | proc | |
+| io_rchar | proc | number of bytes the process read, using any read-like system call (from files, pipes, tty...) |
+| io_wchar | proc | number of bytes the process wrote using any write-like system call |
+| io_syscr | proc | number of read-like system call invocations that the process performed |
+| io_syscw | proc | number of write-like system call invocations that the process performed |
+| io_read_bytes | proc | number of bytes the process directly read from disk |
+| io_write_bytes | proc | number of bytes the process originally dirtied in the page-cache (assuming they will go to disk later) |
+| io_cancelled_write_bytes | proc | number of bytes the process "un-dirtied" - e.g. using an "ftruncate" call that truncated pages from the page-cache |
