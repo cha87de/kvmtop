@@ -53,6 +53,10 @@ func diskLookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
 	var sums diskstats
 	disksources := ""
 	for _, disk := range domcfg.Devices.Disks {
+		if disk.Target == nil || disk.Target.Dev == "" {
+			// skip if disk specs are invalid
+			continue
+		}
 		dev := disk.Target.Dev
 		sizeStats, _ := libvirtDomain.GetBlockInfo(dev, 0)
 		ioStats, _ := libvirtDomain.BlockStats(dev)
@@ -109,14 +113,18 @@ func diskLookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
 		sums.Physical += sizeStats.Physical
 
 		// find source path
-		sourcefile := disk.Source.File
-		sourcedir := filepath.Dir(sourcefile.File)
-		if !strings.Contains(disksources, sourcedir) {
-			if disksources != "" {
-				disksources += ","
+		if disk.Source != nil && disk.Source.File != nil {
+			// only consider file based disks
+			sourcefile := disk.Source.File
+			sourcedir := filepath.Dir(sourcefile.File)
+			if !strings.Contains(disksources, sourcedir) {
+				if disksources != "" {
+					disksources += ","
+				}
+				disksources += sourcedir
 			}
-			disksources += sourcedir
 		}
+
 	}
 
 	// sizes
