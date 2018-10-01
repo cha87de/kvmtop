@@ -51,12 +51,14 @@ func GetProcNetDev(pid int, dev string) ProcNetDev {
 
 	format := "" + dev + ": %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d"
 
+	foundDevStats := false
 	for scanner.Scan() {
 		row := strings.Trim(scanner.Text(), " ")
 		if !strings.Contains(row, dev+":") {
 			// only parse line with specified device
 			continue
 		}
+		foundDevStats = true
 		_, err := fmt.Sscanf(
 			string(row), format,
 			&stats.ReceivedBytes,
@@ -81,7 +83,11 @@ func GetProcNetDev(pid int, dev string) ProcNetDev {
 			fmt.Fprintf(os.Stderr, "Cannot parse row in proc net/dev: %s\n", err)
 			return ProcNetDev{}
 		}
+	}
 
+	if !foundDevStats {
+		fmt.Fprintf(os.Stderr, "could not find network device %s\n", dev)
+		return ProcNetDev{}
 	}
 
 	return stats
