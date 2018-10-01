@@ -90,6 +90,20 @@ func (measurable *Measurable) GetMetricIntArray(metricName string) []int {
 	return array
 }
 
+// GetMetricStringArray reads and returns a metric string array by metric name
+func (measurable *Measurable) GetMetricStringArray(metricName string) []string {
+	var array []string
+	if metric, ok := measurable.GetMetric(metricName); ok {
+		if len(metric.Values) > 0 {
+			byteValue := metric.Values[0].Value
+			reader := bytes.NewReader(byteValue)
+			dec := gob.NewDecoder(reader)
+			dec.Decode(&array)
+		}
+	}
+	return array
+}
+
 // Collector defines a collector for a domain specific metric (e.g. CPU)
 type Collector interface {
 	Lookup(host *Host, domains map[string]*Domain, libvirtDomains map[string]libvirt.Domain)

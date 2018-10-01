@@ -1,0 +1,77 @@
+From  https://www.kernel.org/doc/Documentation/filesystems/proc.txt:
+
+1.4 Networking info in /proc/net
+--------------------------------
+
+The subdirectory  /proc/net  follows  the  usual  pattern. Table 1-8 shows the
+additional values  you  get  for  IP  version 6 if you configure the kernel to
+support this. Table 1-9 lists the files and their meaning.
+
+
+Table 1-8: IPv6 info in /proc/net
+..............................................................................
+ File       Content                                               
+ udp6       UDP sockets (IPv6)                                    
+ tcp6       TCP sockets (IPv6)                                    
+ raw6       Raw device statistics (IPv6)                          
+ igmp6      IP multicast addresses, which this host joined (IPv6) 
+ if_inet6   List of IPv6 interface addresses                      
+ ipv6_route Kernel routing table for IPv6                         
+ rt6_stats  Global IPv6 routing tables statistics                 
+ sockstat6  Socket statistics (IPv6)                              
+ snmp6      Snmp data (IPv6)                                      
+..............................................................................
+
+
+Table 1-9: Network info in /proc/net
+..............................................................................
+ File          Content                                                         
+ arp           Kernel  ARP table                                               
+ dev           network devices with statistics                                 
+ dev_mcast     the Layer2 multicast groups a device is listening too
+               (interface index, label, number of references, number of bound
+               addresses). 
+ dev_stat      network device status                                           
+ ip_fwchains   Firewall chain linkage                                          
+ ip_fwnames    Firewall chain names                                            
+ ip_masq       Directory containing the masquerading tables                    
+ ip_masquerade Major masquerading table                                        
+ netstat       Network statistics                                              
+ raw           raw device statistics                                           
+ route         Kernel routing table                                            
+ rpc           Directory containing rpc info                                   
+ rt_cache      Routing cache                                                   
+ snmp          SNMP data                                                       
+ sockstat      Socket statistics                                               
+ tcp           TCP  sockets                                                    
+ udp           UDP sockets                                                     
+ unix          UNIX domain sockets                                             
+ wireless      Wireless interface data (Wavelan etc)                           
+ igmp          IP multicast addresses, which this host joined                  
+ psched        Global packet scheduler parameters.                             
+ netlink       List of PF_NETLINK sockets                                      
+ ip_mr_vifs    List of multicast virtual interfaces                            
+ ip_mr_cache   List of multicast routing cache                                 
+..............................................................................
+
+You can  use  this  information  to see which network devices are available in
+your system and how much traffic was routed over those devices:
+
+  > cat /proc/net/dev 
+  Inter-|Receive                                                   |[... 
+   face |bytes    packets errs drop fifo frame compressed multicast|[... 
+      lo:  908188   5596     0    0    0     0          0         0 [...         
+    ppp0:15475140  20721   410    0    0   410          0         0 [...  
+    eth0:  614530   7085     0    0    0     0          0         1 [... 
+   
+  ...] Transmit 
+  ...] bytes    packets errs drop fifo colls carrier compressed 
+  ...]  908188     5596    0    0    0     0       0          0 
+  ...] 1375103    17405    0    0    0     0       0          0 
+  ...] 1703981     5535    0    0    0     3       0          0 
+
+In addition, each Channel Bond interface has its own directory.  For
+example, the bond0 device will have a directory called /proc/net/bond0/.
+It will contain information that is specific to that bond, such as the
+current slaves of the bond, the link status of the slaves, and how
+many times the slaves link has failed.
