@@ -62,21 +62,47 @@ Enable with parameter `--net`.
 
 | Metric | Source | Description |
 | --- | --- | --- |
-| - | - | - |
+| net_host_receivedBytes| proc | |
+| net_host_receivedPackets| proc | |
+| net_host_receivedErrs| proc | |
+| net_host_receivedDrop| proc | |
+| net_host_receivedFifo| proc | |
+| net_host_receivedFrame| proc | |
+| net_host_receivedCompressed| proc | |
+| net_host_receivedMulticast| proc | |
+| net_host_transmittedBytes| proc | |
+| net_host_transmittedPackets| proc | |
+| net_host_transmittedErrs| proc | |
+| net_host_transmittedDrop| proc | |
+| net_host_transmittedFifo| proc | |
+| net_host_transmittedColls| proc | |
+| net_host_transmittedCarrier| proc | |
+| net_host_transmittedCompressed| proc | |
 
-missing: total bandwidth, overall utilisation, errors, losses, queue sizes, ?
+missing: total bandwidth, queue sizes, ?
 
 ### Network Virtual Machine Metrics
 
 | Metric | Source | Description |
 | --- | --- | --- |
-| net_ifs | libvirt | |
-| net_tx | libvirt | |
-| net_rx | libvirt | |
+| net_receivedBytes| proc | |
+| net_receivedPackets| proc | |
+| net_receivedErrs| proc | |
+| net_receivedDrop| proc | |
+| net_receivedFifo| proc | |
+| net_receivedFrame| proc | |
+| net_receivedCompressed| proc | |
+| net_receivedMulticast| proc | |
+| net_transmittedBytes| proc | |
+| net_transmittedPackets| proc | |
+| net_transmittedErrs| proc | |
+| net_transmittedDrop| proc | |
+| net_transmittedFifo| proc | |
+| net_transmittedColls| proc | |
+| net_transmittedCarrier| proc | |
+| net_transmittedCompressed| proc | |
 
-missing: wait times / latencies, queue sizes, errors, losses, ?
-
-**TODO:** change source to proc! see issue #9
+missing: wait times / latencies, queue sizes, ?
 
 ## Disk Collector
 
