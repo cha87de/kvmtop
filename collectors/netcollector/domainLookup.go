@@ -16,5 +16,5 @@ func domainLookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
 		ifs = append(ifs, ifx.Name)
 	}
 	newMeasurementInterfaces := models.CreateMeasurement(ifs)
-	domain.AddMetricMeasurement("net_ifs", newMeasurementInterfaces)
+	domain.AddMetricMeasurement("net_interfaces", newMeasurementInterfaces)
 }

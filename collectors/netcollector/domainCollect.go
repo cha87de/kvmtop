@@ -14,7 +14,7 @@ func domainCollect(domain *models.Domain) {
 	*/
 
 	// get stats from net/dev for domain interfaces
-	ifs := domain.GetMetricStringArray("net_ifs")
+	ifs := domain.GetMetricStringArray("net_interfaces")
 	statsSum := util.ProcNetDev{}
 	for _, devname := range ifs {
 		devStats := util.GetProcNetDev(domain.PID, devname)

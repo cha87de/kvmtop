@@ -72,6 +72,7 @@ func (collector *Collector) Print() models.Printable {
 			"net_transmittedColls",
 			"net_transmittedCarrier",
 			"net_transmittedCompressed",
+			"net_interfaces",
 		},
 	}
 

@@ -1,6 +1,8 @@
 package netcollector
 
 import (
+	"strings"
+
 	"github.com/cha87de/kvmtop/collectors"
 	"github.com/cha87de/kvmtop/models"
 )
@@ -23,6 +25,9 @@ func domainPrint(domain *models.Domain) []string {
 	transmittedCarrier := collectors.GetMetricDiffUint64(domain.Measurable, "net_TransmittedCarrier", true)
 	transmittedCompressed := collectors.GetMetricDiffUint64(domain.Measurable, "net_TransmittedCompressed", true)
 
-	result := append([]string{receivedBytes}, receivedPackets, receivedErrs, receivedDrop, receivedFifo, receivedFrame, receivedCompressed, receivedMulticast, transmittedBytes, transmittedPackets, transmittedErrs, transmittedDrop, transmittedFifo, transmittedColls, transmittedCarrier, transmittedCompressed)
+	ifsRaw := domain.GetMetricStringArray("net_interfaces")
+	interfaces := strings.Join(ifsRaw, ";")
+
+	result := append([]string{receivedBytes}, receivedPackets, receivedErrs, receivedDrop, receivedFifo, receivedFrame, receivedCompressed, receivedMulticast, transmittedBytes, transmittedPackets, transmittedErrs, transmittedDrop, transmittedFifo, transmittedColls, transmittedCarrier, transmittedCompressed, interfaces)
 	return result
 }
