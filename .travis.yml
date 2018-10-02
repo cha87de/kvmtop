@@ -19,9 +19,7 @@ before_deploy:
 deploy:
   - provider: script
     skip_cleanup: true
-    script:
-      - docker build -t cha87de/kvmtop:master . ; docker push cha87de/kvmtop:master
-      - docker build -f Dockerfile-alpine -t cha87de/kvmtop:master-alpine . ; docker push cha87de/kvmtop:master-alpine
+    script: docker build -t cha87de/kvmtop:master . ; docker push cha87de/kvmtop:master; docker build -f Dockerfile-alpine -t cha87de/kvmtop:master-alpine . ; docker push cha87de/kvmtop:master-alpine
     on:
       branch: master
   - provider: script
