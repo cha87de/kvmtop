@@ -20,13 +20,15 @@ func initializeCollect(wg *sync.WaitGroup) {
 
 func collect() {
 	// initialize models
-	if models.Collection.Domains == nil {
+	if models.Collection.Domains.Length() <= 0 {
 		// wait for lookup to create domains
 		return
 	}
 
 	// run collectors
-	for _, collector := range models.Collection.Collectors {
-		go collector.Collect(models.Collection.Host, models.Collection.Domains)
-	}
+	models.Collection.Collectors.Map.Range(func(_, collectorRaw interface{}) bool {
+		collector := collectorRaw.(models.Collector)
+		go collector.Collect()
+		return true
+	})
 }

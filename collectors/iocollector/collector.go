@@ -2,31 +2,37 @@ package iocollector
 
 import (
 	"github.com/cha87de/kvmtop/models"
-	libvirt "github.com/libvirt/libvirt-go"
 )
 
-// CollectorIO describes the io collector
+// Collector describes the io collector
 type Collector struct {
 	models.Collector
 }
 
 // Lookup io collector data
-func (collector *Collector) Lookup(host *models.Host, domains map[string]*models.Domain, libvirtDomains map[string]libvirt.Domain) {
-	for uuid := range domains {
-		ioLookup(domains[uuid], libvirtDomains[uuid])
-	}
+func (collector *Collector) Lookup() {
+	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
+		uuid := key.(string)
+		domain := value.(models.Domain)
+		libvirtDomain, _ := models.Collection.LibvirtDomains.Load(uuid)
+		ioLookup(&domain, libvirtDomain)
+		return true
+	})
 }
 
 // Collect io collector data
-func (collector *Collector) Collect(host *models.Host, domains map[string]*models.Domain) {
+func (collector *Collector) Collect() {
 	// lookup for each domain
-	for uuid := range domains {
-		ioCollect(domains[uuid])
-	}
+	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
+		// uuid := key.(string)
+		domain := value.(models.Domain)
+		ioCollect(&domain)
+		return true
+	})
 }
 
 // Print returns the collectors measurements in a Printable struct
-func (collector *Collector) Print(host *models.Host, domains map[string]*models.Domain) models.Printable {
+func (collector *Collector) Print() models.Printable {
 	printable := models.Printable{
 		HostFields: []string{},
 		DomainFields: []string{
@@ -42,9 +48,12 @@ func (collector *Collector) Print(host *models.Host, domains map[string]*models.
 
 	// lookup for each domain
 	printable.DomainValues = make(map[string][]string)
-	for uuid := range domains {
-		printable.DomainValues[uuid] = ioPrint(domains[uuid])
-	}
+	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
+		uuid := key.(string)
+		domain := value.(models.Domain)
+		printable.DomainValues[uuid] = ioPrint(&domain)
+		return true
+	})
 
 	// lookup for host
 	// printable.HostValues = cpuPrintHost(host)

@@ -4,7 +4,6 @@ import (
 	"os"
 
 	"github.com/cha87de/kvmtop/models"
-	libvirt "github.com/libvirt/libvirt-go"
 )
 
 // Collector describes the host collector
@@ -13,22 +12,29 @@ type Collector struct {
 }
 
 // Lookup host collector data
-func (collector *Collector) Lookup(host *models.Host, domains map[string]*models.Domain, libvirtDomains map[string]libvirt.Domain) {
-	for uuid := range domains {
-		hostLookup(domains[uuid], libvirtDomains[uuid])
-	}
+func (collector *Collector) Lookup() {
+	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
+		uuid := key.(string)
+		domain := value.(models.Domain)
+		libvirtDomain, _ := models.Collection.LibvirtDomains.Load(uuid)
+		hostLookup(&domain, libvirtDomain)
+		return true
+	})
 }
 
 // Collect host collector data
-func (collector *Collector) Collect(host *models.Host, domains map[string]*models.Domain) {
+func (collector *Collector) Collect() {
 	// lookup for each domain
-	for uuid := range domains {
-		hostCollect(domains[uuid])
-	}
+	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
+		// uuid := key.(string)
+		domain := value.(models.Domain)
+		hostCollect(&domain)
+		return true
+	})
 }
 
 // Print returns the collectors measurements in a Printable struct
-func (collector *Collector) Print(host *models.Host, domains map[string]*models.Domain) models.Printable {
+func (collector *Collector) Print() models.Printable {
 	printable := models.Printable{
 		HostFields: []string{
 			"host_name",
@@ -40,9 +46,12 @@ func (collector *Collector) Print(host *models.Host, domains map[string]*models.
 
 	// lookup for each domain
 	printable.DomainValues = make(map[string][]string)
-	for uuid := range domains {
-		printable.DomainValues[uuid] = hostPrint(domains[uuid])
-	}
+	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
+		uuid := key.(string)
+		domain := value.(models.Domain)
+		printable.DomainValues[uuid] = hostPrint(&domain)
+		return true
+	})
 
 	// lookup for host
 	// printable.HostValues = cpuPrintHost(host)

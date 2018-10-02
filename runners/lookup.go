@@ -26,24 +26,20 @@ func initializeLookup(wg *sync.WaitGroup) {
 }
 
 func lookup() {
-	// initialize models
-	if models.Collection.Domains == nil {
-		models.Collection.Domains = make(map[string]*models.Domain)
-	}
-
 	// query libvirt
 	doms, err := connector.Libvirt.Connection.ListAllDomains(libvirt.CONNECT_LIST_DOMAINS_ACTIVE)
-	libvirtDomains := make(map[string]libvirt.Domain)
 	if err != nil {
 		log.Printf("Cannot get list of domains form libvirt.")
 		return
 	}
 
 	// create list of cached domains
-	domIDs := make([]string, 0, len(models.Collection.Domains))
-	for id := range models.Collection.Domains {
-		domIDs = append(domIDs, id)
-	}
+	domIDs := make([]string, 0, models.Collection.Domains.Length())
+
+	models.Collection.Domains.Map.Range(func(key, _ interface{}) bool {
+		domIDs = append(domIDs, key.(string))
+		return true
+	})
 
 	// update process list
 	processes = util.GetProcessList()
@@ -51,7 +47,7 @@ func lookup() {
 	// update domain list
 	for _, dom := range doms {
 		domain, err := handleDomain(dom)
-		libvirtDomains[domain.UUID] = dom
+		models.Collection.LibvirtDomains.Store(domain.UUID, dom)
 		if err != nil {
 			continue
 		}
@@ -60,32 +56,36 @@ func lookup() {
 
 	// remove cached but not existent domains
 	for _, id := range domIDs {
-		delete(models.Collection.Domains, id)
+		models.Collection.Domains.Map.Delete(id)
 	}
 
 	// call collector lookup functions
-	for _, collector := range models.Collection.Collectors {
-		collector.Lookup(models.Collection.Host, models.Collection.Domains, libvirtDomains)
-	}
+	models.Collection.Collectors.Map.Range(func(_, collectorRaw interface{}) bool {
+		collector := collectorRaw.(models.Collector)
+		collector.Lookup()
+		return true
+	})
 
 }
 
-func handleDomain(dom libvirt.Domain) (*models.Domain, error) {
+func handleDomain(dom libvirt.Domain) (models.Domain, error) {
 	uuid, err := dom.GetUUIDString()
 	if err != nil {
-		return nil, err
+		return models.Domain{}, err
 	}
 
 	name, err := dom.GetName()
 	if err != nil {
-		return nil, err
+		return models.Domain{}, err
 	}
 
-	if domain, ok := models.Collection.Domains[uuid]; ok {
+	// lookup or create domain
+	var domain models.Domain
+	var ok bool
+	if domain, ok = models.Collection.Domains.Load(uuid); ok {
 		domain.Name = name
-		models.Collection.Domains[uuid] = domain
 	} else {
-		models.Collection.Domains[uuid] = &models.Domain{
+		domain = models.Domain{
 			UUID:       string(uuid),
 			Name:       name,
 			Measurable: &models.Measurable{},
@@ -102,9 +102,12 @@ func handleDomain(dom libvirt.Domain) (*models.Domain, error) {
 			break
 		}
 	}
-	models.Collection.Domains[uuid].PID = pid
+	domain.PID = pid
 
-	return models.Collection.Domains[uuid], nil
+	// write back domain
+	models.Collection.Domains.Store(uuid, domain)
+
+	return domain, nil
 }
 
 func removeFromArray(s []string, r string) []string {

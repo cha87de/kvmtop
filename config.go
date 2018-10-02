@@ -36,32 +36,29 @@ func initializeFlags() {
 	}
 
 	// Set collectors from flags
-	if models.Collection.Collectors == nil {
-		models.Collection.Collectors = make(map[string]models.Collector)
-	}
 	if config.Options.EnableCPU {
 		collector := cpucollector.CreateCollector()
-		models.Collection.Collectors["cpu"] = &collector
+		models.Collection.Collectors.Store("cpu", &collector)
 	}
 	if config.Options.EnableMEM {
 		collector := memcollector.CreateCollector()
-		models.Collection.Collectors["mem"] = &collector
+		models.Collection.Collectors.Store("mem", &collector)
 	}
 	if config.Options.EnableDISK {
 		collector := diskcollector.CreateCollector()
-		models.Collection.Collectors["disk"] = &collector
+		models.Collection.Collectors.Store("disk", &collector)
 	}
 	if config.Options.EnableNET {
 		collector := netcollector.CreateCollector()
-		models.Collection.Collectors["net"] = &collector
+		models.Collection.Collectors.Store("net", &collector)
 	}
 	if config.Options.EnableIO {
 		collector := iocollector.CreateCollector()
-		models.Collection.Collectors["io"] = &collector
+		models.Collection.Collectors.Store("io", &collector)
 	}
 	if config.Options.EnableHost {
 		collector := hostcollector.CreateCollector()
-		models.Collection.Collectors["host"] = &collector
+		models.Collection.Collectors.Store("host", &collector)
 	}
 
 	// select printer, ncurse as default.

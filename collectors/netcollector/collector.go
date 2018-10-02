@@ -2,7 +2,6 @@ package netcollector
 
 import (
 	"github.com/cha87de/kvmtop/models"
-	libvirt "github.com/libvirt/libvirt-go"
 )
 
 // Collector describes the network collector
@@ -11,24 +10,32 @@ type Collector struct {
 }
 
 // Lookup network collector data
-func (collector *Collector) Lookup(host *models.Host, domains map[string]*models.Domain, libvirtDomains map[string]libvirt.Domain) {
-	for uuid := range domains {
-		domainLookup(domains[uuid], libvirtDomains[uuid])
-	}
-	hostLookup(host, libvirtDomains)
+func (collector *Collector) Lookup() {
+	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
+		uuid := key.(string)
+		domain := value.(models.Domain)
+		libvirtDomain, _ := models.Collection.LibvirtDomains.Load(uuid)
+		domainLookup(&domain, libvirtDomain)
+		return true
+	})
+
+	hostLookup(models.Collection.Host)
 }
 
 // Collect network collector data
-func (collector *Collector) Collect(host *models.Host, domains map[string]*models.Domain) {
+func (collector *Collector) Collect() {
 	// lookup for each domain
-	for uuid := range domains {
-		domainCollect(domains[uuid])
-	}
-	hostCollect(host)
+	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
+		// uuid := key.(string)
+		domain := value.(models.Domain)
+		domainCollect(&domain)
+		return true
+	})
+	hostCollect(models.Collection.Host)
 }
 
 // Print returns the collectors measurements in a Printable struct
-func (collector *Collector) Print(host *models.Host, domains map[string]*models.Domain) models.Printable {
+func (collector *Collector) Print() models.Printable {
 	printable := models.Printable{
 		HostFields: []string{
 			"net_host_receivedBytes",
@@ -70,12 +77,15 @@ func (collector *Collector) Print(host *models.Host, domains map[string]*models.
 
 	// lookup for each domain
 	printable.DomainValues = make(map[string][]string)
-	for uuid := range domains {
-		printable.DomainValues[uuid] = domainPrint(domains[uuid])
-	}
+	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
+		uuid := key.(string)
+		domain := value.(models.Domain)
+		printable.DomainValues[uuid] = domainPrint(&domain)
+		return true
+	})
 
 	// lookup for host
-	printable.HostValues = hostPrint(host)
+	printable.HostValues = hostPrint(models.Collection.Host)
 
 	return printable
 }

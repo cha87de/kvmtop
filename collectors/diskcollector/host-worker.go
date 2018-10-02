@@ -98,20 +98,20 @@ func diskHostCollect(host *models.Host) {
 }
 
 func diskPrintHost(host *models.Host) []string {
-	disk_device_reads := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_reads", true)
-	disk_device_readsmerged := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_readsmerged", true)
-	disk_device_sectorsread := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_sectorsread", true)
-	disk_device_timereading := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_timereading", true)
-	disk_device_writes := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_writes", true)
-	disk_device_writesmerged := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_writesmerged", true)
-	disk_device_sectorswritten := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_sectorswritten", true)
-	disk_device_timewriting := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_timewriting", true)
-	disk_device_currentops := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_currentops", true)
-	disk_device_timeforops := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_timeforops", true)
-	disk_device_weightedtimeforops := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_weightedtimeforops", true)
+	diskDeviceReads := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_reads", true)
+	diskDeviceReadsmerged := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_readsmerged", true)
+	diskDeviceSectorsread := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_sectorsread", true)
+	diskDeviceTimereading := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_timereading", true)
+	diskDeviceWrites := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_writes", true)
+	diskDeviceWritesmerged := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_writesmerged", true)
+	diskDeviceSectorswritten := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_sectorswritten", true)
+	diskDeviceTimewriting := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_timewriting", true)
+	diskDeviceCurrentops := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_currentops", true)
+	diskDeviceTimeforops := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_timeforops", true)
+	diskDeviceWeightedtimeforops := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_weightedtimeforops", true)
 
-	result := append([]string{disk_device_reads}, disk_device_readsmerged, disk_device_sectorsread, disk_device_timereading, disk_device_writes)
-	result = append(result, disk_device_writesmerged, disk_device_sectorswritten, disk_device_timewriting, disk_device_currentops, disk_device_timeforops)
-	result = append(result, disk_device_weightedtimeforops)
+	result := append([]string{diskDeviceReads}, diskDeviceReadsmerged, diskDeviceSectorsread, diskDeviceTimereading, diskDeviceWrites)
+	result = append(result, diskDeviceWritesmerged, diskDeviceSectorswritten, diskDeviceTimewriting, diskDeviceCurrentops, diskDeviceTimeforops)
+	result = append(result, diskDeviceWeightedtimeforops)
 	return result
 }

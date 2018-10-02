@@ -2,7 +2,6 @@ package cpucollector
 
 import (
 	"github.com/cha87de/kvmtop/models"
-	libvirt "github.com/libvirt/libvirt-go"
 )
 
 // Collector describes the cpu collector
@@ -11,26 +10,32 @@ type Collector struct {
 }
 
 // Lookup cpu collector data
-func (collector *Collector) Lookup(host *models.Host, domains map[string]*models.Domain, libvirtDomains map[string]libvirt.Domain) {
-	// lookup for each domain
-	for uuid := range domains {
-		cpuLookup(domains[uuid], libvirtDomains[uuid])
-	}
+func (collector *Collector) Lookup() {
+	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
+		uuid := key.(string)
+		domain := value.(models.Domain)
+		libvirtDomain, _ := models.Collection.LibvirtDomains.Load(uuid)
+		cpuLookup(&domain, libvirtDomain)
+		return true
+	})
 
 	// lookup details for host
-	cpuLookupHost(host)
+	cpuLookupHost(models.Collection.Host)
 }
 
 // Collect cpu collector data
-func (collector *Collector) Collect(host *models.Host, domains map[string]*models.Domain) {
+func (collector *Collector) Collect() {
 	// lookup for each domain
-	for uuid := range domains {
-		cpuCollect(domains[uuid])
-	}
+	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
+		// uuid := key.(string)
+		domain := value.(models.Domain)
+		cpuCollect(&domain)
+		return true
+	})
 }
 
 // Print returns the collectors measurements in a Printable struct
-func (collector *Collector) Print(host *models.Host, domains map[string]*models.Domain) models.Printable {
+func (collector *Collector) Print() models.Printable {
 	printable := models.Printable{
 		HostFields: []string{
 			"cpu_cores",
@@ -47,12 +52,15 @@ func (collector *Collector) Print(host *models.Host, domains map[string]*models.
 
 	// lookup for each domain
 	printable.DomainValues = make(map[string][]string)
-	for uuid := range domains {
-		printable.DomainValues[uuid] = cpuPrint(domains[uuid])
-	}
+	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
+		uuid := key.(string)
+		domain := value.(models.Domain)
+		printable.DomainValues[uuid] = cpuPrint(&domain)
+		return true
+	})
 
 	// lookup for host
-	printable.HostValues = cpuPrintHost(host)
+	printable.HostValues = cpuPrintHost(models.Collection.Host)
 
 	return printable
 }

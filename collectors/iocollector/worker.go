@@ -27,10 +27,10 @@ func ioPrint(domain *models.Domain) []string {
 	wchar := collectors.GetMetricDiffUint64(domain.Measurable, "io_wchar", true)
 	syscr := collectors.GetMetricDiffUint64(domain.Measurable, "io_syscr", true)
 	syscw := collectors.GetMetricDiffUint64(domain.Measurable, "io_syscw", true)
-	read_bytes := collectors.GetMetricDiffUint64(domain.Measurable, "io_read_bytes", true)
-	write_bytes := collectors.GetMetricDiffUint64(domain.Measurable, "io_write_bytes", true)
-	cancelled_write_bytes := collectors.GetMetricDiffUint64(domain.Measurable, "io_cancelled_write_bytes", true)
+	readBytes := collectors.GetMetricDiffUint64(domain.Measurable, "io_read_bytes", true)
+	writeBytes := collectors.GetMetricDiffUint64(domain.Measurable, "io_write_bytes", true)
+	cancelledWriteBytes := collectors.GetMetricDiffUint64(domain.Measurable, "io_cancelled_write_bytes", true)
 
-	result := append([]string{rchar}, wchar, syscr, syscw, read_bytes, write_bytes, cancelled_write_bytes)
+	result := append([]string{rchar}, wchar, syscr, syscw, readBytes, writeBytes, cancelledWriteBytes)
 	return result
 }

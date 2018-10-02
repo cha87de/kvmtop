@@ -5,7 +5,6 @@ import (
 
 	"github.com/cha87de/kvmtop/collectors"
 	"github.com/cha87de/kvmtop/models"
-	libvirt "github.com/libvirt/libvirt-go"
 )
 
 // Collector describes the disk collector
@@ -14,13 +13,17 @@ type Collector struct {
 }
 
 // Lookup disk collector data
-func (collector *Collector) Lookup(host *models.Host, domains map[string]*models.Domain, libvirtDomains map[string]libvirt.Domain) {
+func (collector *Collector) Lookup() {
 	hostDiskSources := ""
-	for uuid := range domains {
-		diskLookup(domains[uuid], libvirtDomains[uuid])
 
+	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
+		uuid := key.(string)
+		domain := value.(models.Domain)
+		libvirtDomain, _ := models.Collection.LibvirtDomains.Load(uuid)
+
+		diskLookup(&domain, libvirtDomain)
 		// merge sourcedir metrics from domains to one metric for host
-		disksources := strings.Split(collectors.GetMetricString(domains[uuid].Measurable, "disk_sources", 0), ",")
+		disksources := strings.Split(collectors.GetMetricString(domain.Measurable, "disk_sources", 0), ",")
 		for _, disksource := range disksources {
 			if !strings.Contains(hostDiskSources, disksource) {
 				if hostDiskSources != "" {
@@ -29,23 +32,29 @@ func (collector *Collector) Lookup(host *models.Host, domains map[string]*models
 				hostDiskSources += disksource
 			}
 		}
-	}
-	host.AddMetricMeasurement("disk_sources", models.CreateMeasurement(hostDiskSources))
 
-	diskHostLookup(host)
+		return true
+	})
+
+	models.Collection.Host.AddMetricMeasurement("disk_sources", models.CreateMeasurement(hostDiskSources))
+
+	diskHostLookup(models.Collection.Host)
 }
 
 // Collect disk collector data
-func (collector *Collector) Collect(host *models.Host, domains map[string]*models.Domain) {
+func (collector *Collector) Collect() {
 	// lookup for each domain
-	for uuid := range domains {
-		diskCollect(domains[uuid])
-	}
-	diskHostCollect(host)
+	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
+		// uuid := key.(string)
+		domain := value.(models.Domain)
+		diskCollect(&domain)
+		return true
+	})
+	diskHostCollect(models.Collection.Host)
 }
 
 // Print returns the collectors measurements in a Printable struct
-func (collector *Collector) Print(host *models.Host, domains map[string]*models.Domain) models.Printable {
+func (collector *Collector) Print() models.Printable {
 	printable := models.Printable{
 		HostFields: []string{
 			"disk_device_reads",
@@ -79,12 +88,15 @@ func (collector *Collector) Print(host *models.Host, domains map[string]*models.
 
 	// lookup for each domain
 	printable.DomainValues = make(map[string][]string)
-	for uuid := range domains {
-		printable.DomainValues[uuid] = diskPrint(domains[uuid])
-	}
+	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
+		uuid := key.(string)
+		domain := value.(models.Domain)
+		printable.DomainValues[uuid] = diskPrint(&domain)
+		return true
+	})
 
 	// lookup for host
-	printable.HostValues = diskPrintHost(host)
+	printable.HostValues = diskPrintHost(models.Collection.Host)
 
 	return printable
 }

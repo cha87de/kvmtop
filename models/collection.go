@@ -5,18 +5,18 @@ import (
 	"encoding/gob"
 	"sync"
 	"time"
-
-	libvirt "github.com/libvirt/libvirt-go"
 )
 
 // Collection of domains and other stuff
 var Collection struct {
-	Host       *Host
-	Domains    map[string]*Domain
-	Collectors map[string]Collector
-	Printer    Printer
+	Host           *Host
+	Domains        Domains
+	Collectors     Collectors
+	Printer        Printer
+	LibvirtDomains LibvirtDomains
 }
 
+// Measurable holds collector metrics in a sync.Map
 type Measurable struct {
 	Metrics sync.Map
 }
@@ -106,9 +106,9 @@ func (measurable *Measurable) GetMetricStringArray(metricName string) []string {
 
 // Collector defines a collector for a domain specific metric (e.g. CPU)
 type Collector interface {
-	Lookup(host *Host, domains map[string]*Domain, libvirtDomains map[string]libvirt.Domain)
-	Collect(host *Host, domains map[string]*Domain)
-	Print(host *Host, domains map[string]*Domain) Printable
+	Lookup()
+	Collect()
+	Print() Printable
 }
 
 // Metric contains a monitoring metric value with current and previous

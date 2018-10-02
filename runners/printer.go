@@ -15,9 +15,11 @@ func initializePrinter(wg *sync.WaitGroup) {
 	models.Collection.Printer.Open()
 
 	// define collectors and their order
-	for collectorName := range models.Collection.Collectors {
+	models.Collection.Collectors.Map.Range(func(key, collectorRaw interface{}) bool {
+		collectorName := key.(string)
 		collectors = append(collectors, collectorName)
-	}
+		return true
+	})
 
 	// start continuously printing values
 	for n := -1; config.Options.Runs == -1 || n < config.Options.Runs; n++ {
@@ -40,17 +42,23 @@ func handleRun() {
 	// add general domain fields first
 	printable.DomainFields = []string{"UUID", "name"}
 	printable.DomainValues = make(map[string][]string)
-	for uuid := range models.Collection.Domains {
+	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
+		uuid := key.(string)
+		domain := value.(models.Domain)
 		printable.DomainValues[uuid] = []string{
 			uuid,
-			models.Collection.Domains[uuid].Name,
+			domain.Name,
 		}
-	}
+		return true
+	})
 
 	// collect fields for each collector and merge together
-	for _, collectorName := range collectors {
-		collector := models.Collection.Collectors[collectorName]
-		collectorPrintable := collector.Print(models.Collection.Host, models.Collection.Domains)
+	for _, collectorName := range collectors { // BUG: concurrent map iteration and map write
+		collector, ok := models.Collection.Collectors.Load(collectorName)
+		if !ok {
+			continue
+		}
+		collectorPrintable := collector.Print()
 
 		// merge host data
 		printable.HostFields = append(printable.HostFields, collectorPrintable.HostFields[0:]...)

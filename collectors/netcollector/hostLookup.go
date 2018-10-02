@@ -7,18 +7,20 @@ import (
 	libvirtxml "github.com/libvirt/libvirt-go-xml"
 )
 
-func hostLookup(host *models.Host, libvirtDomains map[string]libvirt.Domain) {
-	bridges := getHostBridges(libvirtDomains)
+func hostLookup(host *models.Host) {
+	bridges := getHostBridges()
 	newMeasurementInterfaces := models.CreateMeasurement(bridges)
 	host.AddMetricMeasurement("net_host_ifs", newMeasurementInterfaces)
 }
 
-func getHostBridges(libvirtDomains map[string]libvirt.Domain) []string {
+func getHostBridges() []string {
 
 	bridges := make(map[string]string)
 	networks := make(map[string]string)
 
-	for _, libvirtDomain := range libvirtDomains {
+	models.Collection.LibvirtDomains.Map.Range(func(key, value interface{}) bool {
+		libvirtDomain := value.(libvirt.Domain)
+
 		xmldoc, _ := libvirtDomain.GetXMLDesc(libvirt.DOMAIN_XML_SECURE)
 		domcfg := &libvirtxml.Domain{}
 		domcfg.Unmarshal(xmldoc)
@@ -33,7 +35,9 @@ func getHostBridges(libvirtDomains map[string]libvirt.Domain) []string {
 				bridges[bridge] = bridge
 			}
 		}
-	}
+
+		return true
+	})
 
 	// lookup bridges of networks
 	for networkName := range networks {
