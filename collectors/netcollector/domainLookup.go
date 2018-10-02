@@ -1,6 +1,8 @@
 package netcollector
 
 import (
+	"fmt"
+
 	"github.com/cha87de/kvmtop/models"
 	libvirt "github.com/libvirt/libvirt-go"
 	libvirtxml "github.com/libvirt/libvirt-go-xml"
@@ -22,6 +24,13 @@ func domainLookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
 	xmldoc, _ := libvirtDomain.GetXMLDesc(libvirt.DOMAIN_XML_SECURE)
 	domcfg := &libvirtxml.Domain{}
 	domcfg.Unmarshal(xmldoc)
+
+	if domcfg.Devices == nil {
+		fmt.Printf("devices for domain %s nil!\n", domain.UUID)
+	}
+	if domcfg.Devices.Interfaces == nil {
+		fmt.Printf("device interfaces for domain %s nil!\n", domain.UUID)
+	}
 
 	for _, devInterface := range domcfg.Devices.Interfaces {
 		if devInterface.Target != nil {

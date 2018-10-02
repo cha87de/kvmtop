@@ -1,6 +1,8 @@
 package netcollector
 
 import (
+	"fmt"
+
 	"github.com/cha87de/kvmtop/connector"
 	"github.com/cha87de/kvmtop/models"
 	libvirt "github.com/libvirt/libvirt-go"
@@ -24,6 +26,13 @@ func getHostBridges() []string {
 		xmldoc, _ := libvirtDomain.GetXMLDesc(libvirt.DOMAIN_XML_SECURE)
 		domcfg := &libvirtxml.Domain{}
 		domcfg.Unmarshal(xmldoc)
+
+		if domcfg.Devices == nil {
+			fmt.Printf("devices for domain %s nil!\n", key.(string))
+		}
+		if domcfg.Devices.Interfaces == nil {
+			fmt.Printf("device interfaces for domain %s nil!\n", key.(string))
+		}
 
 		for _, devInterface := range domcfg.Devices.Interfaces {
 			if devInterface.Source.Network != nil {
