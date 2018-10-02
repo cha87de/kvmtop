@@ -27,16 +27,15 @@ func domainLookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
 
 	if domcfg.Devices == nil {
 		fmt.Printf("devices for domain %s nil!\n", domain.UUID)
-		return true
-	}
-	if domcfg.Devices.Interfaces == nil {
+		return
+	} else if domcfg.Devices.Interfaces == nil {
 		fmt.Printf("device interfaces for domain %s nil!\n", domain.UUID)
-		return true
-	}
-
-	for _, devInterface := range domcfg.Devices.Interfaces {
-		if devInterface.Target != nil {
-			ifs = append(ifs, devInterface.Target.Dev)
+		return
+	} else {
+		for _, devInterface := range domcfg.Devices.Interfaces {
+			if devInterface.Target != nil {
+				ifs = append(ifs, devInterface.Target.Dev)
+			}
 		}
 	}
 
