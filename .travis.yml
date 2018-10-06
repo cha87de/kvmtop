@@ -12,6 +12,7 @@ before_install:
 install:
   - "go get -d -v ./..."
   - "go install ./..."
+  - "cp $GOPATH/bin/kvmtop ."
 
 before_deploy:
  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
