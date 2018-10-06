@@ -146,11 +146,9 @@ missing: capacity, used capacity, fs cache misses, disk scheduler infos?, max ba
 
 ## IO Collector
 
-**TODO:** explain the difference to Disk collector.
-
 Enable with parameter `--io`.
 
-*Please note:* this collector requires root access to /proc.
+The IO Collector extends the disk collector with utilisation metrics from the proc fs instead from libvirt. *Please note: this collector requires root access to /proc on most Linux distributions.*
 
 ### IO Host Metrics
 
