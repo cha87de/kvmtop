@@ -2,6 +2,7 @@ package iocollector
 
 import (
 	"github.com/cha87de/kvmtop/collectors"
+	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
 	"github.com/cha87de/kvmtop/util"
 	libvirt "github.com/libvirt/libvirt-go"
@@ -31,6 +32,9 @@ func ioPrint(domain *models.Domain) []string {
 	writeBytes := collectors.GetMetricDiffUint64(domain.Measurable, "io_write_bytes", true)
 	cancelledWriteBytes := collectors.GetMetricDiffUint64(domain.Measurable, "io_cancelled_write_bytes", true)
 
-	result := append([]string{rchar}, wchar, syscr, syscw, readBytes, writeBytes, cancelledWriteBytes)
+	result := append([]string{readBytes}, writeBytes)
+	if config.Options.Verbose {
+		result = append(result, rchar, wchar, syscr, syscw, cancelledWriteBytes)
+	}
 	return result
 }

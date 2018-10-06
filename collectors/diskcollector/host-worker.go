@@ -2,6 +2,7 @@ package diskcollector
 
 import (
 	"github.com/cha87de/kvmtop/collectors"
+	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/util"
 
 	"github.com/cha87de/kvmtop/models"
@@ -110,8 +111,12 @@ func diskPrintHost(host *models.Host) []string {
 	diskDeviceTimeforops := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_timeforops", true)
 	diskDeviceWeightedtimeforops := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_weightedtimeforops", true)
 
-	result := append([]string{diskDeviceReads}, diskDeviceReadsmerged, diskDeviceSectorsread, diskDeviceTimereading, diskDeviceWrites)
-	result = append(result, diskDeviceWritesmerged, diskDeviceSectorswritten, diskDeviceTimewriting, diskDeviceCurrentops, diskDeviceTimeforops)
-	result = append(result, diskDeviceWeightedtimeforops)
+	result := append([]string{diskDeviceReads}, diskDeviceWrites)
+	if config.Options.Verbose {
+		result = append(result, diskDeviceReadsmerged, diskDeviceSectorsread, diskDeviceTimereading)
+		result = append(result, diskDeviceWritesmerged, diskDeviceSectorswritten, diskDeviceTimewriting, diskDeviceCurrentops, diskDeviceTimeforops)
+		result = append(result, diskDeviceWeightedtimeforops)
+	}
+
 	return result
 }

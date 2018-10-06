@@ -2,6 +2,8 @@
 
 Available metrics, their source and description.
 
+Metrics below the **verbose mode** sign are only available when using the `--verbose` option.
+
 ## CPU Collector
 
 Enable with parameter `--cpu`.
@@ -22,6 +24,7 @@ missing: architecture
 | cpu_cores | proc | |
 | cpu_total | proc | |
 | cpu_steal | proc | |
+| **verbose mode** | | |
 | cpu_other_total | proc | |
 | cpu_other_steal | proc | |
 
@@ -36,8 +39,56 @@ Enable with parameter `--mem`.
 | Metric | Source | Description |
 | --- | --- | --- |
 | - | - | - |
+| ram_Total | proc | |
+| ram_Free | proc | |
+| ram_Available | proc | |
+| **verbose mode** | | |
+| ram_Buffers | proc | |
+| ram_Cached | proc | |
+| ram_SwapCached | proc | |
+| ram_Active | proc | |
+| ram_Inactive | proc | |
+| ram_ActiveAanon | proc | |
+| ram_InactiveAanon | proc | |
+| ram_ActiveFile | proc | |
+| ram_InactiveFile | proc | |
+| ram_Unevictable | proc | |
+| ram_Mlocked | proc | |
+| ram_SwapTotal | proc | |
+| ram_SwapFree | proc | |
+| ram_Dirty | proc | |
+| ram_Writeback | proc | |
+| ram_AnonPages | proc | |
+| ram_Mapped | proc | |
+| ram_Shmem | proc | |
+| ram_Slab | proc | |
+| ram_SReclaimable | proc | |
+| ram_SUnreclaim | proc | |
+| ram_KernelStack | proc | |
+| ram_PageTables | proc | |
+| ram_NFSUnstable | proc | |
+| ram_Bounce | proc | |
+| ram_WritebackTmp | proc | |
+| ram_CommitLimit | proc | |
+| ram_CommittedAS | proc | |
+| ram_VmallocTotal | proc | |
+| ram_VmallocUsed | proc | |
+| ram_VmallocChunk | proc | |
+| ram_HardwareCorrupted | proc | |
+| ram_AnonHugePages | proc | |
+| ram_ShmemHugePages | proc | |
+| ram_ShmemPmdMapped | proc | |
+| ram_HugePagesTotal | proc | |
+| ram_HugePagesFree | proc | |
+| ram_HugePagesRsvd | proc | |
+| ram_HugePagesSurp | proc | |
+| ram_Hugepagesize | proc | |
+| ram_Hugetlb | proc | |
+| ram_DirectMap4k | proc | |
+| ram_DirectMap2M | proc | |
+| ram_DirectMap1G | proc | |
 
-missing: total, used, faults, frequency, ?
+missing: frequency, ?
 
 ### Memory Virtual Machine Metrics
 
@@ -45,6 +96,7 @@ missing: total, used, faults, frequency, ?
 | --- | --- | --- |
 | ram_total | libvirt | |
 | ram_used | libvirt | |
+| **verbose mode** | | |
 | ram_vsize | proc | |
 | ram_rss | proc | |
 | ram_minflt | proc | |
@@ -63,6 +115,8 @@ Enable with parameter `--net`.
 | Metric | Source | Description |
 | --- | --- | --- |
 | net_host_receivedBytes| proc | |
+| net_host_transmittedBytes| proc | |
+| **verbose mode** | | |
 | net_host_receivedPackets| proc | |
 | net_host_receivedErrs| proc | |
 | net_host_receivedDrop| proc | |
@@ -70,7 +124,6 @@ Enable with parameter `--net`.
 | net_host_receivedFrame| proc | |
 | net_host_receivedCompressed| proc | |
 | net_host_receivedMulticast| proc | |
-| net_host_transmittedBytes| proc | |
 | net_host_transmittedPackets| proc | |
 | net_host_transmittedErrs| proc | |
 | net_host_transmittedDrop| proc | |
@@ -86,6 +139,8 @@ missing: total bandwidth, queue sizes, ?
 | Metric | Source | Description |
 | --- | --- | --- |
 | net_receivedBytes| proc | |
+| net_transmittedBytes| proc | |
+| **verbose mode** | | |
 | net_receivedPackets| proc | |
 | net_receivedErrs| proc | |
 | net_receivedDrop| proc | |
@@ -93,7 +148,6 @@ missing: total bandwidth, queue sizes, ?
 | net_receivedFrame| proc | |
 | net_receivedCompressed| proc | |
 | net_receivedMulticast| proc | |
-| net_transmittedBytes| proc | |
 | net_transmittedPackets| proc | |
 | net_transmittedErrs| proc | |
 | net_transmittedDrop| proc | |
@@ -112,12 +166,12 @@ Enable with parameter `--disk`.
 
 | Metric | Source | Description |
 | --- | --- | --- |
-| disk_sources ? | | |
 | disk_device_reads | proc | reads completed successfully |
+| disk_device_writes | proc | writes completed |
+| **verbose mode** | | |
 | disk_device_readsmerged | proc | reads merged |
 | disk_device_sectorsread | proc | sectors read |
 | disk_device_timereading | proc | time spent reading (ms) |
-| disk_device_writes | proc | writes completed |
 | disk_device_writesmerged | proc | writes merged |
 | disk_device_sectorswritten | proc | sectors written |
 | disk_device_timewriting | proc | time spent writing (ms) |
@@ -133,6 +187,7 @@ missing: capacity, used capacity, fs cache misses, disk scheduler infos?, max ba
 | --- | --- | --- |
 | disk_size_capacity | libvirt | Maximum capacity of the virtual block devices (sum if multiple devs.) |
 | disk_size_allocation | libvirt | Allocated space of the virtual block devices (sum if multiple devs.)  |
+| **verbose mode** | | |
 | disk_size_physical | libvirt | Physical space required to serve the virtual block devices (sum if multiple devs.) |
 | disk_stats_flushreq | libvirt | represents the total flush requests of the block device |
 | disk_stats_flushtotaltimes | libvirt | represents the total time spend on cache flushing in nano-seconds of the block device |
@@ -154,16 +209,17 @@ The IO Collector extends the disk collector with utilisation metrics from the pr
 
 | Metric | Source | Description |
 | --- | --- | --- |
-| - | - | - |
+| no metrics available | | |
 
 ### IO Virtual Machine Metrics
 
 | Metric | Source | Description |
 | --- | --- | --- |
+| io_read_bytes | proc | number of bytes the process directly read from disk |
+| io_write_bytes | proc | number of bytes the process originally dirtied in the page-cache (assuming they will go to disk later) |
+| **verbose mode** | | |
 | io_rchar | proc | number of bytes the process read, using any read-like system call (from files, pipes, tty...) |
 | io_wchar | proc | number of bytes the process wrote using any write-like system call |
 | io_syscr | proc | number of read-like system call invocations that the process performed |
 | io_syscw | proc | number of write-like system call invocations that the process performed |
-| io_read_bytes | proc | number of bytes the process directly read from disk |
-| io_write_bytes | proc | number of bytes the process originally dirtied in the page-cache (assuming they will go to disk later) |
 | io_cancelled_write_bytes | proc | number of bytes the process "un-dirtied" - e.g. using an "ftruncate" call that truncated pages from the page-cache |

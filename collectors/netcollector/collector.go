@@ -39,6 +39,8 @@ func (collector *Collector) Print() models.Printable {
 	printable := models.Printable{
 		HostFields: []string{
 			"net_host_receivedBytes",
+			"net_host_transmittedBytes",
+			// verbose
 			"net_host_receivedPackets",
 			"net_host_receivedErrs",
 			"net_host_receivedDrop",
@@ -46,7 +48,6 @@ func (collector *Collector) Print() models.Printable {
 			"net_host_receivedFrame",
 			"net_host_receivedCompressed",
 			"net_host_receivedMulticast",
-			"net_host_transmittedBytes",
 			"net_host_transmittedPackets",
 			"net_host_transmittedErrs",
 			"net_host_transmittedDrop",
@@ -57,6 +58,8 @@ func (collector *Collector) Print() models.Printable {
 		},
 		DomainFields: []string{
 			"net_receivedBytes",
+			"net_transmittedBytes",
+			// verbose
 			"net_receivedPackets",
 			"net_receivedErrs",
 			"net_receivedDrop",
@@ -64,7 +67,6 @@ func (collector *Collector) Print() models.Printable {
 			"net_receivedFrame",
 			"net_receivedCompressed",
 			"net_receivedMulticast",
-			"net_transmittedBytes",
 			"net_transmittedPackets",
 			"net_transmittedErrs",
 			"net_transmittedDrop",

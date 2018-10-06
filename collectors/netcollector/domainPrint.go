@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/cha87de/kvmtop/collectors"
+	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
 )
 
@@ -28,6 +29,9 @@ func domainPrint(domain *models.Domain) []string {
 	ifsRaw := domain.GetMetricStringArray("net_interfaces")
 	interfaces := strings.Join(ifsRaw, ";")
 
-	result := append([]string{receivedBytes}, receivedPackets, receivedErrs, receivedDrop, receivedFifo, receivedFrame, receivedCompressed, receivedMulticast, transmittedBytes, transmittedPackets, transmittedErrs, transmittedDrop, transmittedFifo, transmittedColls, transmittedCarrier, transmittedCompressed, interfaces)
+	result := append([]string{receivedBytes}, transmittedBytes)
+	if config.Options.Verbose {
+		result = append(result, receivedPackets, receivedErrs, receivedDrop, receivedFifo, receivedFrame, receivedCompressed, receivedMulticast, transmittedPackets, transmittedErrs, transmittedDrop, transmittedFifo, transmittedColls, transmittedCarrier, transmittedCompressed, interfaces)
+	}
 	return result
 }

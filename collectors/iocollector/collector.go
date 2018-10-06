@@ -36,12 +36,13 @@ func (collector *Collector) Print() models.Printable {
 	printable := models.Printable{
 		HostFields: []string{},
 		DomainFields: []string{
+			"io_read_bytes",
+			"io_write_bytes",
+			// verbose:
 			"io_rchar",
 			"io_wchar",
 			"io_syscr",
 			"io_syscw",
-			"io_read_bytes",
-			"io_write_bytes",
 			"io_cancelled_write_bytes",
 		},
 	}

@@ -2,6 +2,7 @@ package memcollector
 
 import (
 	"github.com/cha87de/kvmtop/collectors"
+	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
 )
 
@@ -55,7 +56,10 @@ func hostPrint(host *models.Host) []string {
 	DirectMap2M := collectors.GetMetricUint64(host.Measurable, "ram_DirectMap2M", 0)
 	DirectMap1G := collectors.GetMetricUint64(host.Measurable, "ram_DirectMap1G", 0)
 
-	result := append([]string{Total}, Free, Available, Buffers, Cached, SwapCached, Active, Inactive, ActiveAanon, InactiveAanon, ActiveFile, InactiveFile, Unevictable, Mlocked, SwapTotal, SwapFree, Dirty, Writeback, AnonPages, Mapped, Shmem, Slab, SReclaimable, SUnreclaim, KernelStack, PageTables, NFSUnstable, Bounce, WritebackTmp, CommitLimit, CommittedAS, VmallocTotal, VmallocUsed, VmallocChunk, HardwareCorrupted, AnonHugePages, ShmemHugePages, ShmemPmdMapped, HugePagesTotal, HugePagesFree, HugePagesRsvd, HugePagesSurp, Hugepagesize, Hugetlb, DirectMap4k, DirectMap2M, DirectMap1G)
+	result := append([]string{Total}, Free, Available)
+	if config.Options.Verbose {
+		result = append(result, Free, Available, Buffers, Cached, SwapCached, Active, Inactive, ActiveAanon, InactiveAanon, ActiveFile, InactiveFile, Unevictable, Mlocked, SwapTotal, SwapFree, Dirty, Writeback, AnonPages, Mapped, Shmem, Slab, SReclaimable, SUnreclaim, KernelStack, PageTables, NFSUnstable, Bounce, WritebackTmp, CommitLimit, CommittedAS, VmallocTotal, VmallocUsed, VmallocChunk, HardwareCorrupted, AnonHugePages, ShmemHugePages, ShmemPmdMapped, HugePagesTotal, HugePagesFree, HugePagesRsvd, HugePagesSurp, Hugepagesize, Hugetlb, DirectMap4k, DirectMap2M, DirectMap1G)
+	}
 	return result
 
 }

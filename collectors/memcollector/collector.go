@@ -42,6 +42,7 @@ func (collector *Collector) Print() models.Printable {
 			"ram_Total",
 			"ram_Free",
 			"ram_Available",
+			// Verbose:
 			"ram_Buffers",
 			"ram_Cached",
 			"ram_SwapCached",
@@ -90,6 +91,7 @@ func (collector *Collector) Print() models.Printable {
 		DomainFields: []string{
 			"ram_total",
 			"ram_used",
+			// verbose:
 			"ram_vsize",
 			"ram_rss",
 			"ram_minflt",

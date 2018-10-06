@@ -2,6 +2,7 @@ package memcollector
 
 import (
 	"github.com/cha87de/kvmtop/collectors"
+	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
 )
 
@@ -17,6 +18,10 @@ func domainPrint(domain *models.Domain) []string {
 	majflt := collectors.GetMetricDiffUint64(domain.Measurable, "ram_majflt", false)
 	cmajflt := collectors.GetMetricDiffUint64(domain.Measurable, "ram_cmajflt", false)
 
-	result := append([]string{total}, used, vsize, rss, minflt, cminflt, majflt, cmajflt)
+	result := append([]string{total}, used)
+	if config.Options.Verbose {
+		result = append(result, vsize, rss, minflt, cminflt, majflt, cmajflt)
+	}
+
 	return result
 }

@@ -58,10 +58,11 @@ func (collector *Collector) Print() models.Printable {
 	printable := models.Printable{
 		HostFields: []string{
 			"disk_device_reads",
+			"disk_device_writes",
+			// verbose:
 			"disk_device_readsmerged",
 			"disk_device_sectorsread",
 			"disk_device_timereading",
-			"disk_device_writes",
 			"disk_device_writesmerged",
 			"disk_device_sectorswritten",
 			"disk_device_timewriting",
@@ -72,6 +73,7 @@ func (collector *Collector) Print() models.Printable {
 		DomainFields: []string{
 			"disk_size_capacity",
 			"disk_size_allocation",
+			// verbose:
 			"disk_size_physical",
 			"disk_stats_flushreq",
 			"disk_stats_flushtotaltimes",

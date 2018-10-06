@@ -105,7 +105,10 @@ func cpuPrint(domain *models.Domain) []string {
 	otherQueuetimeAllCores := cpuPrintThreadMetric(domain, "cpu_other_runqueues")
 
 	// put results together
-	result := append([]string{cores}, cputimeAllCores, queuetimeAllCores, otherCputimeAllCores, otherQueuetimeAllCores)
+	result := append([]string{cores}, cputimeAllCores, queuetimeAllCores)
+	if config.Options.Verbose {
+		result = append(result, otherCputimeAllCores, otherQueuetimeAllCores)
+	}
 	return result
 }
 

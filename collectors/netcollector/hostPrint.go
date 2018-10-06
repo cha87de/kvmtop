@@ -2,6 +2,7 @@ package netcollector
 
 import (
 	"github.com/cha87de/kvmtop/collectors"
+	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
 )
 
@@ -23,6 +24,10 @@ func hostPrint(host *models.Host) []string {
 	transmittedCarrier := collectors.GetMetricDiffUint64(host.Measurable, "net_host_TransmittedCarrier", true)
 	transmittedCompressed := collectors.GetMetricDiffUint64(host.Measurable, "net_host_TransmittedCompressed", true)
 
-	result := append([]string{receivedBytes}, receivedPackets, receivedErrs, receivedDrop, receivedFifo, receivedFrame, receivedCompressed, receivedMulticast, transmittedBytes, transmittedPackets, transmittedErrs, transmittedDrop, transmittedFifo, transmittedColls, transmittedCarrier, transmittedCompressed)
+	result := append([]string{receivedBytes}, transmittedBytes)
+	if config.Options.Verbose {
+		result = append(result, receivedPackets, receivedErrs, receivedDrop, receivedFifo, receivedFrame, receivedCompressed, receivedMulticast, transmittedPackets, transmittedErrs, transmittedDrop, transmittedFifo, transmittedColls, transmittedCarrier, transmittedCompressed)
+	}
+
 	return result
 }

@@ -45,6 +45,7 @@ func (collector *Collector) Print() models.Printable {
 			"cpu_cores",
 			"cpu_total",
 			"cpu_steal",
+			// verbose:
 			"cpu_other_total",
 			"cpu_other_steal",
 		},
