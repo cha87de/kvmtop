@@ -58,7 +58,7 @@ func hostPrint(host *models.Host) []string {
 
 	result := append([]string{Total}, Free, Available)
 	if config.Options.Verbose {
-		result = append(result, Free, Available, Buffers, Cached, SwapCached, Active, Inactive, ActiveAanon, InactiveAanon, ActiveFile, InactiveFile, Unevictable, Mlocked, SwapTotal, SwapFree, Dirty, Writeback, AnonPages, Mapped, Shmem, Slab, SReclaimable, SUnreclaim, KernelStack, PageTables, NFSUnstable, Bounce, WritebackTmp, CommitLimit, CommittedAS, VmallocTotal, VmallocUsed, VmallocChunk, HardwareCorrupted, AnonHugePages, ShmemHugePages, ShmemPmdMapped, HugePagesTotal, HugePagesFree, HugePagesRsvd, HugePagesSurp, Hugepagesize, Hugetlb, DirectMap4k, DirectMap2M, DirectMap1G)
+		result = append(result, Buffers, Cached, SwapCached, Active, Inactive, ActiveAanon, InactiveAanon, ActiveFile, InactiveFile, Unevictable, Mlocked, SwapTotal, SwapFree, Dirty, Writeback, AnonPages, Mapped, Shmem, Slab, SReclaimable, SUnreclaim, KernelStack, PageTables, NFSUnstable, Bounce, WritebackTmp, CommitLimit, CommittedAS, VmallocTotal, VmallocUsed, VmallocChunk, HardwareCorrupted, AnonHugePages, ShmemHugePages, ShmemPmdMapped, HugePagesTotal, HugePagesFree, HugePagesRsvd, HugePagesSurp, Hugepagesize, Hugetlb, DirectMap4k, DirectMap2M, DirectMap1G)
 	}
 	return result
 
