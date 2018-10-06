@@ -19,12 +19,13 @@ func cpuLookupHost(host *models.Host) {
 	freqMean := stat.Mean(coreFrequencies, nil)
 	host.AddMetricMeasurement("cpu_meanfreq", models.CreateMeasurement(freqMean))
 
-	host.AddMetricMeasurement("cpu_cores", models.CreateMeasurement(len(coreFrequencies)))
+	cores := len(coreFrequencies)
+	host.AddMetricMeasurement("cpu_cores", models.CreateMeasurement(uint64(cores)))
 }
 
 func cpuPrintHost(host *models.Host) []string {
 	cpuMeanfreq := collectors.GetMetricFloat64(host.Measurable, "cpu_meanfreq", 0)
-	cpuCores := collectors.GetMetricFloat64(host.Measurable, "cpu_cores", 0)
+	cpuCores := collectors.GetMetricUint64(host.Measurable, "cpu_cores", 0)
 
 	// put results together
 	result := append([]string{cpuCores}, cpuMeanfreq)
