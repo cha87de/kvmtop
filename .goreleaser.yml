@@ -1,6 +1,7 @@
 # Build customization
 builds:
   - binary: kvmtop
+    main: ./cmd/kvmtop/main.go
     goos:
       - linux
     goarch:
