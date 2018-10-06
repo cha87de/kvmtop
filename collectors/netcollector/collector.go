@@ -1,6 +1,7 @@
 package netcollector
 
 import (
+	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
 )
 
@@ -36,11 +37,16 @@ func (collector *Collector) Collect() {
 
 // Print returns the collectors measurements in a Printable struct
 func (collector *Collector) Print() models.Printable {
-	printable := models.Printable{
-		HostFields: []string{
-			"net_host_receivedBytes",
-			"net_host_transmittedBytes",
-			// verbose
+	hostFields := []string{
+		"net_host_receivedBytes",
+		"net_host_transmittedBytes",
+	}
+	domainFields := []string{
+		"net_receivedBytes",
+		"net_transmittedBytes",
+	}
+	if config.Options.Verbose {
+		hostFields = append(hostFields,
 			"net_host_receivedPackets",
 			"net_host_receivedErrs",
 			"net_host_receivedDrop",
@@ -55,11 +61,8 @@ func (collector *Collector) Print() models.Printable {
 			"net_host_transmittedColls",
 			"net_host_transmittedCarrier",
 			"net_host_transmittedCompressed",
-		},
-		DomainFields: []string{
-			"net_receivedBytes",
-			"net_transmittedBytes",
-			// verbose
+		)
+		domainFields = append(domainFields,
 			"net_receivedPackets",
 			"net_receivedErrs",
 			"net_receivedDrop",
@@ -75,7 +78,11 @@ func (collector *Collector) Print() models.Printable {
 			"net_transmittedCarrier",
 			"net_transmittedCompressed",
 			"net_interfaces",
-		},
+		)
+	}
+	printable := models.Printable{
+		HostFields:   hostFields,
+		DomainFields: domainFields,
 	}
 
 	// lookup for each domain

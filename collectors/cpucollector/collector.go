@@ -1,6 +1,7 @@
 package cpucollector
 
 import (
+	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
 )
 
@@ -36,19 +37,24 @@ func (collector *Collector) Collect() {
 
 // Print returns the collectors measurements in a Printable struct
 func (collector *Collector) Print() models.Printable {
-	printable := models.Printable{
-		HostFields: []string{
-			"cpu_cores",
-			"cpu_meanfreq",
-		},
-		DomainFields: []string{
-			"cpu_cores",
-			"cpu_total",
-			"cpu_steal",
-			// verbose:
+	hostFields := []string{
+		"cpu_cores",
+		"cpu_meanfreq",
+	}
+	domainFields := []string{
+		"cpu_cores",
+		"cpu_total",
+		"cpu_steal",
+	}
+	if config.Options.Verbose {
+		domainFields = append(domainFields,
 			"cpu_other_total",
 			"cpu_other_steal",
-		},
+		)
+	}
+	printable := models.Printable{
+		HostFields:   hostFields,
+		DomainFields: domainFields,
 	}
 
 	// lookup for each domain

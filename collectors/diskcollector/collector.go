@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/cha87de/kvmtop/collectors"
+	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
 )
 
@@ -55,11 +56,16 @@ func (collector *Collector) Collect() {
 
 // Print returns the collectors measurements in a Printable struct
 func (collector *Collector) Print() models.Printable {
-	printable := models.Printable{
-		HostFields: []string{
-			"disk_device_reads",
-			"disk_device_writes",
-			// verbose:
+	hostFields := []string{
+		"disk_device_reads",
+		"disk_device_writes",
+	}
+	domainFields := []string{
+		"disk_size_capacity",
+		"disk_size_allocation",
+	}
+	if config.Options.Verbose {
+		hostFields = append(hostFields,
 			"disk_device_readsmerged",
 			"disk_device_sectorsread",
 			"disk_device_timereading",
@@ -69,11 +75,8 @@ func (collector *Collector) Print() models.Printable {
 			"disk_device_currentops",
 			"disk_device_timeforops",
 			"disk_device_weightedtimeforops",
-		},
-		DomainFields: []string{
-			"disk_size_capacity",
-			"disk_size_allocation",
-			// verbose:
+		)
+		domainFields = append(domainFields,
 			"disk_size_physical",
 			"disk_stats_flushreq",
 			"disk_stats_flushtotaltimes",
@@ -84,7 +87,11 @@ func (collector *Collector) Print() models.Printable {
 			"disk_stats_wrreq",
 			"disk_stats_wrtotaltimes",
 			"disk_delayblkio",
-		},
+		)
+	}
+	printable := models.Printable{
+		HostFields:   hostFields,
+		DomainFields: domainFields,
 	}
 
 	// lookup for each domain

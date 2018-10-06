@@ -1,6 +1,7 @@
 package memcollector
 
 import (
+	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
 )
 
@@ -37,12 +38,17 @@ func (collector *Collector) Collect() {
 
 // Print returns the collectors measurements in a Printable struct
 func (collector *Collector) Print() models.Printable {
-	printable := models.Printable{
-		HostFields: []string{
-			"ram_Total",
-			"ram_Free",
-			"ram_Available",
-			// Verbose:
+	hostFields := []string{
+		"ram_Total",
+		"ram_Free",
+		"ram_Available",
+	}
+	domainFields := []string{
+		"ram_total",
+		"ram_used",
+	}
+	if config.Options.Verbose {
+		hostFields = append(hostFields,
 			"ram_Buffers",
 			"ram_Cached",
 			"ram_SwapCached",
@@ -87,18 +93,20 @@ func (collector *Collector) Print() models.Printable {
 			"ram_DirectMap4k",
 			"ram_DirectMap2M",
 			"ram_DirectMap1G",
-		},
-		DomainFields: []string{
-			"ram_total",
-			"ram_used",
-			// verbose:
+		)
+		domainFields = append(domainFields,
 			"ram_vsize",
 			"ram_rss",
 			"ram_minflt",
 			"ram_cminflt",
 			"ram_majflt",
 			"ram_cmajflt",
-		},
+		)
+	}
+
+	printable := models.Printable{
+		HostFields:   hostFields,
+		DomainFields: domainFields,
 	}
 
 	// lookup for each domain

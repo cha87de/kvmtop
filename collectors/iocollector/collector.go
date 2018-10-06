@@ -1,6 +1,7 @@
 package iocollector
 
 import (
+	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
 )
 
@@ -33,18 +34,22 @@ func (collector *Collector) Collect() {
 
 // Print returns the collectors measurements in a Printable struct
 func (collector *Collector) Print() models.Printable {
-	printable := models.Printable{
-		HostFields: []string{},
-		DomainFields: []string{
-			"io_read_bytes",
-			"io_write_bytes",
-			// verbose:
+	domainFields := []string{
+		"io_read_bytes",
+		"io_write_bytes",
+	}
+	if config.Options.Verbose {
+		domainFields = append(domainFields,
 			"io_rchar",
 			"io_wchar",
 			"io_syscr",
 			"io_syscw",
 			"io_cancelled_write_bytes",
-		},
+		)
+	}
+	printable := models.Printable{
+		HostFields:   []string{},
+		DomainFields: domainFields,
 	}
 
 	// lookup for each domain
