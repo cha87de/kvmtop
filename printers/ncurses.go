@@ -74,10 +74,49 @@ func CreateNcurses() NcursesPrinter {
 
 func printHost(window *goncurses.Window, fields []string, values []string) {
 	window.Move(1, 1)
-	// window.Printf("Whatever: %s", values[0])
-	for i, field := range fields {
-		window.Printf("%s: %s, ", field, values[i])
+
+	currentPosX := 1
+	currentPosY := 1
+
+	currentGroup := ""
+	for columnID, field := range fields {
+		// make group columns & print headline
+		fieldParts := strings.Split(field, "_")
+		if len(fieldParts) > 1 {
+			groupLabel := strings.Join(fieldParts[0:len(fieldParts)-1], " ")
+			if groupLabel != currentGroup {
+				// found new group! move to next column
+				if currentGroup != "" {
+					currentPosY = 1
+					currentPosX += 2*DOMAINMAXFIELDWIDTH + 3
+				}
+				// print net group label
+				currentGroup = groupLabel
+				window.Move(currentPosY, currentPosX)
+				window.AttrOn(goncurses.A_REVERSE)
+				headline := fitInCell(groupLabel)
+				for len(headline) <= 2*DOMAINMAXFIELDWIDTH {
+					headline = headline + " "
+				}
+				window.Printf("%s", headline)
+				window.AttrOff(goncurses.A_REVERSE)
+				currentPosY++
+			}
+		}
+
+		// print label
+		fieldLabel := fitInCell(fieldParts[len(fieldParts)-1])
+		window.Move(currentPosY, currentPosX)
+		window.Printf("%s", fieldLabel)
+
+		// print value
+		value := fitInCell(values[columnID])
+		window.Move(currentPosY, currentPosX+DOMAINMAXFIELDWIDTH+1)
+		window.Printf("%s", value)
+
+		currentPosY++
 	}
+
 }
 
 func printDomain(window *goncurses.Window, fields []string, values map[string][]string, sortByColumn int) {
