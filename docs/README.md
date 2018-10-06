@@ -144,10 +144,6 @@ missing: capacity, used capacity, fs cache misses, disk scheduler infos?, max ba
 | disk_stats_wrtotaltimes | libvirt | represents the total time spend on cache writes in nano-seconds of the block device |
 | disk_delayblkio | proc | aggregated block I/O delays, measured in clock ticks (centiseconds) |
 
-missing: capacity, used capacity, ?
-
-**TODO:** change source to proc! see issue #8
-
 ## IO Collector
 
 **TODO:** explain the difference to Disk collector.
