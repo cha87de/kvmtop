@@ -10,9 +10,9 @@ func InitializeRunners() {
 	var wg sync.WaitGroup
 	wg.Add(1) // terminate when first thread terminates
 
-	go initializeLookup(&wg)
-	go initializeCollect(&wg)
-	go initializePrinter(&wg)
+	go InitializeLookup(&wg)
+	go InitializeCollect(&wg)
+	go InitializePrinter(&wg)
 
 	wg.Wait()
 }

@@ -10,7 +10,8 @@ import (
 
 var collectors []string
 
-func initializePrinter(wg *sync.WaitGroup) {
+// InitializePrinter starts the periodic print calls
+func InitializePrinter(wg *sync.WaitGroup) {
 	// open configured printer
 	models.Collection.Printer.Open()
 
@@ -24,7 +25,7 @@ func initializePrinter(wg *sync.WaitGroup) {
 	// start continuously printing values
 	for n := -1; config.Options.Runs == -1 || n < config.Options.Runs; n++ {
 		start := time.Now()
-		handleRun()
+		Print()
 		nextRun := start.Add(time.Duration(config.Options.Frequency) * time.Second)
 		time.Sleep(nextRun.Sub(time.Now()))
 	}
@@ -36,7 +37,8 @@ func initializePrinter(wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func handleRun() {
+// Print runs one printing cycle
+func Print() {
 	printable := models.Printable{}
 
 	// add general domain fields first

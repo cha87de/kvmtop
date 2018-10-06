@@ -15,17 +15,19 @@ import (
 
 var processes []int
 
-func initializeLookup(wg *sync.WaitGroup) {
+// InitializeLookup starts the periodic lookup calls
+func InitializeLookup(wg *sync.WaitGroup) {
 	for n := -1; config.Options.Runs == -1 || n < config.Options.Runs; n++ {
 		start := time.Now()
-		lookup()
+		Lookup()
 		nextRun := start.Add(time.Duration(config.Options.Frequency) * time.Second)
 		time.Sleep(nextRun.Sub(time.Now()))
 	}
 	wg.Done()
 }
 
-func lookup() {
+// Lookup runs one lookup cycle to detect rather static metrics
+func Lookup() {
 	// query libvirt
 	doms, err := connector.Libvirt.Connection.ListAllDomains(libvirt.CONNECT_LIST_DOMAINS_ACTIVE)
 	if err != nil {
