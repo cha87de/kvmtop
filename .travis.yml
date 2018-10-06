@@ -11,7 +11,7 @@ before_install:
 
 install:
   - "go get -d -v ./..."
-  - "go build -v"
+  - "go install ./..."
 
 before_deploy:
  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
