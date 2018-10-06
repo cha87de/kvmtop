@@ -73,7 +73,6 @@ func (collector *Collector) Print() models.Printable {
 			"disk_size_capacity",
 			"disk_size_allocation",
 			"disk_size_physical",
-			"disk_stats_errs",
 			"disk_stats_flushreq",
 			"disk_stats_flushtotaltimes",
 			"disk_stats_rdbytes",

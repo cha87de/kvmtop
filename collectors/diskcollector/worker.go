@@ -28,11 +28,11 @@ type diskstats struct {
 	FlushReq           int64
 	FlushTotalTimesSet bool
 	FlushTotalTimes    int64
-	ErrsSet            bool
-	Errs               int64
-	Capacity           uint64
-	Allocation         uint64
-	Physical           uint64
+	// ErrsSet            bool
+	// Errs               int64
+	Capacity   uint64
+	Allocation uint64
+	Physical   uint64
 }
 
 func diskLookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
@@ -61,11 +61,11 @@ func diskLookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
 		sizeStats, _ := libvirtDomain.GetBlockInfo(dev, 0)
 		ioStats, _ := libvirtDomain.BlockStats(dev)
 
-		// ioStats.ErrsSet
-		if ioStats.ErrsSet {
+		// ioStats.ErrsSet - works only for xen
+		/*if ioStats.ErrsSet {
 			sums.ErrsSet = true
 			sums.Errs += ioStats.Errs
-		}
+		}*/
 		// ioStats.FlushReq
 		if ioStats.FlushReqSet {
 			sums.FlushReqSet = true
@@ -132,7 +132,7 @@ func diskLookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
 	domain.AddMetricMeasurement("disk_size_allocation", models.CreateMeasurement(uint64(sums.Allocation)))
 	domain.AddMetricMeasurement("disk_size_physical", models.CreateMeasurement(uint64(sums.Physical)))
 	// IOs
-	domain.AddMetricMeasurement("disk_stats_errs", models.CreateMeasurement(uint64(sums.Errs)))
+	// domain.AddMetricMeasurement("disk_stats_errs", models.CreateMeasurement(uint64(sums.Errs)))
 	domain.AddMetricMeasurement("disk_stats_flushreq", models.CreateMeasurement(uint64(sums.FlushReq)))
 	domain.AddMetricMeasurement("disk_stats_flushtotaltimes", models.CreateMeasurement(uint64(sums.FlushTotalTimes)))
 	domain.AddMetricMeasurement("disk_stats_rdbytes", models.CreateMeasurement(uint64(sums.RdBytes)))
@@ -157,7 +157,7 @@ func diskPrint(domain *models.Domain) []string {
 	allocation := collectors.GetMetricUint64(domain.Measurable, "disk_size_allocation", 0)
 	physical := collectors.GetMetricUint64(domain.Measurable, "disk_size_physical", 0)
 
-	errs := collectors.GetMetricDiffUint64(domain.Measurable, "disk_stats_errs", true)
+	// errs := collectors.GetMetricDiffUint64(domain.Measurable, "disk_stats_errs", true)
 	flushreq := collectors.GetMetricDiffUint64(domain.Measurable, "disk_stats_flushreq", true)
 	flushtotaltimes := collectors.GetMetricDiffUint64(domain.Measurable, "disk_stats_flushtotaltimes", true)
 	rdbytes := collectors.GetMetricDiffUint64(domain.Measurable, "disk_stats_rdbytes", true)
@@ -169,6 +169,6 @@ func diskPrint(domain *models.Domain) []string {
 
 	delayblkio := collectors.GetMetricDiffUint64(domain.Measurable, "disk_delayblkio", true)
 
-	result := append([]string{capacity}, allocation, physical, errs, flushreq, flushtotaltimes, rdbytes, rdreq, rdtotaltimes, wrbytes, wrreq, wrtotaltimes, delayblkio)
+	result := append([]string{capacity}, allocation, physical, flushreq, flushtotaltimes, rdbytes, rdreq, rdtotaltimes, wrbytes, wrreq, wrtotaltimes, delayblkio)
 	return result
 }

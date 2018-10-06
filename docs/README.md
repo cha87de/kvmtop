@@ -131,8 +131,9 @@ missing: capacity, used capacity, fs cache misses, disk scheduler infos?, max ba
 
 | Metric | Source | Description |
 | --- | --- | --- |
-| disks_disks | libvirt | |
-| disk_stats_errs | libvirt | only for Xen Hypervisor - needs to be removed |
+| disk_size_capacity | libvirt | Maximum capacity of the virtual block devices (sum if multiple devs.) |
+| disk_size_allocation | libvirt | Allocated space of the virtual block devices (sum if multiple devs.)  |
+| disk_size_physical | libvirt | Physical space required to serve the virtual block devices (sum if multiple devs.) |
 | disk_stats_flushreq | libvirt | represents the total flush requests of the block device |
 | disk_stats_flushtotaltimes | libvirt | represents the total time spend on cache flushing in nano-seconds of the block device |
 | disk_stats_rdbytes | libvirt | represents the total number of read bytes of the block device |
