@@ -12,7 +12,7 @@ before_install:
 install:
   - "go get -d -v ./..."
   - "go install ./..."
-  - "cp $GOPATH/bin/kvmtop ."
+  - "cp $GOPATH/bin/kvm* ."
 
 before_deploy:
  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
@@ -23,6 +23,11 @@ deploy:
     script: docker build -t cha87de/kvmtop:master . ; docker push cha87de/kvmtop:master 
     on:
       branch: master
+  - provider: script
+    skip_cleanup: true
+    script: docker build -t cha87de/kvmtop:profiler . ; docker push cha87de/kvmtop:profiler
+    on:
+      branch: profiler
   - provider: script
     script: curl -sL https://git.io/goreleaser | bash
     on:
