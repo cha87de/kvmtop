@@ -25,12 +25,14 @@ func initializeFlags() {
 
 	// Parse parameters
 	if _, err := parser.Parse(); err != nil {
-		fmt.Printf("Error parsing flags: %s", err)
 		code := 1
 		if fe, ok := err.(*flags.Error); ok {
 			if fe.Type == flags.ErrHelp {
 				code = 0
 			}
+		}
+		if code != 0 {
+			fmt.Printf("Error parsing flags: %s", err)
 		}
 		os.Exit(code)
 	}
