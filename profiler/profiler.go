@@ -1,22 +1,22 @@
 package profiler
 
 import (
-	"strconv"
 	"sync"
 	"time"
 
 	"github.com/cha87de/tsprofiler/impl"
 	"github.com/cha87de/tsprofiler/spec"
 
-	"github.com/cha87de/kvmtop/collectors/cpucollector"
 	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
+	"github.com/cha87de/kvmtop/printers"
 )
 
 var domainProfiler sync.Map
 
 // InitializeProfiler starts the periodical profiler
 func InitializeProfiler(wg *sync.WaitGroup) {
+	printers.OutputOpen()
 
 	// pull measurements in frequency
 	for n := -1; config.Options.Runs == -1 || n < config.Options.Runs; n++ {
@@ -27,6 +27,7 @@ func InitializeProfiler(wg *sync.WaitGroup) {
 	}
 
 	// return from runner
+	printers.OutputClose()
 	wg.Done()
 }
 
@@ -36,25 +37,28 @@ func pickup() {
 		domain := domainRaw.(models.Domain)
 		uuid := key.(string)
 
-		// get CPU util
-		cputimeAllCores, _ := strconv.Atoi(cpucollector.CpuPrintThreadMetric(&domain, "cpu_times"))
-		queuetimeAllCores, _ := strconv.Atoi(cpucollector.CpuPrintThreadMetric(&domain, "cpu_runqueues"))
-		cpuUtil := cputimeAllCores + queuetimeAllCores
+		cpuUtil := pickupCPU(domain)
+		ioUtil := pickupIO(domain)
+		netUtil := pickupNet(domain)
 
-		// write measurements in a ring
+		// write measurements to profiler
 		profilerRaw, found := domainProfiler.Load(uuid)
 		var profiler spec.TSProfiler
 		if found {
 			profiler = profilerRaw.(spec.TSProfiler)
 		} else {
 			profiler = impl.NewSimpleProfiler(spec.Settings{
-				Frequency: config.Options.Frequency * 10,
-				Name:      uuid + "_cpu",
+				Name:           uuid,
+				BufferSize:     config.Options.Frequency * 10,
+				OutputFreq:     time.Duration(1) * time.Minute,
+				OutputCallback: profileOutput,
 			})
 		}
 
 		profiler.Put(spec.TSData{
-			Value: float64(cpuUtil),
+			CPU: float64(cpuUtil),
+			IO:  float64(ioUtil),
+			Net: float64(netUtil),
 		})
 
 		domainProfiler.Store(uuid, profiler)

@@ -11,7 +11,7 @@ import (
 var tcpConn net.Conn
 var file *os.File
 
-func outputOpen() {
+func OutputOpen() {
 	if config.Options.Output == "tcp" {
 		var err error
 		tcpConn, err = net.Dial("tcp", config.Options.OutputTarget)
@@ -33,7 +33,7 @@ func outputOpen() {
 	}
 }
 
-func output(text string) {
+func Output(text string) {
 	if config.Options.Output == "tcp" {
 		_, err := fmt.Fprintf(tcpConn, text)
 		if err != nil {
@@ -51,7 +51,7 @@ func output(text string) {
 	}
 }
 
-func outputClose() {
+func OutputClose() {
 	if config.Options.Output == "tcp" {
 		tcpConn.Close()
 	} else if config.Options.Output == "file" {

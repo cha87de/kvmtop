@@ -14,64 +14,64 @@ type JSONPrinter struct {
 
 // Open opens the printer
 func (printer *JSONPrinter) Open() {
-	outputOpen()
+	OutputOpen()
 }
 
 // Screen prints the measurements on the screen
 func (printer *JSONPrinter) Screen(printable models.Printable) {
-	output(fmt.Sprintf("{ \"host\": {"))
+	Output(fmt.Sprintf("{ \"host\": {"))
 	hostFields := printable.HostFields
 	hostValues := printable.HostValues
 	i := 0
 	for _, value := range hostValues {
 		if i > 0 {
-			output(fmt.Sprintf(","))
+			Output(fmt.Sprintf(","))
 		}
 
 		// but """ only for strings
 		if intValue, err := strconv.ParseInt(value, 10, 64); err == nil {
-			output(fmt.Sprintf("\"%s\": %d", hostFields[i], intValue))
+			Output(fmt.Sprintf("\"%s\": %d", hostFields[i], intValue))
 		} else if floatValue, err := strconv.ParseFloat(value, 64); err == nil {
-			output(fmt.Sprintf("\"%s\": %f", hostFields[i], floatValue))
+			Output(fmt.Sprintf("\"%s\": %f", hostFields[i], floatValue))
 		} else {
-			output(fmt.Sprintf("\"%s\": \"%s\"", hostFields[i], value))
+			Output(fmt.Sprintf("\"%s\": \"%s\"", hostFields[i], value))
 		}
 		i++
 	}
 
-	output(fmt.Sprintf("}, \"domains\": ["))
+	Output(fmt.Sprintf("}, \"domains\": ["))
 
 	domainFields := printable.DomainFields
 	domainValues := printable.DomainValues
 	i = 0
 	for domvalue := range domainValues {
 		if i > 0 {
-			output(fmt.Sprintf(","))
+			Output(fmt.Sprintf(","))
 		}
-		output(fmt.Sprintf("{"))
+		Output(fmt.Sprintf("{"))
 		for j, value := range domainValues[domvalue] {
 			if j > 0 {
-				output(fmt.Sprintf(","))
+				Output(fmt.Sprintf(","))
 			}
 
 			// but """ only for strings
 			if _, err := strconv.ParseInt(value, 10, 64); err == nil {
-				output(fmt.Sprintf("\"%s\": %s", domainFields[j], value))
+				Output(fmt.Sprintf("\"%s\": %s", domainFields[j], value))
 			} else if _, err := strconv.ParseFloat(value, 64); err == nil {
-				output(fmt.Sprintf("\"%s\": %s", domainFields[j], value))
+				Output(fmt.Sprintf("\"%s\": %s", domainFields[j], value))
 			} else {
-				output(fmt.Sprintf("\"%s\": \"%s\"", domainFields[j], value))
+				Output(fmt.Sprintf("\"%s\": \"%s\"", domainFields[j], value))
 			}
 		}
-		output(fmt.Sprintf("}"))
+		Output(fmt.Sprintf("}"))
 		i++
 	}
-	output(fmt.Sprintf("]}\n"))
+	Output(fmt.Sprintf("]}\n"))
 }
 
 // Close terminates the printer
 func (printer *JSONPrinter) Close() {
-	outputClose()
+	OutputClose()
 }
 
 // CreateJSON creates a new simple text printer
