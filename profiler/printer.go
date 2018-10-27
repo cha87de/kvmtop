@@ -2,7 +2,6 @@ package profiler
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/cha87de/kvmtop/printers"
 	"github.com/cha87de/tsprofiler/spec"
@@ -18,7 +17,7 @@ func profileOutput(data spec.TSProfile) {
 		Profile: data,
 	}
 	json, _ := json.Marshal(profilerOutput)
-	fmt.Printf("%s\n", json)
+	// fmt.Printf("%s\n", json)
 
 	printers.Output(string(json) + "\n")
 }
