@@ -37,29 +37,43 @@ func pickup() {
 		domain := domainRaw.(models.Domain)
 		uuid := key.(string)
 
-		cpuUtil := pickupCPU(domain)
-		ioUtil := pickupIO(domain)
-		netUtil := pickupNet(domain)
-
 		// write measurements to profiler
 		profilerRaw, found := domainProfiler.Load(uuid)
 		var profiler spec.TSProfiler
 		if found {
 			profiler = profilerRaw.(spec.TSProfiler)
 		} else {
-			profiler = impl.NewSimpleProfiler(spec.Settings{
+			profiler = impl.NewProfiler(spec.Settings{
 				Name:           uuid,
 				BufferSize:     config.Options.Frequency * 10,
-				OutputFreq:     time.Duration(1) * time.Minute,
+				States:         4,
+				OutputFreq:     time.Duration(20) * time.Second,
 				OutputCallback: profileOutput,
 			})
 		}
 
-		profiler.Put(spec.TSData{
-			CPU: float64(cpuUtil),
-			IO:  float64(ioUtil),
-			Net: float64(netUtil),
+		metrics := make([]spec.TSDataMetric, 0)
+		models.Collection.Collectors.Map.Range(func(nameRaw interface{}, collectorRaw interface{}) bool {
+			name := nameRaw.(string)
+			var util int
+			if name == "cpu" {
+				util = pickupCPU(domain)
+			} else if name == "io" {
+				util = pickupIO(domain)
+			} else if name == "net" {
+				util = pickupNet(domain)
+			}
+			metrics = append(metrics, spec.TSDataMetric{
+				Name:  name,
+				Value: float64(util),
+			})
+			return true
 		})
+
+		tsdata := spec.TSData{
+			Metrics: metrics,
+		}
+		profiler.Put(tsdata)
 
 		domainProfiler.Store(uuid, profiler)
 		return true
