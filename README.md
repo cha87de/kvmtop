@@ -119,3 +119,16 @@ A more detailed list, including all metrics is available here at [./docs/README.
 ## kvmtop with InfluxDB
 
 kvmtop can be used as a monitoring agent to send data to an InfluxDB instance: kvmtop transmits JSON data via TCP to logstash, while logstash writes to InfluxDB. More detailes are available at [https://github.com/cha87de/kvmtop-datasink/](https://github.com/cha87de/kvmtop-datasink/).
+
+```    
+                                      kvmtop-datasink
+                  +-----------------------------------------------------+
+                  |                                                     |
++------------     | +------------+     +------------+     +-----------+ |
+|           |     | |            |     |            |     |           | |
+|  kvmtop   +---> | |  logstash  +---> |  influxdb  +---> |  grafana  | |
+|           |     | |            |     |            |     |           | |
++------------     | +------------+     +------------+     +-----------+ |
+                  |                                                     |
+                  +-----------------------------------------------------+
+```
