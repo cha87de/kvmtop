@@ -39,7 +39,13 @@ func (collector *Collector) Collect() {
 func (collector *Collector) Print() models.Printable {
 	hostFields := []string{
 		"cpu_cores",
-		"cpu_meanfreq",
+		"cpu_curfreq",
+	}
+	if config.Options.Verbose {
+		hostFields = append(hostFields,
+			"cpu_minfreq",
+			"cpu_maxfreq",
+		)
 	}
 	domainFields := []string{
 		"cpu_cores",
