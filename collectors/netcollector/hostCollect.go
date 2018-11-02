@@ -10,7 +10,6 @@ import (
 func hostCollect(host *models.Host) {
 	// get stats from net/dev for host interfaces
 	ifs := host.GetMetricStringArray("net_host_ifs")
-	fmt.Printf("ifs: %+v\n", ifs)
 	statsSum := util.ProcNetDev{}
 	for _, devname := range ifs {
 		devStats := util.GetProcNetDev(0, devname)
