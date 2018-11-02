@@ -1,8 +1,6 @@
 package netcollector
 
 import (
-	"fmt"
-
 	"github.com/cha87de/kvmtop/models"
 	"github.com/cha87de/kvmtop/util"
 )
