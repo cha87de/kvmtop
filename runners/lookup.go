@@ -53,7 +53,7 @@ func Lookup() {
 		if err != nil {
 			continue
 		}
-		domIDs = removeFromArray(domIDs, domain.UUID)
+		domIDs = util.RemoveFromArray(domIDs, domain.UUID)
 	}
 
 	// remove cached but not existent domains
@@ -110,13 +110,4 @@ func handleDomain(dom libvirt.Domain) (models.Domain, error) {
 	models.Collection.Domains.Store(uuid, domain)
 
 	return domain, nil
-}
-
-func removeFromArray(s []string, r string) []string {
-	for i, v := range s {
-		if v == r {
-			return append(s[:i], s[i+1:]...)
-		}
-	}
-	return s
 }

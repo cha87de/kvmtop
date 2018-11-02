@@ -10,6 +10,7 @@ import (
 	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
 	"github.com/cha87de/kvmtop/printers"
+	"github.com/cha87de/kvmtop/util"
 )
 
 var domainProfiler sync.Map
@@ -32,12 +33,20 @@ func InitializeProfiler(wg *sync.WaitGroup) {
 }
 
 func pickup() {
+
+	// create list of cached profilers
+	domIDs := make([]string, 0)
+	domainProfiler.Range(func(key, _ interface{}) bool {
+		domIDs = append(domIDs, key.(string))
+		return true
+	})
+
 	// for each domain ...
 	models.Collection.Domains.Map.Range(func(key, domainRaw interface{}) bool {
 		domain := domainRaw.(models.Domain)
 		uuid := key.(string)
 
-		// write measurements to profiler
+		// get or create profiler
 		profilerRaw, found := domainProfiler.Load(uuid)
 		var profiler spec.TSProfiler
 		if found {
@@ -52,6 +61,7 @@ func pickup() {
 			})
 		}
 
+		// pick up collector measurement
 		metrics := make([]spec.TSDataMetric, 0)
 		models.Collection.Collectors.Map.Range(func(nameRaw interface{}, collectorRaw interface{}) bool {
 			name := nameRaw.(string)
@@ -70,14 +80,28 @@ func pickup() {
 			return true
 		})
 
+		// send measurement to profiler
 		tsdata := spec.TSData{
 			Metrics: metrics,
 		}
 		profiler.Put(tsdata)
 
+		// store profiler
 		domainProfiler.Store(uuid, profiler)
+
+		// mark domain as considered by removing from cache
+		domIDs = util.RemoveFromArray(domIDs, uuid)
+
 		return true
 	})
 
-	// TODO clean up: remove old domains
+	// remove cached profilers for not existent domains
+	for _, uuid := range domIDs {
+		profilerRaw, found := domainProfiler.Load(uuid)
+		if found {
+			profiler := profilerRaw.(spec.TSProfiler)
+			profiler.Terminate()
+		}
+		domainProfiler.Delete(uuid)
+	}
 }
