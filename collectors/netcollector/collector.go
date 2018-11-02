@@ -40,6 +40,7 @@ func (collector *Collector) Print() models.Printable {
 	hostFields := []string{
 		"net_host_receivedBytes",
 		"net_host_transmittedBytes",
+		"net_host_speed",
 	}
 	domainFields := []string{
 		"net_receivedBytes",
