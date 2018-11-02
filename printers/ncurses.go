@@ -182,7 +182,9 @@ func printDomain(window *goncurses.Window, fields []string, values map[string][]
 func sortDomainIDsByField(values map[string][]string, sortByColumn int) []KeyValue {
 	var sorted []KeyValue
 	for key, value := range values {
-		sorted = append(sorted, KeyValue{key, value[sortByColumn]})
+		if len(value) >= sortByColumn {
+			sorted = append(sorted, KeyValue{key, value[sortByColumn]})
+		}
 	}
 	sort.Slice(sorted, func(i, j int) bool {
 		return sorted[i].Value > sorted[j].Value

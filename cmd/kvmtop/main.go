@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"runtime/debug"
 	"syscall"
 
 	"github.com/cha87de/kvmtop/config"
@@ -15,6 +16,14 @@ import (
 var version = "devbuild"
 
 func main() {
+
+	// catch panics
+	defer func() {
+		if r := recover(); r != nil {
+			debug.PrintStack()
+			shutdown(1)
+		}
+	}()
 
 	// handle flags
 	initializeFlags()

@@ -24,7 +24,9 @@ func hostPrint(host *models.Host) []string {
 	transmittedCarrier := collectors.GetMetricDiffUint64(host.Measurable, "net_host_TransmittedCarrier", true)
 	transmittedCompressed := collectors.GetMetricDiffUint64(host.Measurable, "net_host_TransmittedCompressed", true)
 
-	result := append([]string{receivedBytes}, transmittedBytes)
+	speed := collectors.GetMetricUint64(host.Measurable, "net_host_speed", 0)
+
+	result := append([]string{receivedBytes}, transmittedBytes, speed)
 	if config.Options.Verbose {
 		result = append(result, receivedPackets, receivedErrs, receivedDrop, receivedFifo, receivedFrame, receivedCompressed, receivedMulticast, transmittedPackets, transmittedErrs, transmittedDrop, transmittedFifo, transmittedColls, transmittedCarrier, transmittedCompressed)
 	}

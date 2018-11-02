@@ -3,8 +3,10 @@ package netcollector
 import (
 	"fmt"
 
+	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/connector"
 	"github.com/cha87de/kvmtop/models"
+	"github.com/cha87de/kvmtop/util"
 	libvirt "github.com/libvirt/libvirt-go"
 	libvirtxml "github.com/libvirt/libvirt-go-xml"
 )
@@ -13,6 +15,10 @@ func hostLookup(host *models.Host) {
 	bridges := getHostBridges()
 	newMeasurementInterfaces := models.CreateMeasurement(bridges)
 	host.AddMetricMeasurement("net_host_ifs", newMeasurementInterfaces)
+
+	speed := util.GetSysNetSpeed(config.Options.NetworkDevice)
+	newMeasurementSpeed := models.CreateMeasurement(uint64(speed.Value))
+	host.AddMetricMeasurement("net_host_speed", newMeasurementSpeed)
 }
 
 func getHostBridges() []string {
