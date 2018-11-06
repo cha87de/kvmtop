@@ -22,11 +22,13 @@ func initializePrinter(wg *sync.WaitGroup) {
 	})
 
 	// start continuously printing values
-	for n := -1; config.Options.Runs == -1 || n < config.Options.Runs; n++ {
-		start := time.Now()
-		handleRun()
+	start := time.Now()
+	for n := 0; config.Options.Runs == -1 || n < config.Options.Runs; n++ {
+		// sleep before execution
 		nextRun := start.Add(time.Duration(config.Options.Frequency) * time.Second)
 		time.Sleep(nextRun.Sub(time.Now()))
+		handleRun()
+		start = time.Now()
 	}
 
 	// close configured printer
