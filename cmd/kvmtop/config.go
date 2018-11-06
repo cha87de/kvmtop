@@ -38,51 +38,88 @@ func initializeFlags() {
 	}
 
 	// Set collectors from flags
+	hasCollector := false
 	if config.Options.EnableCPU {
-		collector := cpucollector.CreateCollector()
-		models.Collection.Collectors.Store("cpu", &collector)
+		enableCPU()
+		hasCollector = true
 	}
 	if config.Options.EnableMEM {
-		collector := memcollector.CreateCollector()
-		models.Collection.Collectors.Store("mem", &collector)
+		enableMEM()
+		hasCollector = true
 	}
 	if config.Options.EnableDISK {
-		collector := diskcollector.CreateCollector()
-		models.Collection.Collectors.Store("disk", &collector)
+		enableDISK()
+		hasCollector = true
 	}
 	if config.Options.EnableNET {
-		collector := netcollector.CreateCollector()
-		models.Collection.Collectors.Store("net", &collector)
+		enableNET()
+		hasCollector = true
 	}
 	if config.Options.EnableIO {
-		collector := iocollector.CreateCollector()
-		models.Collection.Collectors.Store("io", &collector)
+		enableIO()
+		hasCollector = true
 	}
 	if config.Options.EnableHost {
-		collector := hostcollector.CreateCollector()
-		models.Collection.Collectors.Store("host", &collector)
+		enableHOST()
+		hasCollector = true
+	}
+
+	if !hasCollector {
+		// no collector selected, going to add default collector
+		enableCPU()
+		enableMEM()
 	}
 
 	// select printer, ncurse as default.
-	if config.Options.PrintBatch { // DEPRECATED remove PrintBatch in future
+	switch config.Options.Printer {
+	case "ncurses":
+		printer := printers.CreateNcurses()
+		models.Collection.Printer = &printer
+	case "text":
 		printer := printers.CreateText()
 		models.Collection.Printer = &printer
-	} else {
-		switch config.Options.Printer {
-		case "ncurses":
-			printer := printers.CreateNcurses()
-			models.Collection.Printer = &printer
-		case "text":
-			printer := printers.CreateText()
-			models.Collection.Printer = &printer
-		case "json":
-			printer := printers.CreateJSON()
-			models.Collection.Printer = &printer
-		default:
-			fmt.Println("unknown printer")
-			os.Exit(1)
-		}
-
+	case "json":
+		printer := printers.CreateJSON()
+		models.Collection.Printer = &printer
+	default:
+		fmt.Println("unknown printer")
+		os.Exit(1)
 	}
 
+}
+
+// EnableCPU adds more cpu collector
+func enableCPU() {
+	collector := cpucollector.CreateCollector()
+	models.Collection.Collectors.Store("cpu", &collector)
+}
+
+// enableMEM adds more mem collector
+func enableMEM() {
+	collector := memcollector.CreateCollector()
+	models.Collection.Collectors.Store("mem", &collector)
+}
+
+// enableDISK adds more disk collector
+func enableDISK() {
+	collector := diskcollector.CreateCollector()
+	models.Collection.Collectors.Store("disk", &collector)
+}
+
+// enableNET adds more net collector
+func enableNET() {
+	collector := netcollector.CreateCollector()
+	models.Collection.Collectors.Store("net", &collector)
+}
+
+// enableIO adds more io collector
+func enableIO() {
+	collector := iocollector.CreateCollector()
+	models.Collection.Collectors.Store("io", &collector)
+}
+
+// enableHOST adds more host collector
+func enableHOST() {
+	collector := hostcollector.CreateCollector()
+	models.Collection.Collectors.Store("host", &collector)
 }
