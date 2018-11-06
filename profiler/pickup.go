@@ -10,8 +10,8 @@ import (
 )
 
 func pickupCPU(domain models.Domain) (int, int) {
-	cputimeAllCores, _ := strconv.Atoi(cpucollector.CpuPrintThreadMetric(&domain, "cpu_times"))
-	queuetimeAllCores, _ := strconv.Atoi(cpucollector.CpuPrintThreadMetric(&domain, "cpu_runqueues"))
+	cputimeAllCores, _ := strconv.Atoi(cpucollector.CpuPrintThreadMetric(&domain, "cpu_threadIDs", "cpu_times"))
+	queuetimeAllCores, _ := strconv.Atoi(cpucollector.CpuPrintThreadMetric(&domain, "cpu_threadIDs", "cpu_runqueues"))
 	cpuUtil := cputimeAllCores + queuetimeAllCores
 	cpuMax := 100
 	return cpuUtil, cpuMax

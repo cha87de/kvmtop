@@ -109,9 +109,11 @@ func diskLookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
 		}
 
 		// sizes
-		sums.Capacity += sizeStats.Capacity
-		sums.Allocation += sizeStats.Allocation
-		sums.Physical += sizeStats.Physical
+		if sizeStats != nil {
+			sums.Capacity += sizeStats.Capacity
+			sums.Allocation += sizeStats.Allocation
+			sums.Physical += sizeStats.Physical
+		}
 
 		// find source path
 		if disk.Source != nil && disk.Source.File != nil {

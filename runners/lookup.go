@@ -14,15 +14,25 @@ import (
 )
 
 var processes []int
+var lookupDone chan bool
 
 // InitializeLookup starts the periodic lookup calls
 func InitializeLookup(wg *sync.WaitGroup) {
+	lookupDone = make(chan bool)
 	for n := -1; config.Options.Runs == -1 || n < config.Options.Runs; n++ {
+		// execution, then sleep
 		start := time.Now()
 		Lookup()
-		nextRun := start.Add(time.Duration(config.Options.Frequency) * time.Second)
+		lookupDone <- true
+		freq := float32(config.Options.Frequency)
+		if n <= 1 {
+			// first run, half frequency only
+			freq = freq / 2
+		}
+		nextRun := start.Add(time.Duration(freq) * time.Second)
 		time.Sleep(nextRun.Sub(time.Now()))
 	}
+	close(lookupDone)
 	wg.Done()
 }
 

@@ -66,6 +66,11 @@ func (measurable *Measurable) AddMetricMeasurement(metricName string, measuremen
 	//domain.Metrics.Store(metricName, metrics)
 }
 
+// DelMetricMeasurement removes a metric
+func (measurable *Measurable) DelMetricMeasurement(metricName string) {
+	measurable.Metrics.Delete(metricName)
+}
+
 // GetMetric reads and returns the metric values by metric name
 func (measurable *Measurable) GetMetric(metricName string) (*Metric, bool) {
 	rawmetric, exists := measurable.Metrics.Load(metricName)

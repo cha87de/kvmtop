@@ -2,21 +2,21 @@ package runners
 
 import (
 	"sync"
-	"time"
 
-	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
 )
 
 // InitializeCollect starts the periodic collect calls
 func InitializeCollect(wg *sync.WaitGroup) {
-	for n := -1; config.Options.Runs == -1 || n < config.Options.Runs; n++ {
-		start := time.Now()
+	for {
+		// wait with execution for lookup routine
+		_, ok := <-lookupDone
+		if !ok {
+			wg.Done()
+			return
+		}
 		Collect()
-		nextRun := start.Add(time.Duration(config.Options.Frequency) * time.Second)
-		time.Sleep(nextRun.Sub(time.Now()))
 	}
-	wg.Done()
 }
 
 // Collect runs one collect cycle to measure frequently changing metrics
