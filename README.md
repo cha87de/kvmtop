@@ -1,6 +1,8 @@
 [![Build Status](https://travis-ci.org/cha87de/kvmtop.svg)](https://travis-ci.org/cha87de/kvmtop)
 [![GitHub release](https://img.shields.io/github/release/cha87de/kvmtop.svg)](https://github.com/cha87de/kvmtop/releases)
 [![GitHub stars](https://img.shields.io/github/stars/cha87de/kvmtop.svg?style=social&label=Stars)](https://github.com/cha87de/kvmtop)
+[![Go Report Card](https://goreportcard.com/badge/github.com/cha87de/kvmtop)](https://goreportcard.com/report/github.com/cha87de/kvmtop)
+[![GoDoc](https://godoc.org/github.com/cha87de/kvmtop?status.svg)](https://godoc.org/github.com/cha87de/kvmtop)
 [![Docker Pulls](https://img.shields.io/docker/pulls/cha87de/kvmtop.svg)](https://hub.docker.com/r/cha87de/kvmtop/)
 
 ## What kvmtop does
