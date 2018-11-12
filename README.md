@@ -134,3 +134,17 @@ kvmtop can be used as a monitoring agent to send data to an InfluxDB instance: k
                   |                                                     |
                   +-----------------------------------------------------+
 ```
+
+# Development Guide
+
+Install the golang binary. Create a new folder as your kvmtop workspace, e.g. /opt/kvmtop.  Then follow these steps:
+
+```
+cd /opt/kvmtop
+export GOPATH=$(pwd) # take workspace as GOPATH
+go get -d github.com/cha87de/kvmtop/...   # download all source files, including depencencies
+go install github.com/cha87de/kvmtop/...  # compile kvmtop binaries
+```
+The resulting binaries are then located in `/opt/kvmtop/bin`.
+
+Further reading: https://golang.org/doc/code.html
