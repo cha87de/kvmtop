@@ -1,8 +1,7 @@
 package hostcollector
 
 import (
-	"os"
-
+	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
 )
 
@@ -17,9 +16,10 @@ func (collector *Collector) Lookup() {
 		uuid := key.(string)
 		domain := value.(models.Domain)
 		libvirtDomain, _ := models.Collection.LibvirtDomains.Load(uuid)
-		hostLookup(&domain, libvirtDomain)
+		domainLookup(&domain, libvirtDomain)
 		return true
 	})
+	hostLookup(models.Collection.Host)
 }
 
 // Collect host collector data
@@ -28,20 +28,30 @@ func (collector *Collector) Collect() {
 	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
 		// uuid := key.(string)
 		domain := value.(models.Domain)
-		hostCollect(&domain)
+		domainCollect(&domain)
 		return true
 	})
+	hostCollect(models.Collection.Host)
 }
 
 // Print returns the collectors measurements in a Printable struct
 func (collector *Collector) Print() models.Printable {
+	hostFields := []string{
+		"host_name",
+	}
+	domainFields := []string{
+		"host_name",
+	}
+
+	if config.Options.Verbose {
+		hostFields = append(hostFields,
+			"host_uuid",
+		)
+	}
+
 	printable := models.Printable{
-		HostFields: []string{
-			"host_name",
-		},
-		DomainFields: []string{
-			"host_name",
-		},
+		HostFields:   hostFields,
+		DomainFields: domainFields,
 	}
 
 	// lookup for each domain
@@ -49,14 +59,12 @@ func (collector *Collector) Print() models.Printable {
 	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
 		uuid := key.(string)
 		domain := value.(models.Domain)
-		printable.DomainValues[uuid] = hostPrint(&domain)
+		printable.DomainValues[uuid] = domainPrint(&domain)
 		return true
 	})
 
 	// lookup for host
-	// printable.HostValues = cpuPrintHost(host)
-	hostname, _ := os.Hostname()
-	printable.HostValues = append(printable.HostValues, hostname)
+	printable.HostValues = hostPrint(models.Collection.Host)
 
 	return printable
 }
