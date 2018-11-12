@@ -33,6 +33,9 @@ func (collector *Collector) Collect() {
 		cpuCollect(&domain)
 		return true
 	})
+
+	// collect host measurements
+	cpuCollectHost(models.Collection.Host)
 }
 
 // Print returns the collectors measurements in a Printable struct
