@@ -65,18 +65,17 @@ func pickup() {
 		metrics := make([]spec.TSDataMetric, 0)
 		models.Collection.Collectors.Map.Range(func(nameRaw interface{}, collectorRaw interface{}) bool {
 			name := nameRaw.(string)
-			var util, max int
+			var util int
 			if name == "cpu" {
-				util, max = pickupCPU(domain)
+				util = pickupCPU(domain)
 			} else if name == "io" {
-				util, max = pickupIO(domain)
+				util = pickupIO(domain)
 			} else if name == "net" {
-				util, max = pickupNet(domain)
+				util = pickupNet(domain)
 			}
 			metrics = append(metrics, spec.TSDataMetric{
 				Name:  name,
 				Value: float64(util),
-				Max:   float64(max),
 			})
 			return true
 		})
