@@ -17,8 +17,10 @@ func pickupCPU(domain models.Domain) int {
 }
 
 func pickupIO(domain models.Domain) int {
-	// TODO
-	return 0
+	readBytes, _ := strconv.Atoi(collectors.GetMetricDiffUint64(domain.Measurable, "io_read_bytes", true))
+	writtenbytes, _ := strconv.Atoi(collectors.GetMetricDiffUint64(domain.Measurable, "io_write_bytes", true))
+	total := readBytes + writtenbytes
+	return total
 }
 
 func pickupNet(domain models.Domain) int {
