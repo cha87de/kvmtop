@@ -1,6 +1,8 @@
 [![Build Status](https://travis-ci.org/cha87de/kvmtop.svg?branch=profiler)](https://travis-ci.org/cha87de/kvmtop)
 [![GitHub release](https://img.shields.io/github/release/cha87de/kvmtop.svg)](https://github.com/cha87de/kvmtop/releases)
 [![GitHub stars](https://img.shields.io/github/stars/cha87de/kvmtop.svg?style=social&label=Stars)](https://github.com/cha87de/kvmtop)
+[![Go Report Card](https://goreportcard.com/badge/github.com/cha87de/kvmtop)](https://goreportcard.com/report/github.com/cha87de/kvmtop)
+[![GoDoc](https://godoc.org/github.com/cha87de/kvmtop?status.svg)](https://godoc.org/github.com/cha87de/kvmtop)
 [![Docker Pulls](https://img.shields.io/docker/pulls/cha87de/kvmtop.svg)](https://hub.docker.com/r/cha87de/kvmtop/)
 
 ## What kvmtop does
@@ -119,8 +121,6 @@ A more detailed list, including all metrics is available here at [./docs/README.
 ## kvmtop with InfluxDB
 
 kvmtop can be used as a monitoring agent to send data to an InfluxDB instance: kvmtop transmits JSON data via TCP to logstash, while logstash writes to InfluxDB. More detailes are available at [https://github.com/cha87de/kvmtop-datasink/](https://github.com/cha87de/kvmtop-datasink/).
-<<<<<<< HEAD
-=======
 
 ```    
                                       kvmtop-datasink
@@ -134,4 +134,17 @@ kvmtop can be used as a monitoring agent to send data to an InfluxDB instance: k
                   |                                                     |
                   +-----------------------------------------------------+
 ```
->>>>>>> master
+
+# Development Guide
+
+Install the golang binary. Create a new folder as your kvmtop workspace, e.g. /opt/kvmtop.  Then follow these steps:
+
+```
+cd /opt/kvmtop
+export GOPATH=$(pwd) # take workspace as GOPATH
+go get -d github.com/cha87de/kvmtop/...   # download all source files, including depencencies
+go install github.com/cha87de/kvmtop/...  # compile kvmtop binaries
+```
+The resulting binaries are then located in `/opt/kvmtop/bin`.
+
+Further reading: https://golang.org/doc/code.html

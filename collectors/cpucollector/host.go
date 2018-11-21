@@ -33,6 +33,10 @@ func cpuLookupHost(host *models.Host) {
 	host.AddMetricMeasurement("cpu_cores", models.CreateMeasurement(uint64(cores)))
 }
 
+func cpuCollectHost(host *models.Host) {
+	// TODO lookup cpu host utilisation, cf. #23
+}
+
 func cpuPrintHost(host *models.Host) []string {
 	cpuMinfreq := collectors.GetMetricFloat64(host.Measurable, "cpu_minfreq", 0)
 	cpuMaxfreq := collectors.GetMetricFloat64(host.Measurable, "cpu_maxfreq", 0)
