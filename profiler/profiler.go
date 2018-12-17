@@ -71,7 +71,6 @@ func pickup() {
 			var util int
 			if name == "cpu" {
 				util = pickupCPU(domain)
-				fmt.Printf("cpu util: %d\n", util)
 			} else if name == "io" {
 				util = pickupIO(domain)
 			} else if name == "net" {
