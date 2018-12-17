@@ -11,8 +11,6 @@ before_install:
 
 install:
   - "go get -d -v ./..."
-  - "(cd cmd/kvmprofiler/ ; godep restore)"
-  # - "(cd cmd/kvmtop/ ; godep restore)"
   - "go install ./..."
   - "cp $GOPATH/bin/kvmtop ."
 
