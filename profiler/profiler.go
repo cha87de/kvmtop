@@ -1,6 +1,7 @@
 package profiler
 
 import (
+	"fmt"
 	"sync"
 	"time"
 
@@ -54,9 +55,11 @@ func pickup() {
 		} else {
 			profiler = impl.NewProfiler(spec.Settings{
 				Name:           uuid,
-				BufferSize:     config.Options.Frequency * 10,
-				States:         4,
-				OutputFreq:     time.Duration(20) * time.Second,
+				BufferSize:     config.Options.Profiler.BufferSize,
+				States:         config.Options.Profiler.States,
+				History:        config.Options.Profiler.History,
+				FilterStdDevs:  config.Options.Profiler.FilterStdDevs,
+				OutputFreq:     config.Options.Profiler.OutputFreq,
 				OutputCallback: profileOutput,
 			})
 		}
@@ -68,11 +71,13 @@ func pickup() {
 			var util int
 			if name == "cpu" {
 				util = pickupCPU(domain)
+				fmt.Printf("cpu util: %d\n", util)
 			} else if name == "io" {
 				util = pickupIO(domain)
 			} else if name == "net" {
 				util = pickupNet(domain)
 			}
+
 			metrics = append(metrics, spec.TSDataMetric{
 				Name:  name,
 				Value: float64(util),

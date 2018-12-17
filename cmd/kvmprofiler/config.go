@@ -1,9 +1,8 @@
 package main
 
 import (
-	"os"
-
 	"fmt"
+	"os"
 
 	"github.com/cha87de/kvmtop/collectors/cpucollector"
 	"github.com/cha87de/kvmtop/collectors/iocollector"
