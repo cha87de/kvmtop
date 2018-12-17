@@ -141,7 +141,10 @@ func cpuPrintThreadMetric(domain *models.Domain, lookupMetric string, metric str
 		measurementCount++
 	}
 
-	avg := float64(measurementSum) / float64(measurementCount)
+	var avg float64
+	if measurementCount > 0 {
+		avg = float64(measurementSum) / float64(measurementCount)
+	}
 	percent := avg * 100
 	return fmt.Sprintf("%.0f", percent)
 }
