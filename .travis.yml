@@ -11,8 +11,8 @@ before_install:
 
 install:
   - "go get -d -v ./..."
-  - "go get github.com/tools/godep"
-  - "(cd cmd/kvmprofiler/ ; godep restore)"
+  #- "go get github.com/tools/godep"
+  #- "(cd cmd/kvmprofiler/ ; godep restore)"
   # - "(cd cmd/kvmtop/ ; godep restore)"
   - "go install ./..."
   - "cp $GOPATH/bin/kvm* ."
