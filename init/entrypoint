@@ -10,7 +10,7 @@ function start_metrics(){
     kvmtop $PARAMS
 }
 function start_profiler(){
-    kvmprofiler $PARAMS
+    kvmprofiler $PARAMS $PROFILER_PARAMS
 }
 function start(){
     echo "starting applications..."

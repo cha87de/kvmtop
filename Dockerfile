@@ -18,6 +18,7 @@ ADD kvmprofiler /bin/kvmprofiler
 
 # set parameters
 ENV PARAMS "-c qemu:///system --printer=text --cpu --mem --net --disk"
+ENV PROFILER_PARAMS "--states 4 --history 1 --filterstddevs 12 --outputFreq 20"
 
 # start from init folder
 WORKDIR /opt/docker-init
