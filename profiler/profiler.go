@@ -1,7 +1,6 @@
 package profiler
 
 import (
-	"fmt"
 	"sync"
 	"time"
 
