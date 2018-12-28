@@ -59,57 +59,59 @@ func diskLookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
 			continue
 		}
 		dev := disk.Target.Dev
-		sizeStats, _ := libvirtDomain.GetBlockInfo(dev, 0)
-		ioStats, _ := libvirtDomain.BlockStats(dev)
+		ioStats, err := libvirtDomain.BlockStats(dev)
 
-		// ioStats.ErrsSet - works only for xen
-		/*if ioStats.ErrsSet {
-			sums.ErrsSet = true
-			sums.Errs += ioStats.Errs
-		}*/
-		// ioStats.FlushReq
-		if ioStats.FlushReqSet {
-			sums.FlushReqSet = true
-			sums.FlushReq += ioStats.FlushReq
-		}
-		// ioStats.FlushTotalTimes
-		if ioStats.FlushTotalTimesSet {
-			sums.FlushTotalTimesSet = true
-			sums.FlushTotalTimes += ioStats.FlushTotalTimes
-		}
-		// ioStats.RdBytes
-		if ioStats.RdBytesSet {
-			sums.RdBytesSet = true
-			sums.RdBytes += ioStats.RdBytes
-		}
-		// ioStats.RdReq
-		if ioStats.RdReqSet {
-			sums.RdReqSet = true
-			sums.RdReq += ioStats.RdReq
-		}
-		// ioStats.RdTotalTimes
-		if ioStats.RdTotalTimesSet {
-			sums.RdTotalTimesSet = true
-			sums.RdTotalTimes += ioStats.RdTotalTimes
-		}
-		// ioStats.WrBytes
-		if ioStats.WrBytesSet {
-			sums.WrBytesSet = true
-			sums.WrBytes += ioStats.WrBytes
-		}
-		// ioStats.WrReq
-		if ioStats.WrReqSet {
-			sums.WrReqSet = true
-			sums.WrReq += ioStats.WrReq
-		}
-		// ioStats.WrTotalTimes
-		if ioStats.WrTotalTimesSet {
-			sums.WrTotalTimesSet = true
-			sums.WrTotalTimes += ioStats.WrTotalTimes
+		if ioStats != nil && err == nil {
+			// ioStats.ErrsSet - works only for xen
+			/*if ioStats.ErrsSet {
+				sums.ErrsSet = true
+				sums.Errs += ioStats.Errs
+			}*/
+			// ioStats.FlushReq
+			if ioStats.FlushReqSet {
+				sums.FlushReqSet = true
+				sums.FlushReq += ioStats.FlushReq
+			}
+			// ioStats.FlushTotalTimes
+			if ioStats.FlushTotalTimesSet {
+				sums.FlushTotalTimesSet = true
+				sums.FlushTotalTimes += ioStats.FlushTotalTimes
+			}
+			// ioStats.RdBytes
+			if ioStats.RdBytesSet {
+				sums.RdBytesSet = true
+				sums.RdBytes += ioStats.RdBytes
+			}
+			// ioStats.RdReq
+			if ioStats.RdReqSet {
+				sums.RdReqSet = true
+				sums.RdReq += ioStats.RdReq
+			}
+			// ioStats.RdTotalTimes
+			if ioStats.RdTotalTimesSet {
+				sums.RdTotalTimesSet = true
+				sums.RdTotalTimes += ioStats.RdTotalTimes
+			}
+			// ioStats.WrBytes
+			if ioStats.WrBytesSet {
+				sums.WrBytesSet = true
+				sums.WrBytes += ioStats.WrBytes
+			}
+			// ioStats.WrReq
+			if ioStats.WrReqSet {
+				sums.WrReqSet = true
+				sums.WrReq += ioStats.WrReq
+			}
+			// ioStats.WrTotalTimes
+			if ioStats.WrTotalTimesSet {
+				sums.WrTotalTimesSet = true
+				sums.WrTotalTimes += ioStats.WrTotalTimes
+			}
 		}
 
+		sizeStats, err := libvirtDomain.GetBlockInfo(dev, 0)
 		// sizes
-		if sizeStats != nil {
+		if sizeStats != nil && err == nil {
 			sums.Capacity += sizeStats.Capacity
 			sums.Allocation += sizeStats.Allocation
 			sums.Physical += sizeStats.Physical
