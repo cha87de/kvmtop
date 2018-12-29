@@ -37,7 +37,6 @@ dockers:
     goarch: amd64
     goarm: ''
     binary: kvmtop
-    image: cha87de/kvmtop
-    tag_templates:
-    - "{{ .Tag }}"
-    - latest
+    image_templates:
+    - 'cha87de/kvmtop:{{ .Tag }}'
+    - 'cha87de/kvmtop:latest'
