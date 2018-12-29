@@ -21,17 +21,14 @@ nfpm:
     - deb
     - rpm
 
-  # Packages your package depends on.
-  #overrides:
-  #  deb:
-  #    dependencies:
-  #      - libvirt-clients
-  #  rpm:
-  #    dependencies:
-  #      - libvirt-client
-
   # Override default /usr/local/bin destination for binaries
   bindir: /usr/bin
+
+  # additional files, e.g. systemd service
+  files:
+    "pkgbuild/kvmtop.service": "/etc/systemd/system/kvmtop.service"
+  config_files:
+    "pkgbuild/kvmtop.conf": "/etc/kvmtop.conf"
 
 dockers:
   -
