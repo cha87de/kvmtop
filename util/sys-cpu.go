@@ -19,7 +19,7 @@ type SysCPU struct {
 func GetSysCPU() []SysCPU {
 	stats := []SysCPU{}
 
-	files, err := filepath.Glob("/sys/devices/system/cpu/cpu[0-999]")
+	files, err := filepath.Glob("/sys/devices/system/cpu/cpu[0-9]*")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Cannot read cpu infos from sys fs: %s\n", err)
 		return stats

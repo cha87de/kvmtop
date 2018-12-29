@@ -1,0 +1,13 @@
+[Unit]
+Description=Monitor virtual machine experience from outside on KVM hypervisor level
+After=libvirtd.service
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=3
+EnvironmentFile=/etc/kvmtop.conf
+ExecStart=/usr/bin/kvmtop --printer=json --output=tcp --target=${KVMTOP_TARGET} --cpu --net --mem --io --disk --host --verbose
+
+[Install]
+WantedBy=multi-user.target
