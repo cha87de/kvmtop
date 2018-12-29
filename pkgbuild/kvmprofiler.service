@@ -1,0 +1,13 @@
+[Unit]
+Description=Profiler for virtual machine monitoring kvmtop
+After=libvirtd.service
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=3
+EnvironmentFile=/etc/kvmtop.conf
+ExecStart=/usr/bin/kvmprofiler --printer=json --output=tcp --target=${KVMTOP_TARGET} --cpu --net --mem --io --disk --host --verbose ${KVMPROFILER_PARAMS}
+
+[Install]
+WantedBy=multi-user.target

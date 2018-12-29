@@ -27,6 +27,7 @@ nfpm:
   # additional files, e.g. systemd service
   files:
     "pkgbuild/kvmtop.service": "/etc/systemd/system/kvmtop.service"
+    "pkgbuild/kvmprofiler.service": "/etc/systemd/system/kvmprofiler.service"
   config_files:
     "pkgbuild/kvmtop.conf": "/etc/kvmtop.conf"
 
