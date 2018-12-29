@@ -39,3 +39,5 @@ dockers:
     binary: kvmtop
     image_templates:
     - 'cha87de/kvmtop:{{ .Tag }}'
+    extra_files:
+    - init
