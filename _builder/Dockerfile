@@ -9,4 +9,4 @@ ENV GOPATH /opt/gopath
 
 # kvmtop specific
 RUN apt-get install -y libvirt-dev pkg-config libncurses5-dev
-CMD go build github.com/cha87de/kvmtop
+CMD go build github.com/cha87de/kvmtop/cmd/kvmtop
