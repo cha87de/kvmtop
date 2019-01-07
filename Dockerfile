@@ -13,8 +13,8 @@ RUN mkdir -p /opt/docker-init
 ADD init /opt/docker-init
 
 # add kvmtop binaries
-ADD kvmtop /bin/kvmtop
-ADD kvmprofiler /bin/kvmprofiler
+ADD dist/linux_amd64/kvmtop /bin/kvmtop
+ADD dist/linux_amd64/kvmprofiler /bin/kvmprofiler
 
 # set parameters
 ENV PARAMS "-c qemu:///system --printer=text --cpu --mem --net --disk"

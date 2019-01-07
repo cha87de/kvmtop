@@ -46,3 +46,4 @@ dockers:
     - 'cha87de/kvmtop:{{ .Tag }}'
     extra_files:
     - init
+    - dist/linux_amd64
