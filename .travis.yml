@@ -15,7 +15,7 @@ install:
   #- "(cd cmd/kvmprofiler/ ; godep restore)"
   # - "(cd cmd/kvmtop/ ; godep restore)"
   - "go install ./..."
-  - "cp $GOPATH/bin/kvm* ."
+  - "mkdir -p dist/linux_amd64 ; cp $GOPATH/bin/kvm* ./dist/linux_amd64/"
 
 before_deploy:
  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
@@ -32,7 +32,7 @@ deploy:
     on:
       branch: profiler
   - provider: script
-    script: curl -sL https://git.io/goreleaser | bash
+    script: rm -rf dist/linux_amd64; curl -sL https://git.io/goreleaser | bash
     on:
       tags: true
       condition: $TRAVIS_OS_NAME = linux
