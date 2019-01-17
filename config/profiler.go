@@ -9,4 +9,5 @@ type ProfilerOptionsType struct {
 	History       int           `long:"history" default:"1"`
 	FilterStdDevs int           `long:"filterstddevs" default:"-1"`
 	OutputFreq    time.Duration `long:"outputFreq" default:"60"`
+	FixedBound    bool          `long:"fixedbound"`
 }

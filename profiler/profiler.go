@@ -58,6 +58,7 @@ func pickup() {
 				States:         config.Options.Profiler.States,
 				History:        config.Options.Profiler.History,
 				FilterStdDevs:  config.Options.Profiler.FilterStdDevs,
+				FixBound:       config.Options.Profiler.FixedBound,
 				OutputFreq:     config.Options.Profiler.OutputFreq,
 				OutputCallback: profileOutput,
 			})
@@ -67,18 +68,20 @@ func pickup() {
 		metrics := make([]spec.TSDataMetric, 0)
 		models.Collection.Collectors.Map.Range(func(nameRaw interface{}, collectorRaw interface{}) bool {
 			name := nameRaw.(string)
-			var util int
+			var util, min, max int
 			if name == "cpu" {
-				util = pickupCPU(domain)
+				util, min, max = pickupCPU(domain)
 			} else if name == "io" {
-				util = pickupIO(domain)
+				util, min, max = pickupIO(domain)
 			} else if name == "net" {
-				util = pickupNet(domain)
+				util, min, max = pickupNet(domain)
 			}
 
 			metrics = append(metrics, spec.TSDataMetric{
-				Name:  name,
-				Value: float64(util),
+				Name:     name,
+				Value:    float64(util),
+				FixedMin: float64(min),
+				FixedMax: float64(max),
 			})
 			return true
 		})
