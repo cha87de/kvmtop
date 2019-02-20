@@ -4,8 +4,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/cha87de/tsprofiler/impl"
-	"github.com/cha87de/tsprofiler/spec"
+	tsprofilerApi "github.com/cha87de/tsprofiler/api"
+	tsprofilerModels "github.com/cha87de/tsprofiler/models"
+	tsprofiler "github.com/cha87de/tsprofiler/profiler"
 
 	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
@@ -48,24 +49,25 @@ func pickup() {
 
 		// get or create profiler
 		profilerRaw, found := domainProfiler.Load(uuid)
-		var profiler spec.TSProfiler
+		var profiler tsprofilerApi.TSProfiler
 		if found {
-			profiler = profilerRaw.(spec.TSProfiler)
+			profiler = profilerRaw.(tsprofilerApi.TSProfiler)
 		} else {
-			profiler = impl.NewProfiler(spec.Settings{
+			profiler = tsprofiler.NewProfiler(tsprofilerModels.Settings{
 				Name:           uuid,
-				BufferSize:     config.Options.Profiler.BufferSize,
-				States:         config.Options.Profiler.States,
-				History:        config.Options.Profiler.History,
+				BufferSize:     config.Options.Profiler.BufferSize, // default: 10, with default 1s frequency => every 10s
+				States:         config.Options.Profiler.States,     // default: 4
+				History:        config.Options.Profiler.History,    // default: 1
 				FilterStdDevs:  config.Options.Profiler.FilterStdDevs,
 				FixBound:       config.Options.Profiler.FixedBound,
 				OutputFreq:     config.Options.Profiler.OutputFreq,
 				OutputCallback: profileOutput,
+				PeriodSize:     []int{6, 60}, // 1min, 1h
 			})
 		}
 
 		// pick up collector measurement
-		metrics := make([]spec.TSDataMetric, 0)
+		metrics := make([]tsprofilerModels.TSInputMetric, 0)
 		models.Collection.Collectors.Map.Range(func(nameRaw interface{}, collectorRaw interface{}) bool {
 			name := nameRaw.(string)
 			var util, min, max int
@@ -77,7 +79,7 @@ func pickup() {
 				util, min, max = pickupNet(domain)
 			}
 
-			metrics = append(metrics, spec.TSDataMetric{
+			metrics = append(metrics, tsprofilerModels.TSInputMetric{
 				Name:     name,
 				Value:    float64(util),
 				FixedMin: float64(min),
@@ -87,7 +89,7 @@ func pickup() {
 		})
 
 		// send measurement to profiler
-		tsdata := spec.TSData{
+		tsdata := tsprofilerModels.TSInput{
 			Metrics: metrics,
 		}
 		profiler.Put(tsdata)
@@ -105,7 +107,7 @@ func pickup() {
 	for _, uuid := range domIDs {
 		profilerRaw, found := domainProfiler.Load(uuid)
 		if found {
-			profiler := profilerRaw.(spec.TSProfiler)
+			profiler := profilerRaw.(tsprofilerApi.TSProfiler)
 			profiler.Terminate()
 		}
 		domainProfiler.Delete(uuid)

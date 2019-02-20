@@ -5,14 +5,14 @@ import (
 	"fmt"
 
 	"github.com/cha87de/kvmtop/printers"
-	"github.com/cha87de/tsprofiler/spec"
+	"github.com/cha87de/tsprofiler/models"
 )
 
 type profilerOutput struct {
-	Profile spec.TSProfile `json:"profile"`
+	Profile models.TSProfile `json:"profile"`
 }
 
-func profileOutput(data spec.TSProfile) {
+func profileOutput(data models.TSProfile) {
 	// text := printTransitMatrix(data.TXMatrix)
 	profilerOutput := profilerOutput{
 		Profile: data,
