@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 
 	"github.com/cha87de/kvmtop/collectors/cpucollector"
 	"github.com/cha87de/kvmtop/collectors/iocollector"
@@ -54,5 +56,17 @@ func initializeFlags() {
 	if config.Options.EnableHost {
 		fmt.Println("host profiling not supported.")
 	}
+
+	// Parse periodsize csv string
+	periodSizeStr := strings.Split(config.Options.Profiler.PeriodSize, ",")
+	periodSize := make([]int, 0)
+	for _, s := range periodSizeStr {
+		if s == "" {
+			continue
+		}
+		si, _ := strconv.Atoi(s)
+		periodSize = append(periodSize, si)
+	}
+	config.Options.Profiler.PeriodSizeParsed = periodSize
 
 }

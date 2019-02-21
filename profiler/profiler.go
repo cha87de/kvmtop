@@ -62,7 +62,7 @@ func pickup() {
 				FixBound:       config.Options.Profiler.FixedBound,
 				OutputFreq:     config.Options.Profiler.OutputFreq,
 				OutputCallback: profileOutput,
-				PeriodSize:     []int{6, 60}, // 1min, 1h
+				PeriodSize:     config.Options.Profiler.PeriodSizeParsed,
 			})
 		}
 
