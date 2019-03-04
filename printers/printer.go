@@ -8,18 +8,19 @@ import (
 	"github.com/cha87de/kvmtop/config"
 )
 
-var tcpConn net.Conn
+var conn net.Conn
 var file *os.File
 
+// OutputOpen establishes the output channel for the printer
 func OutputOpen() {
-	if config.Options.Output == "tcp" {
+	if config.Options.Output == "tcp" || config.Options.Output == "udp" {
 		var err error
-		tcpConn, err = net.Dial("tcp", config.Options.OutputTarget)
+		conn, err = net.Dial(config.Options.Output, config.Options.OutputTarget)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "failed to open tcp connection")
+			fmt.Fprintf(os.Stderr, "failed to open %s connection", config.Options.Output)
 			os.Exit(1)
 		}
-		fmt.Printf("Output will be redirected to tcp://%s\n", config.Options.OutputTarget)
+		fmt.Printf("Output will be redirected to %s://%s\n", config.Options.Output, config.Options.OutputTarget)
 	} else if config.Options.Output == "file" {
 		var err error
 		file, err = os.OpenFile(config.Options.OutputTarget, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
@@ -33,11 +34,12 @@ func OutputOpen() {
 	}
 }
 
+// Output takes a string and prints it to the configured output
 func Output(text string) {
-	if config.Options.Output == "tcp" {
-		_, err := fmt.Fprintf(tcpConn, text)
+	if config.Options.Output == "tcp" || config.Options.Output == "udp" {
+		_, err := fmt.Fprintf(conn, text)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "failed to send to tcp connection")
+			fmt.Fprintf(os.Stderr, "failed to send to network connection")
 			os.Exit(1)
 		}
 	} else if config.Options.Output == "file" {
@@ -51,9 +53,10 @@ func Output(text string) {
 	}
 }
 
+// OutputClose closes the channel for printing the output
 func OutputClose() {
-	if config.Options.Output == "tcp" {
-		tcpConn.Close()
+	if config.Options.Output == "tcp" || config.Options.Output == "udp" {
+		conn.Close()
 	} else if config.Options.Output == "file" {
 		file.Close()
 	} else {

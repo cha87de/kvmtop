@@ -18,8 +18,8 @@ type OptionsType struct {
 
 	Printer string `short:"p" long:"printer" description:"the output printer to use (valid printers: ncurses, text, json)" default:"ncurses"`
 
-	Output       string `short:"o" long:"output" description:"the output channel to send printer output (valid output: stdout, file, tcp)" default:"stdout"`
-	OutputTarget string `long:"target" description:"for output 'file' the location, for 'tcp' the url to the tcp server"`
+	Output       string `short:"o" long:"output" description:"the output channel to send printer output (valid output: stdout, file, tcp, udp)" default:"stdout"`
+	OutputTarget string `long:"target" description:"for output 'file' the location, for 'tcp' or 'udp' the url (host:port) to the server"`
 
 	NetworkDevice string `long:"netdev" description:"The network device used for the virtual traffic"`
 
