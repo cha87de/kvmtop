@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/cha87de/kvmtop.svg?branch=profiler)](https://travis-ci.org/cha87de/kvmtop)
+[![Build Status](https://travis-ci.org/cha87de/kvmtop.svg?branch=master)](https://travis-ci.org/cha87de/kvmtop)
 [![GitHub release](https://img.shields.io/github/release/cha87de/kvmtop.svg)](https://github.com/cha87de/kvmtop/releases)
 [![GitHub stars](https://img.shields.io/github/stars/cha87de/kvmtop.svg?style=social&label=Stars)](https://github.com/cha87de/kvmtop)
 [![Go Report Card](https://goreportcard.com/badge/github.com/cha87de/kvmtop)](https://goreportcard.com/report/github.com/cha87de/kvmtop)
