@@ -10,13 +10,13 @@ import (
 )
 
 func cpuLookupHost(host *models.Host) {
-	cpuinfo := util.GetSysCPU()
 
-	// calculate average of current cpu frequency
+	// collect cpu freq
+	cpufreqinfo := util.GetSysCPU()
 	coreFreqMin := []float64{}
 	coreFreqMax := []float64{}
 	coreFreqCurrent := []float64{}
-	for _, c := range cpuinfo {
+	for _, c := range cpufreqinfo {
 		// convert kHz to MHz
 		coreFreqMin = append(coreFreqMin, float64(c.MinFreq/1000))
 		coreFreqMax = append(coreFreqMax, float64(c.MaxFreq/1000))
@@ -29,7 +29,8 @@ func cpuLookupHost(host *models.Host) {
 	coreFreqCurMean := stat.Mean(coreFreqCurrent, nil)
 	host.AddMetricMeasurement("cpu_curfreq", models.CreateMeasurement(coreFreqCurMean))
 
-	cores := len(coreFreqCurrent)
+	cpuinfos := util.GetProcCpuinfo()
+	cores := len(cpuinfos)
 	host.AddMetricMeasurement("cpu_cores", models.CreateMeasurement(uint64(cores)))
 }
 
