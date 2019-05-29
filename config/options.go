@@ -9,12 +9,13 @@ type OptionsType struct {
 	ProcFS     string `long:"procfs" description:"path to the proc filesystem" default:"/proc"`
 	Verbose    bool   `long:"verbose" description:"Verbose output, adds more detailed fields"`
 
-	EnableCPU  bool `long:"cpu" description:"enable cpu metrics"`
-	EnableMEM  bool `long:"mem" description:"enable memory metrics"`
-	EnableDISK bool `long:"disk" description:"enable disk metrics"`
-	EnableNET  bool `long:"net" description:"enable network metrics"`
-	EnableIO   bool `long:"io" description:"enable io metrics (requires root)"`
-	EnableHost bool `long:"host" description:"enable host metrics"`
+	EnableCPU      bool `long:"cpu" description:"enable cpu metrics"`
+	EnableMEM      bool `long:"mem" description:"enable memory metrics"`
+	EnableDISK     bool `long:"disk" description:"enable disk metrics"`
+	EnableNET      bool `long:"net" description:"enable network metrics"`
+	EnableIO       bool `long:"io" description:"enable io metrics (requires root)"`
+	EnablePressure bool `long:"pressure" description:"enable pressure metrics (requires kernel 4.20+)"`
+	EnableHost     bool `long:"host" description:"enable host metrics"`
 
 	Printer string `short:"p" long:"printer" description:"the output printer to use (valid printers: ncurses, text, json)" default:"ncurses"`
 

@@ -11,6 +11,7 @@ import (
 	"github.com/cha87de/kvmtop/collectors/iocollector"
 	"github.com/cha87de/kvmtop/collectors/memcollector"
 	"github.com/cha87de/kvmtop/collectors/netcollector"
+	"github.com/cha87de/kvmtop/collectors/psicollector"
 	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
 	"github.com/cha87de/kvmtop/printers"
@@ -57,6 +58,10 @@ func initializeFlags() {
 	}
 	if config.Options.EnableIO {
 		enableIO()
+		hasCollector = true
+	}
+	if config.Options.EnablePressure {
+		enablePressure()
 		hasCollector = true
 	}
 	if config.Options.EnableHost {
@@ -116,6 +121,12 @@ func enableNET() {
 func enableIO() {
 	collector := iocollector.CreateCollector()
 	models.Collection.Collectors.Store("io", &collector)
+}
+
+// enablePressure adds more pressure collector
+func enablePressure() {
+	collector := psicollector.CreateCollector()
+	models.Collection.Collectors.Store("pressure", &collector)
 }
 
 // enableHOST adds more host collector
