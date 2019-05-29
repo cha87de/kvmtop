@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# include bpkg  dependencies
+source /usr/local/bin/retry
+source /usr/local/bin/bgo
+source /usr/local/bin/bgowait
+
+##############################################################################
+function start_metrics(){
+    kvmtop $PARAMS
+}
+function start_profiler(){
+    kvmprofiler $PARAMS $PROFILER_PARAMS
+}
+function start(){
+    echo "starting applications..."
+    bgo start_metrics start_profiler
+    if [[ $? != 0 ]]; then
+        echo "start failed. exiting now." >&2
+        exit 1
+    fi
+}
+
+##############################################################################
+function main(){
+    # start
+    start 
+    if [[ $? != 0 ]]; then
+        echo "start failed. exiting now." >&2
+        exit 1
+    fi    
+
+    # wait
+    echo "done. now waiting for services."
+    #freq=5; waitForN=-1; killTasks=0 # fail one, ignore (development mode)
+    freq=5; waitForN=1; killTasks=1 #fail one, fail all (production mode)
+    bgowait $freq $waitForN $killTasks
+}
+
+if [[ "$1" == "" ]]; then
+    main
+else
+    exec "$@"
+fi

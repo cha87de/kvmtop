@@ -16,12 +16,13 @@ import (
 var processes []int
 var lookupDone chan bool
 
-func initializeLookup(wg *sync.WaitGroup) {
+// InitializeLookup starts the periodic lookup calls
+func InitializeLookup(wg *sync.WaitGroup) {
 	lookupDone = make(chan bool)
 	for n := -1; config.Options.Runs == -1 || n < config.Options.Runs; n++ {
 		// execution, then sleep
 		start := time.Now()
-		lookup()
+		Lookup()
 		lookupDone <- true
 		freq := float32(config.Options.Frequency)
 		if n <= 1 {
@@ -35,7 +36,8 @@ func initializeLookup(wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func lookup() {
+// Lookup runs one lookup cycle to detect rather static metrics
+func Lookup() {
 	// query libvirt
 	doms, err := connector.Libvirt.Connection.ListAllDomains(libvirt.CONNECT_LIST_DOMAINS_ACTIVE)
 	if err != nil {
@@ -61,7 +63,7 @@ func lookup() {
 		if err != nil {
 			continue
 		}
-		domIDs = removeFromArray(domIDs, domain.UUID)
+		domIDs = util.RemoveFromArray(domIDs, domain.UUID)
 	}
 
 	// remove cached but not existent domains
@@ -118,13 +120,4 @@ func handleDomain(dom libvirt.Domain) (models.Domain, error) {
 	models.Collection.Domains.Store(uuid, domain)
 
 	return domain, nil
-}
-
-func removeFromArray(s []string, r string) []string {
-	for i, v := range s {
-		if v == r {
-			return append(s[:i], s[i+1:]...)
-		}
-	}
-	return s
 }

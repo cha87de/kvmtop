@@ -1,6 +1,6 @@
 language: go
 go:
-  - '1.9' 
+  - '1.11.5' 
 
 services:
   - docker
@@ -11,8 +11,11 @@ before_install:
 
 install:
   - "go get -d -v ./..."
+  #- "go get github.com/tools/godep"
+  #- "(cd cmd/kvmprofiler/ ; godep restore)"
+  # - "(cd cmd/kvmtop/ ; godep restore)"
   - "go install ./..."
-  - "cp $GOPATH/bin/kvmtop ."
+  - "mkdir -p dist/linux_amd64 ; cp $GOPATH/bin/kvm* ./dist/linux_amd64/"
 
 before_deploy:
  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
@@ -20,11 +23,11 @@ before_deploy:
 deploy:
   - provider: script
     skip_cleanup: true
-    script: docker build -t cha87de/kvmtop:master . ; docker push cha87de/kvmtop:master 
+    script: docker build --no-cache -t cha87de/kvmtop:master . ; docker push cha87de/kvmtop:master 
     on:
       branch: master
   - provider: script
-    script: curl -sL https://git.io/goreleaser | bash
+    script: rm -rf dist/linux_amd64; curl -sL https://git.io/goreleaser | bash
     on:
       tags: true
       condition: $TRAVIS_OS_NAME = linux

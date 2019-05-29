@@ -6,7 +6,8 @@ import (
 	"github.com/cha87de/kvmtop/models"
 )
 
-func initializeCollect(wg *sync.WaitGroup) {
+// InitializeCollect starts the periodic collect calls
+func InitializeCollect(wg *sync.WaitGroup) {
 	for {
 		// wait with execution for lookup routine
 		_, ok := <-lookupDone
@@ -14,11 +15,12 @@ func initializeCollect(wg *sync.WaitGroup) {
 			wg.Done()
 			return
 		}
-		collect()
+		Collect()
 	}
 }
 
-func collect() {
+// Collect runs one collect cycle to measure frequently changing metrics
+func Collect() {
 	// initialize models
 	if models.Collection.Domains.Length() <= 0 {
 		// wait for lookup to create domains

@@ -1,7 +1,7 @@
 package config
 
-// Options holds set of runtime configuration parameters
-var Options struct {
+// OptionsType defines the runtime configuration parameters
+type OptionsType struct {
 	Version    bool   `short:"v" long:"version" description:"Show version"`
 	Frequency  int    `short:"f" long:"frequency" description:"Frequency (in seconds) for collecting metrics" default:"1"`
 	Runs       int    `short:"r" long:"runs" description:"Amount of collection runs" default:"-1"`
@@ -18,8 +18,13 @@ var Options struct {
 
 	Printer string `short:"p" long:"printer" description:"the output printer to use (valid printers: ncurses, text, json)" default:"ncurses"`
 
-	Output       string `short:"o" long:"output" description:"the output channel to send printer output (valid output: stdout, file, tcp)" default:"stdout"`
-	OutputTarget string `long:"target" description:"for output 'file' the location, for 'tcp' the url to the tcp server"`
+	Output       string `short:"o" long:"output" description:"the output channel to send printer output (valid output: stdout, file, tcp, udp)" default:"stdout"`
+	OutputTarget string `long:"target" description:"for output 'file' the location, for 'tcp' or 'udp' the url (host:port) to the server"`
 
 	NetworkDevice string `long:"netdev" description:"The network device used for the virtual traffic"`
+
+	Profiler ProfilerOptionsType `group:"Profiler Options"`
 }
+
+// Options holds the OptionsType configuration parameters
+var Options OptionsType

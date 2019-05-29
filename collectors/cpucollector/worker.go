@@ -107,12 +107,12 @@ func cpuPrint(domain *models.Domain) []string {
 	cores := collectors.GetMetricUint64(domain.Measurable, "cpu_cores", 0)
 
 	// cpu util for vcores
-	cputimeAllCores := cpuPrintThreadMetric(domain, "cpu_threadIDs", "cpu_times")
-	queuetimeAllCores := cpuPrintThreadMetric(domain, "cpu_threadIDs", "cpu_runqueues")
+	cputimeAllCores := CpuPrintThreadMetric(domain, "cpu_threadIDs", "cpu_times")
+	queuetimeAllCores := CpuPrintThreadMetric(domain, "cpu_threadIDs", "cpu_runqueues")
 
 	// cpu util for for other threads (i/o or emulation)
-	otherCputimeAllCores := cpuPrintThreadMetric(domain, "cpu_otherThreadIDs", "cpu_other_times")
-	otherQueuetimeAllCores := cpuPrintThreadMetric(domain, "cpu_otherThreadIDs", "cpu_other_runqueues")
+	otherCputimeAllCores := CpuPrintThreadMetric(domain, "cpu_otherThreadIDs", "cpu_other_times")
+	otherQueuetimeAllCores := CpuPrintThreadMetric(domain, "cpu_otherThreadIDs", "cpu_other_runqueues")
 
 	// put results together
 	result := append([]string{cores}, cputimeAllCores, queuetimeAllCores)
@@ -122,7 +122,7 @@ func cpuPrint(domain *models.Domain) []string {
 	return result
 }
 
-func cpuPrintThreadMetric(domain *models.Domain, lookupMetric string, metric string) string {
+func CpuPrintThreadMetric(domain *models.Domain, lookupMetric string, metric string) string {
 	threadIDs := domain.GetMetricIntArray(lookupMetric)
 	var measurementSum float64
 	var measurementCount int

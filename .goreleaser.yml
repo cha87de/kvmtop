@@ -6,6 +6,12 @@ builds:
       - linux
     goarch:
       - amd64
+  - main: ./cmd/kvmprofiler
+    binary: kvmprofiler
+    goos:
+      - linux
+    goarch:
+      - amd64      
 
 nfpm:
   name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
@@ -27,6 +33,7 @@ nfpm:
   # additional files, e.g. systemd service
   files:
     "pkgbuild/kvmtop.service": "/etc/systemd/system/kvmtop.service"
+    "pkgbuild/kvmprofiler.service": "/etc/systemd/system/kvmprofiler.service"
   config_files:
     "pkgbuild/kvmtop.conf": "/etc/kvmtop.conf"
 
@@ -35,7 +42,8 @@ dockers:
     goos: linux
     goarch: amd64
     goarm: ''
-    binary: kvmtop
     image_templates:
     - 'cha87de/kvmtop:{{ .Tag }}'
-    - 'cha87de/kvmtop:latest'
+    extra_files:
+    - init
+    - dist/linux_amd64
