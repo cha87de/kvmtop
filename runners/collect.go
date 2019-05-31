@@ -22,10 +22,10 @@ func InitializeCollect(wg *sync.WaitGroup) {
 // Collect runs one collect cycle to measure frequently changing metrics
 func Collect() {
 	// initialize models
-	if models.Collection.Domains.Length() <= 0 {
+	/*if models.Collection.Domains.Length() <= 0 {
 		// wait for lookup to create domains
 		return
-	}
+	}*/
 
 	// run collectors
 	models.Collection.Collectors.Map.Range(func(_, collectorRaw interface{}) bool {
