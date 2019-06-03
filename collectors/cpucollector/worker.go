@@ -8,7 +8,6 @@ import (
 
 	"fmt"
 
-	"github.com/cha87de/kvmtop/collectors"
 	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
 	"github.com/cha87de/kvmtop/util"
@@ -104,7 +103,7 @@ func cpuCollectMeasurements(domain *models.Domain, metricName string, measuremen
 }
 
 func cpuPrint(domain *models.Domain) []string {
-	cores := collectors.GetMetricUint64(domain.Measurable, "cpu_cores", 0)
+	cores, _ := domain.GetMetricUint64("cpu_cores", 0)
 
 	// cpu util for vcores
 	cputimeAllCores := CpuPrintThreadMetric(domain, "cpu_threadIDs", "cpu_times")
@@ -128,7 +127,7 @@ func CpuPrintThreadMetric(domain *models.Domain, lookupMetric string, metric str
 	var measurementCount int
 	for _, threadID := range threadIDs {
 		metricName := fmt.Sprint(metric, "_", threadID)
-		measurementStr := collectors.GetMetricDiffUint64(domain.Measurable, metricName, true)
+		measurementStr := domain.GetMetricDiffUint64(metricName, true)
 		if measurementStr == "" {
 			continue
 		}

@@ -4,7 +4,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/cha87de/kvmtop/collectors"
 	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
 	"github.com/cha87de/kvmtop/util"
@@ -158,21 +157,21 @@ func diskCollect(domain *models.Domain) {
 }
 
 func diskPrint(domain *models.Domain) []string {
-	capacity := collectors.GetMetricUint64(domain.Measurable, "disk_size_capacity", 0)
-	allocation := collectors.GetMetricUint64(domain.Measurable, "disk_size_allocation", 0)
-	physical := collectors.GetMetricUint64(domain.Measurable, "disk_size_physical", 0)
+	capacity,_ := domain.GetMetricUint64("disk_size_capacity", 0)
+	allocation,_ := domain.GetMetricUint64("disk_size_allocation", 0)
+	physical,_ := domain.GetMetricUint64("disk_size_physical", 0)
 
-	// errs := collectors.GetMetricDiffUint64(domain.Measurable, "disk_stats_errs", true)
-	flushreq := collectors.GetMetricDiffUint64(domain.Measurable, "disk_stats_flushreq", true)
-	flushtotaltimes := collectors.GetMetricDiffUint64(domain.Measurable, "disk_stats_flushtotaltimes", true)
-	rdbytes := collectors.GetMetricDiffUint64(domain.Measurable, "disk_stats_rdbytes", true)
-	rdreq := collectors.GetMetricDiffUint64(domain.Measurable, "disk_stats_rdreq", true)
-	rdtotaltimes := collectors.GetMetricDiffUint64(domain.Measurable, "disk_stats_rdtotaltimes", true)
-	wrbytes := collectors.GetMetricDiffUint64(domain.Measurable, "disk_stats_wrbytes", true)
-	wrreq := collectors.GetMetricDiffUint64(domain.Measurable, "disk_stats_wrreq", true)
-	wrtotaltimes := collectors.GetMetricDiffUint64(domain.Measurable, "disk_stats_wrtotaltimes", true)
+	// errs := domain.GetMetricDiffUint64("disk_stats_errs", true)
+	flushreq := domain.GetMetricDiffUint64("disk_stats_flushreq", true)
+	flushtotaltimes := domain.GetMetricDiffUint64("disk_stats_flushtotaltimes", true)
+	rdbytes := domain.GetMetricDiffUint64("disk_stats_rdbytes", true)
+	rdreq := domain.GetMetricDiffUint64("disk_stats_rdreq", true)
+	rdtotaltimes := domain.GetMetricDiffUint64("disk_stats_rdtotaltimes", true)
+	wrbytes := domain.GetMetricDiffUint64("disk_stats_wrbytes", true)
+	wrreq := domain.GetMetricDiffUint64("disk_stats_wrreq", true)
+	wrtotaltimes := domain.GetMetricDiffUint64("disk_stats_wrtotaltimes", true)
 
-	delayblkio := collectors.GetMetricDiffUint64(domain.Measurable, "disk_delayblkio", true)
+	delayblkio := domain.GetMetricDiffUint64("disk_delayblkio", true)
 
 	result := append([]string{capacity}, allocation)
 	if config.Options.Verbose {

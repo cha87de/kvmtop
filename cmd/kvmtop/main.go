@@ -49,11 +49,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	// initialize host measureable
-	models.Collection.Host = &models.Host{
-		Measurable: &models.Measurable{},
-	}
-
 	// start runners
 	runners.InitializeRunners()
 

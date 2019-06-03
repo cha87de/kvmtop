@@ -1,7 +1,6 @@
 package diskcollector
 
 import (
-	"github.com/cha87de/kvmtop/collectors"
 	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/util"
 
@@ -14,7 +13,7 @@ func diskHostLookup(host *models.Host) {
 		// find relevant devices
 		devices := []string{}
 		mounts := util.GetProcMounts()
-		diskSources := strings.Split(collectors.GetMetricString(host.Measurable, "disk_sources", 0), ",")
+		diskSources := strings.Split(host.GetMetricString("disk_sources", 0), ",")
 		for _, source := range diskSources {
 			// find best matching mountpoint
 			var bestMount util.ProcMount
@@ -99,17 +98,17 @@ func diskHostCollect(host *models.Host) {
 }
 
 func diskPrintHost(host *models.Host) []string {
-	diskDeviceReads := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_reads", true)
-	diskDeviceReadsmerged := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_readsmerged", true)
-	diskDeviceSectorsread := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_sectorsread", true)
-	diskDeviceTimereading := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_timereading", true)
-	diskDeviceWrites := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_writes", true)
-	diskDeviceWritesmerged := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_writesmerged", true)
-	diskDeviceSectorswritten := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_sectorswritten", true)
-	diskDeviceTimewriting := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_timewriting", true)
-	diskDeviceCurrentops := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_currentops", true)
-	diskDeviceTimeforops := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_timeforops", true)
-	diskDeviceWeightedtimeforops := collectors.GetMetricDiffUint64(host.Measurable, "disk_device_weightedtimeforops", true)
+	diskDeviceReads := host.GetMetricDiffUint64("disk_device_reads", true)
+	diskDeviceReadsmerged := host.GetMetricDiffUint64("disk_device_readsmerged", true)
+	diskDeviceSectorsread := host.GetMetricDiffUint64("disk_device_sectorsread", true)
+	diskDeviceTimereading := host.GetMetricDiffUint64("disk_device_timereading", true)
+	diskDeviceWrites := host.GetMetricDiffUint64("disk_device_writes", true)
+	diskDeviceWritesmerged := host.GetMetricDiffUint64("disk_device_writesmerged", true)
+	diskDeviceSectorswritten := host.GetMetricDiffUint64("disk_device_sectorswritten", true)
+	diskDeviceTimewriting := host.GetMetricDiffUint64("disk_device_timewriting", true)
+	diskDeviceCurrentops := host.GetMetricDiffUint64("disk_device_currentops", true)
+	diskDeviceTimeforops := host.GetMetricDiffUint64("disk_device_timeforops", true)
+	diskDeviceWeightedtimeforops := host.GetMetricDiffUint64("disk_device_weightedtimeforops", true)
 
 	result := append([]string{diskDeviceReads}, diskDeviceWrites)
 	if config.Options.Verbose {

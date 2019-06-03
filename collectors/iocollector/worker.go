@@ -1,7 +1,6 @@
 package iocollector
 
 import (
-	"github.com/cha87de/kvmtop/collectors"
 	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
 	"github.com/cha87de/kvmtop/util"
@@ -24,13 +23,13 @@ func ioCollect(domain *models.Domain) {
 }
 
 func ioPrint(domain *models.Domain) []string {
-	rchar := collectors.GetMetricDiffUint64(domain.Measurable, "io_rchar", true)
-	wchar := collectors.GetMetricDiffUint64(domain.Measurable, "io_wchar", true)
-	syscr := collectors.GetMetricDiffUint64(domain.Measurable, "io_syscr", true)
-	syscw := collectors.GetMetricDiffUint64(domain.Measurable, "io_syscw", true)
-	readBytes := collectors.GetMetricDiffUint64(domain.Measurable, "io_read_bytes", true)
-	writeBytes := collectors.GetMetricDiffUint64(domain.Measurable, "io_write_bytes", true)
-	cancelledWriteBytes := collectors.GetMetricDiffUint64(domain.Measurable, "io_cancelled_write_bytes", true)
+	rchar := domain.GetMetricDiffUint64("io_rchar", true)
+	wchar := domain.GetMetricDiffUint64("io_wchar", true)
+	syscr := domain.GetMetricDiffUint64("io_syscr", true)
+	syscw := domain.GetMetricDiffUint64("io_syscw", true)
+	readBytes := domain.GetMetricDiffUint64("io_read_bytes", true)
+	writeBytes := domain.GetMetricDiffUint64("io_write_bytes", true)
+	cancelledWriteBytes := domain.GetMetricDiffUint64("io_cancelled_write_bytes", true)
 
 	result := append([]string{readBytes}, writeBytes)
 	if config.Options.Verbose {

@@ -14,16 +14,16 @@ import (
 )
 
 var processes []int
-var lookupDone chan bool
+
 
 // InitializeLookup starts the periodic lookup calls
 func InitializeLookup(wg *sync.WaitGroup) {
-	lookupDone = make(chan bool)
+	
 	for n := -1; config.Options.Runs == -1 || n < config.Options.Runs; n++ {
 		// execution, then sleep
 		start := time.Now()
 		Lookup()
-		lookupDone <- true
+		initialLookupDone <- true
 		freq := float32(config.Options.Frequency)
 		if n <= 1 {
 			// first run, half frequency only
@@ -32,7 +32,7 @@ func InitializeLookup(wg *sync.WaitGroup) {
 		nextRun := start.Add(time.Duration(freq) * time.Second)
 		time.Sleep(nextRun.Sub(time.Now()))
 	}
-	close(lookupDone)
+	close(initialLookupDone)
 	wg.Done()
 }
 
@@ -48,7 +48,7 @@ func Lookup() {
 	// create list of cached domains
 	domIDs := make([]string, 0, models.Collection.Domains.Length())
 
-	models.Collection.Domains.Map.Range(func(key, _ interface{}) bool {
+	models.Collection.Domains.Range(func(key, _ interface{}) bool {
 		domIDs = append(domIDs, key.(string))
 		return true
 	})
@@ -68,12 +68,11 @@ func Lookup() {
 
 	// remove cached but not existent domains
 	for _, id := range domIDs {
-		models.Collection.Domains.Map.Delete(id)
+		models.Collection.Domains.Delete(id)
 	}
 
 	// call collector lookup functions
-	models.Collection.Collectors.Map.Range(func(_, collectorRaw interface{}) bool {
-		collector := collectorRaw.(models.Collector)
+	models.Collection.Collectors.Range(func(_ interface{}, collector models.Collector) bool {
 		collector.Lookup()
 		return true
 	})
@@ -98,9 +97,9 @@ func handleDomain(dom libvirt.Domain) (models.Domain, error) {
 		domain.Name = name
 	} else {
 		domain = models.Domain{
+			Measurable: models.NewMeasurable(),
 			UUID:       string(uuid),
 			Name:       name,
-			Measurable: &models.Measurable{},
 		}
 	}
 

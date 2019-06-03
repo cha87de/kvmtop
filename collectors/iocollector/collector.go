@@ -12,7 +12,7 @@ type Collector struct {
 
 // Lookup io collector data
 func (collector *Collector) Lookup() {
-	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
+	models.Collection.Domains.Range(func(key, value interface{}) bool {
 		uuid := key.(string)
 		domain := value.(models.Domain)
 		libvirtDomain, _ := models.Collection.LibvirtDomains.Load(uuid)
@@ -24,7 +24,7 @@ func (collector *Collector) Lookup() {
 // Collect io collector data
 func (collector *Collector) Collect() {
 	// lookup for each domain
-	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
+	models.Collection.Domains.Range(func(key, value interface{}) bool {
 		// uuid := key.(string)
 		domain := value.(models.Domain)
 		ioCollect(&domain)
@@ -54,7 +54,7 @@ func (collector *Collector) Print() models.Printable {
 
 	// lookup for each domain
 	printable.DomainValues = make(map[string][]string)
-	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
+	models.Collection.Domains.Range(func(key, value interface{}) bool {
 		uuid := key.(string)
 		domain := value.(models.Domain)
 		printable.DomainValues[uuid] = ioPrint(&domain)

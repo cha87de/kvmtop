@@ -1,7 +1,6 @@
 package cpucollector
 
 import (
-	"github.com/cha87de/kvmtop/collectors"
 	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
 
@@ -39,10 +38,10 @@ func cpuCollectHost(host *models.Host) {
 }
 
 func cpuPrintHost(host *models.Host) []string {
-	cpuMinfreq := collectors.GetMetricFloat64(host.Measurable, "cpu_minfreq", 0)
-	cpuMaxfreq := collectors.GetMetricFloat64(host.Measurable, "cpu_maxfreq", 0)
-	cpuCurfreq := collectors.GetMetricFloat64(host.Measurable, "cpu_curfreq", 0)
-	cpuCores := collectors.GetMetricUint64(host.Measurable, "cpu_cores", 0)
+	cpuMinfreq := host.GetMetricFloat64("cpu_minfreq", 0)
+	cpuMaxfreq := host.GetMetricFloat64("cpu_maxfreq", 0)
+	cpuCurfreq := host.GetMetricFloat64("cpu_curfreq", 0)
+	cpuCores, _ := host.GetMetricUint64("cpu_cores", 0)
 
 	// put results together
 	result := append([]string{cpuCores}, cpuCurfreq)

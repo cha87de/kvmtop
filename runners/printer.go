@@ -16,7 +16,7 @@ func InitializePrinter(wg *sync.WaitGroup) {
 	models.Collection.Printer.Open()
 
 	// define collectors and their order
-	models.Collection.Collectors.Map.Range(func(key, collectorRaw interface{}) bool {
+	models.Collection.Collectors.Range(func(key interface{}, collector models.Collector) bool {
 		collectorName := key.(string)
 		collectors = append(collectors, collectorName)
 		return true
@@ -46,7 +46,7 @@ func Print() {
 	// add general domain fields first
 	printable.DomainFields = []string{"UUID", "name"}
 	printable.DomainValues = make(map[string][]string)
-	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
+	models.Collection.Domains.Range(func(key, value interface{}) bool {
 		uuid := key.(string)
 		domain := value.(models.Domain)
 		printable.DomainValues[uuid] = []string{
@@ -57,7 +57,7 @@ func Print() {
 	})
 
 	// collect fields for each collector and merge together
-	for _, collectorName := range collectors { // BUG: concurrent map iteration and map write
+	for _, collectorName := range collectors {
 		collector, ok := models.Collection.Collectors.Load(collectorName)
 		if !ok {
 			continue

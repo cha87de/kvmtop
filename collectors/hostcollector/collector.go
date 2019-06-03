@@ -12,26 +12,26 @@ type Collector struct {
 
 // Lookup host collector data
 func (collector *Collector) Lookup() {
-	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
+	models.Collection.Domains.Range(func(key, value interface{}) bool {
 		uuid := key.(string)
 		domain := value.(models.Domain)
 		libvirtDomain, _ := models.Collection.LibvirtDomains.Load(uuid)
 		domainLookup(&domain, libvirtDomain)
 		return true
 	})
-	hostLookup(models.Collection.Host)
+	hostLookup(&models.Collection.Host)
 }
 
 // Collect host collector data
 func (collector *Collector) Collect() {
 	// lookup for each domain
-	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
+	models.Collection.Domains.Range(func(key, value interface{}) bool {
 		// uuid := key.(string)
 		domain := value.(models.Domain)
 		domainCollect(&domain)
 		return true
 	})
-	hostCollect(models.Collection.Host)
+	hostCollect(&models.Collection.Host)
 }
 
 // Print returns the collectors measurements in a Printable struct
@@ -56,7 +56,7 @@ func (collector *Collector) Print() models.Printable {
 
 	// lookup for each domain
 	printable.DomainValues = make(map[string][]string)
-	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
+	models.Collection.Domains.Range(func(key, value interface{}) bool {
 		uuid := key.(string)
 		domain := value.(models.Domain)
 		printable.DomainValues[uuid] = domainPrint(&domain)
@@ -64,7 +64,7 @@ func (collector *Collector) Print() models.Printable {
 	})
 
 	// lookup for host
-	printable.HostValues = hostPrint(models.Collection.Host)
+	printable.HostValues = hostPrint(&models.Collection.Host)
 
 	return printable
 }

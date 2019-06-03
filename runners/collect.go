@@ -10,7 +10,7 @@ import (
 func InitializeCollect(wg *sync.WaitGroup) {
 	for {
 		// wait with execution for lookup routine
-		_, ok := <-lookupDone
+		_, ok := <-initialLookupDone
 		if !ok {
 			wg.Done()
 			return
@@ -28,8 +28,7 @@ func Collect() {
 	}*/
 
 	// run collectors
-	models.Collection.Collectors.Map.Range(func(_, collectorRaw interface{}) bool {
-		collector := collectorRaw.(models.Collector)
+	models.Collection.Collectors.Range(func(_ interface{}, collector models.Collector) bool {
 		go collector.Collect()
 		return true
 	})

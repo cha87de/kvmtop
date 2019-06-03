@@ -12,7 +12,7 @@ type Collector struct {
 
 // Lookup cpu collector data
 func (collector *Collector) Lookup() {
-	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
+	models.Collection.Domains.Range(func(key, value interface{}) bool {
 		uuid := key.(string)
 		domain := value.(models.Domain)
 		libvirtDomain, _ := models.Collection.LibvirtDomains.Load(uuid)
@@ -21,13 +21,13 @@ func (collector *Collector) Lookup() {
 	})
 
 	// lookup details for host
-	cpuLookupHost(models.Collection.Host)
+	cpuLookupHost(&models.Collection.Host)
 }
 
 // Collect cpu collector data
 func (collector *Collector) Collect() {
 	// lookup for each domain
-	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
+	models.Collection.Domains.Range(func(key, value interface{}) bool {
 		// uuid := key.(string)
 		domain := value.(models.Domain)
 		cpuCollect(&domain)
@@ -35,7 +35,7 @@ func (collector *Collector) Collect() {
 	})
 
 	// collect host measurements
-	cpuCollectHost(models.Collection.Host)
+	cpuCollectHost(&models.Collection.Host)
 }
 
 // Print returns the collectors measurements in a Printable struct
@@ -68,7 +68,7 @@ func (collector *Collector) Print() models.Printable {
 
 	// lookup for each domain
 	printable.DomainValues = make(map[string][]string)
-	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
+	models.Collection.Domains.Range(func(key, value interface{}) bool {
 		uuid := key.(string)
 		domain := value.(models.Domain)
 		printable.DomainValues[uuid] = cpuPrint(&domain)
@@ -76,7 +76,7 @@ func (collector *Collector) Print() models.Printable {
 	})
 
 	// lookup for host
-	printable.HostValues = cpuPrintHost(models.Collection.Host)
+	printable.HostValues = cpuPrintHost(&models.Collection.Host)
 
 	return printable
 }

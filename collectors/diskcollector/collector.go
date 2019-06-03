@@ -3,7 +3,6 @@ package diskcollector
 import (
 	"strings"
 
-	"github.com/cha87de/kvmtop/collectors"
 	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
 )
@@ -17,14 +16,14 @@ type Collector struct {
 func (collector *Collector) Lookup() {
 	hostDiskSources := ""
 
-	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
+	models.Collection.Domains.Range(func(key, value interface{}) bool {
 		uuid := key.(string)
 		domain := value.(models.Domain)
 		libvirtDomain, _ := models.Collection.LibvirtDomains.Load(uuid)
 
 		diskLookup(&domain, libvirtDomain)
 		// merge sourcedir metrics from domains to one metric for host
-		disksources := strings.Split(collectors.GetMetricString(domain.Measurable, "disk_sources", 0), ",")
+		disksources := strings.Split(domain.GetMetricString("disk_sources", 0), ",")
 		for _, disksource := range disksources {
 			if !strings.Contains(hostDiskSources, disksource) {
 				if hostDiskSources != "" {
@@ -39,19 +38,19 @@ func (collector *Collector) Lookup() {
 
 	models.Collection.Host.AddMetricMeasurement("disk_sources", models.CreateMeasurement(hostDiskSources))
 
-	diskHostLookup(models.Collection.Host)
+	diskHostLookup(&models.Collection.Host)
 }
 
 // Collect disk collector data
 func (collector *Collector) Collect() {
 	// lookup for each domain
-	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
+	models.Collection.Domains.Range(func(key, value interface{}) bool {
 		// uuid := key.(string)
 		domain := value.(models.Domain)
 		diskCollect(&domain)
 		return true
 	})
-	diskHostCollect(models.Collection.Host)
+	diskHostCollect(&models.Collection.Host)
 }
 
 // Print returns the collectors measurements in a Printable struct
@@ -96,7 +95,7 @@ func (collector *Collector) Print() models.Printable {
 
 	// lookup for each domain
 	printable.DomainValues = make(map[string][]string)
-	models.Collection.Domains.Map.Range(func(key, value interface{}) bool {
+	models.Collection.Domains.Range(func(key, value interface{}) bool {
 		uuid := key.(string)
 		domain := value.(models.Domain)
 		printable.DomainValues[uuid] = diskPrint(&domain)
@@ -104,7 +103,7 @@ func (collector *Collector) Print() models.Printable {
 	})
 
 	// lookup for host
-	printable.HostValues = diskPrintHost(models.Collection.Host)
+	printable.HostValues = diskPrintHost(&models.Collection.Host)
 
 	return printable
 }

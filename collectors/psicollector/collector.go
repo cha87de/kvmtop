@@ -12,12 +12,12 @@ type Collector struct {
 
 // Lookup disk collector data
 func (collector *Collector) Lookup() {
-	hostLookup(models.Collection.Host)
+	hostLookup(&models.Collection.Host)
 }
 
 // Collect disk collector data
 func (collector *Collector) Collect() {
-	hostCollect(models.Collection.Host)
+	hostCollect(&models.Collection.Host)
 }
 
 // Print returns the collectors measurements in a Printable struct
@@ -66,7 +66,7 @@ func (collector *Collector) Print() models.Printable {
 	}
 
 	// lookup for host
-	printable.HostValues = printHost(models.Collection.Host)
+	printable.HostValues = printHost(&models.Collection.Host)
 
 	return printable
 }

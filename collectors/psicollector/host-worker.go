@@ -3,7 +3,6 @@ package psicollector
 import (
 	"fmt"
 
-	"github.com/cha87de/kvmtop/collectors"
 	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/util"
 
@@ -68,11 +67,12 @@ func printHostResource(host *models.Host, resource util.ProcPressureResource, qu
 	for _, metric := range metrics {
 		fieldPrefix := fmt.Sprintf("psi_%s_%s", metric, resource)
 
-		result = append(result, collectors.GetMetricFloat64(host.Measurable, fmt.Sprintf("%s_avg60", fieldPrefix), 0))
+		result = append(result, host.GetMetricFloat64(fmt.Sprintf("%s_avg60", fieldPrefix), 0))
 		if verbose {
-			result = append(result, collectors.GetMetricFloat64(host.Measurable, fmt.Sprintf("%s_avg10", fieldPrefix), 0))
-			result = append(result, collectors.GetMetricFloat64(host.Measurable, fmt.Sprintf("%s_avg300", fieldPrefix), 0))
-			result = append(result, collectors.GetMetricUint64(host.Measurable, fmt.Sprintf("%s_total", fieldPrefix), 0))
+			result = append(result, host.GetMetricFloat64(fmt.Sprintf("%s_avg10", fieldPrefix), 0))
+			result = append(result, host.GetMetricFloat64(fmt.Sprintf("%s_avg300", fieldPrefix), 0))
+			val, _ := host.GetMetricUint64(fmt.Sprintf("%s_total", fieldPrefix), 0)
+			result = append(result, val)
 		}
 	}
 	return result

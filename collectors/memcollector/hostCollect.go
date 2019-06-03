@@ -56,4 +56,6 @@ func hostCollect(host *models.Host) {
 	host.AddMetricMeasurement("ram_DirectMap2M", models.CreateMeasurement(uint64(stats.DirectMap2M)))
 	host.AddMetricMeasurement("ram_DirectMap1G", models.CreateMeasurement(uint64(stats.DirectMap1G)))
 
+	//fmt.Printf("collected these values: %+v\n\n", host.Dump())
+
 }

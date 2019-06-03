@@ -7,7 +7,6 @@ import (
 
 	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/connector"
-	"github.com/cha87de/kvmtop/models"
 	"github.com/cha87de/kvmtop/profiler"
 	"github.com/cha87de/kvmtop/runners"
 )
@@ -23,11 +22,6 @@ func main() {
 	if err != nil {
 		fmt.Println("failed to initialize connection to libvirt. kvmprofile will terminate.")
 		os.Exit(1)
-	}
-
-	// initialize host measureable
-	models.Collection.Host = &models.Host{
-		Measurable: &models.Measurable{},
 	}
 
 	// start lookup and collect runners
