@@ -42,8 +42,10 @@ func pickup() {
 		return true
 	})
 
+	host := models.Collection.Host
+
 	// for each domain ...
-	models.Collection.Domains.Map.Range(func(key, domainRaw interface{}) bool {
+	models.Collection.Domains.Range(func(key, domainRaw interface{}) bool {
 		domain := domainRaw.(models.Domain)
 		uuid := key.(string)
 
@@ -68,15 +70,15 @@ func pickup() {
 
 		// pick up collector measurement
 		metrics := make([]tsprofilerModels.TSInputMetric, 0)
-		models.Collection.Collectors.Map.Range(func(nameRaw interface{}, collectorRaw interface{}) bool {
+		models.Collection.Collectors.Range(func(nameRaw interface{}, collector models.Collector) bool {
 			name := nameRaw.(string)
 			var util, min, max int
 			if name == "cpu" {
-				util, min, max = pickupCPU(domain)
+				util, min, max = pickupCPU(host, domain)
 			} else if name == "io" {
-				util, min, max = pickupIO(domain)
+				util, min, max = pickupIO(host, domain)
 			} else if name == "net" {
-				util, min, max = pickupNet(domain)
+				util, min, max = pickupNet(host, domain)
 			}
 
 			metrics = append(metrics, tsprofilerModels.TSInputMetric{

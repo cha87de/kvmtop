@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/cha87de/kvmtop/collectors"
 	"github.com/cha87de/kvmtop/models"
 
 	"github.com/cha87de/kvmtop/collectors/cpucollector"
 )
 
-func pickupCPU(domain models.Domain) (int, int, int) {
+func pickupCPU(host models.Host, domain models.Domain) (int, int, int) {
 	cputimeAllCores, err := strconv.Atoi(cpucollector.CpuPrintThreadMetric(&domain, "cpu_threadIDs", "cpu_times"))
 	if err != nil {
 		fmt.Printf("err Atiu cpu_times: %v\n", err)
@@ -25,12 +24,12 @@ func pickupCPU(domain models.Domain) (int, int, int) {
 	return cpuUtil, min, max
 }
 
-func pickupIO(domain models.Domain) (int, int, int) {
-	readBytes, err := strconv.Atoi(collectors.GetMetricDiffUint64(domain.Measurable, "io_read_bytes", true))
+func pickupIO(host models.Host, domain models.Domain) (int, int, int) {
+	readBytes, err := strconv.Atoi(domain.GetMetricDiffUint64("io_read_bytes", true))
 	if err != nil {
 		fmt.Printf("err Atiu io_read_bytes: %v\n", err)
 	}
-	writtenbytes, err := strconv.Atoi(collectors.GetMetricDiffUint64(domain.Measurable, "io_write_bytes", true))
+	writtenbytes, err := strconv.Atoi(domain.GetMetricDiffUint64("io_write_bytes", true))
 	if err != nil {
 		fmt.Printf("err Atiu io_write_bytes: %v\n", err)
 	}
@@ -42,8 +41,8 @@ func pickupIO(domain models.Domain) (int, int, int) {
 	return total, min, max
 }
 
-func pickupNet(domain models.Domain) (int, int, int) {
-	rawRx := collectors.GetMetricDiffUint64(domain.Measurable, "net_ReceivedBytes", true)
+func pickupNet(host models.Host, domain models.Domain) (int, int, int) {
+	rawRx := domain.GetMetricDiffUint64("net_ReceivedBytes", true)
 	if rawRx == "" {
 		rawRx = "0"
 	}
@@ -51,7 +50,7 @@ func pickupNet(domain models.Domain) (int, int, int) {
 	if err != nil {
 		fmt.Printf("err Atiu net_ReceivedBytes: %v\n", err)
 	}
-	rawTx := collectors.GetMetricDiffUint64(domain.Measurable, "net_TransmittedBytes", true)
+	rawTx := domain.GetMetricDiffUint64("net_TransmittedBytes", true)
 	if rawTx == "" {
 		rawTx = "0"
 	}
@@ -61,7 +60,7 @@ func pickupNet(domain models.Domain) (int, int, int) {
 	}
 	total := receivedBytes + transmittedBytes
 	min := 0
-	rawNetSpeed := collectors.GetMetricUint64(models.Collection.Host.Measurable, "net_host_speed", 0)
+	rawNetSpeed, _ := host.GetMetricUint64("net_host_speed", 0)
 	if rawNetSpeed == "0" {
 		// set default to 1GBit/s
 		defaultSpeed := 1 * 1024 * 1024 * 1024
