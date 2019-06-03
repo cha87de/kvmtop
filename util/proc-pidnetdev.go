@@ -10,8 +10,8 @@ import (
 	"github.com/cha87de/kvmtop/config"
 )
 
-// ProcNetDev represents entries of /proc/<pid>/net/dev file
-type ProcNetDev struct {
+// ProcPIDNetDev represents entries of /proc/<pid>/net/dev file
+type ProcPIDNetDev struct {
 	// The process ID.
 	PID int
 
@@ -36,9 +36,9 @@ type ProcNetDev struct {
 	TransmittedCompressed uint64
 }
 
-// GetProcNetDev reads the net/dev file for given pid and device name from procfs
-func GetProcNetDev(pid int, dev string) ProcNetDev {
-	stats := ProcNetDev{PID: pid, Dev: dev}
+// GetProcPIDNetDev reads the net/dev file for given pid and device name from procfs
+func GetProcPIDNetDev(pid int, dev string) ProcPIDNetDev {
+	stats := ProcPIDNetDev{PID: pid, Dev: dev}
 
 	filepath := fmt.Sprint(config.Options.ProcFS, "/net/dev")
 	if pid != 0 {
@@ -81,13 +81,13 @@ func GetProcNetDev(pid int, dev string) ProcNetDev {
 		)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Cannot parse row in proc net/dev: %s\n", err)
-			return ProcNetDev{}
+			return ProcPIDNetDev{}
 		}
 	}
 
 	if !foundDevStats {
 		fmt.Fprintf(os.Stderr, "could not find network device %s\n", dev)
-		return ProcNetDev{}
+		return ProcPIDNetDev{}
 	}
 
 	return stats

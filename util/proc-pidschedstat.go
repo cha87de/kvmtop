@@ -9,9 +9,9 @@ import (
 	"github.com/cha87de/kvmtop/config"
 )
 
-// ProcSchedStat defines the fields of a /proc/[pid]/schedstat file
+// ProcPIDSchedStat defines the fields of a /proc/[pid]/schedstat file
 // cf. https://www.kernel.org/doc/Documentation/scheduler/sched-stats.txt
-type ProcSchedStat struct {
+type ProcPIDSchedStat struct {
 	// The process ID.
 	PID int
 	// time spent on the cpu
@@ -22,9 +22,9 @@ type ProcSchedStat struct {
 	Timeslices uint64
 }
 
-// GetProcSchedStat reads and returns the schedstat for a process from the proc fs
-func GetProcSchedStat(pid int) ProcSchedStat {
-	stats := ProcSchedStat{PID: pid}
+// GetProcPIDSchedStat reads and returns the schedstat for a process from the proc fs
+func GetProcPIDSchedStat(pid int) ProcPIDSchedStat {
+	stats := ProcPIDSchedStat{PID: pid}
 	filepath := fmt.Sprint(config.Options.ProcFS, "/", strconv.Itoa(pid), "/schedstat")
 	filecontent, _ := ioutil.ReadFile(filepath)
 
@@ -36,7 +36,7 @@ func GetProcSchedStat(pid int) ProcSchedStat {
 	)
 
 	if err != nil {
-		return ProcSchedStat{}
+		return ProcPIDSchedStat{}
 	}
 
 	return stats

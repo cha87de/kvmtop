@@ -9,9 +9,9 @@ import (
 	"github.com/cha87de/kvmtop/config"
 )
 
-// ProcStat defines the fields of a /proc/[pid]/stat file
+// ProcPIDStat defines the fields of a /proc/[pid]/stat file
 // cf. http://man7.org/linux/man-pages/man5/proc.5.html
-type ProcStat struct {
+type ProcPIDStat struct {
 	// The process ID.
 	PID int
 	// The filename of the executable.
@@ -159,9 +159,9 @@ type ProcStat struct {
 	ExitCode uint64
 }
 
-// GetProcStat reads and returns the stat for a process from the proc fs
-func GetProcStat(pid int) ProcStat {
-	stats := ProcStat{PID: pid}
+// GetProcPIDStat reads and returns the stat for a process from the proc fs
+func GetProcPIDStat(pid int) ProcPIDStat {
+	stats := ProcPIDStat{PID: pid}
 	filepath := fmt.Sprint(config.Options.ProcFS, "/", strconv.Itoa(pid), "/stat")
 	filecontent, _ := ioutil.ReadFile(filepath)
 	// fmt.Printf("%s", filecontent)
@@ -174,7 +174,7 @@ func GetProcStat(pid int) ProcStat {
 	)
 
 	if l < 0 || r < 0 {
-		return ProcStat{}
+		return ProcPIDStat{}
 	}
 
 	stats.Comm = string(filecontent[l+1 : r])
@@ -233,7 +233,7 @@ func GetProcStat(pid int) ProcStat {
 	)
 
 	if err != nil {
-		return ProcStat{}
+		return ProcPIDStat{}
 	}
 
 	return stats

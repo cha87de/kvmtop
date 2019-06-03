@@ -35,6 +35,24 @@ func cpuLookupHost(host *models.Host) {
 
 func cpuCollectHost(host *models.Host) {
 	// TODO lookup cpu host utilisation, cf. #23
+	stats := util.GetProcStatCPU()
+	maincpuStat := util.ProcStatCPU{}
+	for _, s := range stats {
+		if s.Name == "cpu" {
+			maincpuStat = s
+			break
+		}
+	}
+	host.AddMetricMeasurement("cpu_user", models.CreateMeasurement(maincpuStat.User))
+	host.AddMetricMeasurement("cpu_nice", models.CreateMeasurement(maincpuStat.Nice))
+	host.AddMetricMeasurement("cpu_system", models.CreateMeasurement(maincpuStat.System))
+	host.AddMetricMeasurement("cpu_idle", models.CreateMeasurement(maincpuStat.Idle))
+	host.AddMetricMeasurement("cpu_iowait", models.CreateMeasurement(maincpuStat.IOWait))
+	host.AddMetricMeasurement("cpu_irq", models.CreateMeasurement(maincpuStat.IRQ))
+	host.AddMetricMeasurement("cpu_softirq", models.CreateMeasurement(maincpuStat.SoftIRQ))
+	host.AddMetricMeasurement("cpu_steal", models.CreateMeasurement(maincpuStat.Steal))
+	host.AddMetricMeasurement("cpu_guest", models.CreateMeasurement(maincpuStat.Guest))
+	host.AddMetricMeasurement("cpu_guestnice", models.CreateMeasurement(maincpuStat.GuestNice))
 }
 
 func cpuPrintHost(host *models.Host) []string {
@@ -43,10 +61,21 @@ func cpuPrintHost(host *models.Host) []string {
 	cpuCurfreq := host.GetMetricFloat64("cpu_curfreq", 0)
 	cpuCores, _ := host.GetMetricUint64("cpu_cores", 0)
 
+	cpuUser := host.GetMetricDiffUint64("cpu_user", true)
+	cpuNice := host.GetMetricDiffUint64("cpu_nice", true)
+	cpuSystem := host.GetMetricDiffUint64("cpu_system", true)
+	cpuIdle := host.GetMetricDiffUint64("cpu_idle", true)
+	cpuIOWait := host.GetMetricDiffUint64("cpu_iowait", true)
+	cpuIRQ := host.GetMetricDiffUint64("cpu_irq", true)
+	cpuSoftIRQ := host.GetMetricDiffUint64("cpu_softirq", true)
+	cpuSteal := host.GetMetricDiffUint64("cpu_steal", true)
+	cpuGuest := host.GetMetricDiffUint64("cpu_guest", true)
+	cpuGuestNice := host.GetMetricDiffUint64("cpu_guestnice", true)
+
 	// put results together
-	result := append([]string{cpuCores}, cpuCurfreq)
+	result := append([]string{cpuCores}, cpuCurfreq, cpuUser, cpuSystem, cpuIdle, cpuSteal)
 	if config.Options.Verbose {
-		result = append(result, cpuMinfreq, cpuMaxfreq)
+		result = append(result, cpuMinfreq, cpuMaxfreq, cpuNice, cpuIOWait, cpuIRQ, cpuSoftIRQ, cpuGuest, cpuGuestNice)
 	}
 	return result
 }

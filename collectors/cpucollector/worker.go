@@ -88,15 +88,12 @@ func cpuCollect(domain *models.Domain) {
 	cpuCollectMeasurements(domain, "cpu_threadIDs", "cpu_")
 	// PART B: stats for other threads (i/o or emulation)
 	cpuCollectMeasurements(domain, "cpu_otherThreadIDs", "cpu_other_")
-
-	// PART C: collect frequencies
-
 }
 
 func cpuCollectMeasurements(domain *models.Domain, metricName string, measurementPrefix string) {
 	threadIDs := domain.GetMetricIntArray(metricName)
 	for _, threadID := range threadIDs {
-		schedstat := util.GetProcSchedStat(threadID)
+		schedstat := util.GetProcPIDSchedStat(threadID)
 		domain.AddMetricMeasurement(fmt.Sprint(measurementPrefix, "times_", threadID), models.CreateMeasurement(schedstat.Cputime))
 		domain.AddMetricMeasurement(fmt.Sprint(measurementPrefix, "runqueues_", threadID), models.CreateMeasurement(schedstat.Runqueue))
 	}

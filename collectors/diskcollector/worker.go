@@ -151,7 +151,7 @@ func diskLookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
 
 func diskCollect(domain *models.Domain) {
 	pid := domain.PID
-	stats := util.GetProcStat(pid)
+	stats := util.GetProcPIDStat(pid)
 	// fmt.Printf("\n%v\n", stats)
 	domain.AddMetricMeasurement("disk_delayblkio", models.CreateMeasurement(uint64(stats.DelayacctBlkioTicks)))
 }

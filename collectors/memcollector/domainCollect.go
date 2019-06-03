@@ -7,7 +7,7 @@ import (
 
 func domainCollect(domain *models.Domain) {
 	pid := domain.PID
-	stats := util.GetProcStat(pid)
+	stats := util.GetProcPIDStat(pid)
 	// fmt.Printf("vsize: %d, rss: %d\n", stats.VSize/1024/1024, stats.RSS*4096/1024/1024)
 	// fmt.Printf("MinFlt: %d, CMinFlt: %d, MajFlt: %d, CMajFlt: %d\n", stats.MinFlt, stats.CMinFlt, stats.MajFlt, stats.CMajFlt)
 	domain.AddMetricMeasurement("ram_vsize", models.CreateMeasurement(uint64(stats.VSize)))

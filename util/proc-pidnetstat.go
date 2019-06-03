@@ -9,8 +9,8 @@ import (
 	"github.com/cha87de/kvmtop/config"
 )
 
-// ProcNetstat represents entries of /proc/<pid>/net/netstat file
-type ProcNetstat struct {
+// ProcPIDNetstat represents entries of /proc/<pid>/net/netstat file
+type ProcPIDNetstat struct {
 	// The process ID.
 	PID int
 
@@ -148,15 +148,15 @@ type ProcNetstat struct {
 	InCEPkts             uint64
 }
 
-// GetProcNetstat reads the netstat file for given pid from procfs
-func GetProcNetstat(pid int) ProcNetstat {
-	stats := ProcNetstat{PID: pid}
+// GetProcPIDNetstat reads the netstat file for given pid from procfs
+func GetProcPIDNetstat(pid int) ProcPIDNetstat {
+	stats := ProcPIDNetstat{PID: pid}
 
 	filepath := fmt.Sprint(config.Options.ProcFS, "/", strconv.Itoa(pid), "/net/netstat")
 	filecontent, err := ioutil.ReadFile(filepath)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Cannot read proc netstat: %s\n", err)
-		return ProcNetstat{}
+		return ProcPIDNetstat{}
 	}
 
 	ioFormat := "" +
@@ -439,7 +439,7 @@ func GetProcNetstat(pid int) ProcNetstat {
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Cannot parse proc netstat: %s\n", err)
-		return ProcNetstat{}
+		return ProcPIDNetstat{}
 	}
 
 	return stats

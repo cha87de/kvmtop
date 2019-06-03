@@ -40,14 +40,25 @@ func (collector *Collector) Collect() {
 
 // Print returns the collectors measurements in a Printable struct
 func (collector *Collector) Print() models.Printable {
+
 	hostFields := []string{
 		"cpu_cores",
 		"cpu_curfreq",
-	}
+		"cpu_user",
+		"cpu_system",
+		"cpu_idle",
+		"cpu_steal",
+		}
 	if config.Options.Verbose {
 		hostFields = append(hostFields,
 			"cpu_minfreq",
 			"cpu_maxfreq",
+			"cpu_nice",
+			"cpu_iowait",
+			"cpu_irq",
+			"cpu_softirq",
+			"cpu_guest",
+			"cpu_guestnice",
 		)
 	}
 	domainFields := []string{

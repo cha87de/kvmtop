@@ -9,9 +9,9 @@ import (
 	"github.com/cha87de/kvmtop/config"
 )
 
-// ProcIO defines the fields of a /proc/[pid]/io file
+// ProcPIDIO defines the fields of a /proc/[pid]/io file
 // cf. https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/filesystems/proc.txt?id=HEAD
-type ProcIO struct {
+type ProcPIDIO struct {
 	// The process ID.
 	PID int
 	//  number of bytes the process read, using any read-like system call (from files, pipes, tty...).
@@ -30,14 +30,14 @@ type ProcIO struct {
 	Cancelled_write_bytes uint64
 }
 
-// GetProcIO reads and returns the io for a process from the proc fs
-func GetProcIO(pid int) ProcIO {
-	stats := ProcIO{PID: pid}
+// GetProcPIDIO reads and returns the io for a process from the proc fs
+func GetProcPIDIO(pid int) ProcPIDIO {
+	stats := ProcPIDIO{PID: pid}
 	filepath := fmt.Sprint(config.Options.ProcFS, "/", strconv.Itoa(pid), "/io")
 	filecontent, err := ioutil.ReadFile(filepath)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Cannot read proc io: %s\n", err)
-		return ProcIO{}
+		return ProcPIDIO{}
 	}
 
 	ioFormat := "rchar: %d\nwchar: %d\nsyscr: %d\nsyscw: %d\n" +
@@ -57,7 +57,7 @@ func GetProcIO(pid int) ProcIO {
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Cannot parse proc io: %s\n", err)
-		return ProcIO{}
+		return ProcPIDIO{}
 	}
 
 	return stats

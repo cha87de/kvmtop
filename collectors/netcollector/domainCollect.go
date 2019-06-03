@@ -15,9 +15,9 @@ func domainCollect(domain *models.Domain) {
 
 	// get stats from net/dev for domain interfaces
 	ifs := domain.GetMetricStringArray("net_interfaces")
-	statsSum := util.ProcNetDev{}
+	statsSum := util.ProcPIDNetDev{}
 	for _, devname := range ifs {
-		devStats := util.GetProcNetDev(domain.PID, devname)
+		devStats := util.GetProcPIDNetDev(domain.PID, devname)
 
 		statsSum.ReceivedBytes += devStats.ReceivedBytes
 		statsSum.ReceivedPackets += devStats.ReceivedPackets

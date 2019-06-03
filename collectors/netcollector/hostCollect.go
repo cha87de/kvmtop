@@ -8,9 +8,9 @@ import (
 func hostCollect(host *models.Host) {
 	// get stats from net/dev for host interfaces
 	ifs := host.GetMetricStringArray("net_host_ifs")
-	statsSum := util.ProcNetDev{}
+	statsSum := util.ProcPIDNetDev{}
 	for _, devname := range ifs {
-		devStats := util.GetProcNetDev(0, devname)
+		devStats := util.GetProcPIDNetDev(0, devname)
 
 		statsSum.ReceivedBytes += devStats.ReceivedBytes
 		statsSum.ReceivedPackets += devStats.ReceivedPackets

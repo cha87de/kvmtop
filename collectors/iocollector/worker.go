@@ -12,7 +12,7 @@ func ioLookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
 }
 
 func ioCollect(domain *models.Domain) {
-	stats := util.GetProcIO(domain.PID)
+	stats := util.GetProcPIDIO(domain.PID)
 	domain.AddMetricMeasurement("io_rchar", models.CreateMeasurement(uint64(stats.Rchar)))
 	domain.AddMetricMeasurement("io_wchar", models.CreateMeasurement(uint64(stats.Wchar)))
 	domain.AddMetricMeasurement("io_syscr", models.CreateMeasurement(uint64(stats.Syscr)))
