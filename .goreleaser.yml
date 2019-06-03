@@ -44,6 +44,7 @@ dockers:
     goarm: ''
     image_templates:
     - 'cha87de/kvmtop:{{ .Tag }}'
+    - 'cha87de/kvmtop:latest'
     extra_files:
     - init
     - dist/linux_amd64
