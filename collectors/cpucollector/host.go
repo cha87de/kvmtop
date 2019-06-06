@@ -1,6 +1,11 @@
 package cpucollector
 
 import (
+	"bytes"
+	"encoding/gob"
+	"fmt"
+	"strconv"
+
 	"github.com/cha87de/kvmtop/config"
 	"github.com/cha87de/kvmtop/models"
 
@@ -34,7 +39,6 @@ func cpuLookupHost(host *models.Host) {
 }
 
 func cpuCollectHost(host *models.Host) {
-	// TODO lookup cpu host utilisation, cf. #23
 	stats := util.GetProcStatCPU()
 	maincpuStat := util.ProcStatCPU{}
 	for _, s := range stats {
@@ -61,16 +65,17 @@ func cpuPrintHost(host *models.Host) []string {
 	cpuCurfreq := host.GetMetricFloat64("cpu_curfreq", 0)
 	cpuCores, _ := host.GetMetricUint64("cpu_cores", 0)
 
-	cpuUser := host.GetMetricDiffUint64("cpu_user", true)
-	cpuNice := host.GetMetricDiffUint64("cpu_nice", true)
-	cpuSystem := host.GetMetricDiffUint64("cpu_system", true)
-	cpuIdle := host.GetMetricDiffUint64("cpu_idle", true)
-	cpuIOWait := host.GetMetricDiffUint64("cpu_iowait", true)
-	cpuIRQ := host.GetMetricDiffUint64("cpu_irq", true)
-	cpuSoftIRQ := host.GetMetricDiffUint64("cpu_softirq", true)
-	cpuSteal := host.GetMetricDiffUint64("cpu_steal", true)
-	cpuGuest := host.GetMetricDiffUint64("cpu_guest", true)
-	cpuGuestNice := host.GetMetricDiffUint64("cpu_guestnice", true)
+	cores, _ := strconv.Atoi(cpuCores)
+	cpuUser := toPercent(host, "cpu_user", cores)
+	cpuNice := toPercent(host, "cpu_nice", cores)
+	cpuSystem := toPercent(host, "cpu_system", cores)
+	cpuIdle := toPercent(host, "cpu_idle", cores)
+	cpuIOWait := toPercent(host, "cpu_iowait", cores)
+	cpuIRQ := toPercent(host, "cpu_irq", cores)
+	cpuSoftIRQ := toPercent(host, "cpu_softirq", cores)
+	cpuSteal := toPercent(host, "cpu_steal", cores)
+	cpuGuest := toPercent(host, "cpu_guest", cores)
+	cpuGuestNice := toPercent(host, "cpu_guestnice", cores)
 
 	// put results together
 	result := append([]string{cpuCores}, cpuCurfreq, cpuUser, cpuSystem, cpuIdle, cpuSteal)
@@ -78,4 +83,44 @@ func cpuPrintHost(host *models.Host) []string {
 		result = append(result, cpuMinfreq, cpuMaxfreq, cpuNice, cpuIOWait, cpuIRQ, cpuSoftIRQ, cpuGuest, cpuGuestNice)
 	}
 	return result
+}
+
+func toPercent(host *models.Host, metricName string, cores int) string {
+	perTime := true
+	var output string
+	var percent float64
+	if metric, ok := host.GetMetric(metricName); ok {
+		if len(metric.Values) >= 2 {
+			// get first value
+			byteValue1 := metric.Values[0].Value
+			reader1 := bytes.NewReader(byteValue1)
+			decoder1 := gob.NewDecoder(reader1)
+			var value1 uint64
+			decoder1.Decode(&value1)
+
+			// get second value
+			byteValue2 := metric.Values[1].Value
+			reader2 := bytes.NewReader(byteValue2)
+			decoder2 := gob.NewDecoder(reader2)
+			var value2 uint64
+			decoder2.Decode(&value2)
+
+			// calculate value diff per time
+			value := float64(value1 - value2)
+
+			// get time diff
+			if perTime {
+				ts1 := metric.Values[0].Timestamp
+				ts2 := metric.Values[1].Timestamp
+				diffSeconds := ts1.Sub(ts2).Seconds()
+				valuePerSecond := value / 100 // since value is in Hz
+				ratio := valuePerSecond / diffSeconds
+				ratio = ratio / float64(cores)
+				percent = ratio * 100 // compute it as percent
+			}
+			output = fmt.Sprintf("%.0f", percent)
+		}
+	}
+	return output
+
 }

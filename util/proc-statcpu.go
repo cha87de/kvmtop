@@ -13,6 +13,8 @@ import (
 type ProcStatCPU struct {
 	Name string
 
+	// The amount of time, measured in units of USER_HZ
+	// (1/100ths of a second on most architectures)
 	User      uint64
 	Nice      uint64
 	System    uint64
