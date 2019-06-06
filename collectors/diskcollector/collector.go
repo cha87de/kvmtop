@@ -75,6 +75,7 @@ func (collector *Collector) Print() models.Printable {
 			"disk_device_currentops",
 			"disk_device_timeforops",
 			"disk_device_weightedtimeforops",
+			"disk_device_count",
 		)
 		domainFields = append(domainFields,
 			"disk_size_physical",

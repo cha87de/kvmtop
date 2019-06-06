@@ -124,7 +124,7 @@ func diskPrintHost(host *models.Host) []string {
 	diskDeviceCurrentops := host.GetMetricDiffUint64("disk_device_currentops", true)
 	diskDeviceTimeforops := host.GetMetricDiffUint64("disk_device_timeforops", true)
 	diskDeviceWeightedtimeforops := host.GetMetricDiffUint64("disk_device_weightedtimeforops", true)
-	//diskDeviceCountStr, _ := host.GetMetricUint64("disk_device_count", 1)
+	diskDeviceCountStr, _ := host.GetMetricUint64("disk_device_count", 1)
 	//diskDeviceCount, _ := strconv.Atoi(diskDeviceCountStr)
 
 	ioutil := timeToPercent(host, "disk_device_timeforops")
@@ -133,7 +133,7 @@ func diskPrintHost(host *models.Host) []string {
 	if config.Options.Verbose {
 		result = append(result, diskDeviceReadsmerged, diskDeviceSectorsread, diskDeviceTimereading)
 		result = append(result, diskDeviceWritesmerged, diskDeviceSectorswritten, diskDeviceTimewriting, diskDeviceCurrentops, diskDeviceTimeforops)
-		result = append(result, diskDeviceWeightedtimeforops)
+		result = append(result, diskDeviceWeightedtimeforops, diskDeviceCountStr)
 	}
 
 	return result
