@@ -58,6 +58,7 @@ func (collector *Collector) Print() models.Printable {
 	hostFields := []string{
 		"disk_device_reads",
 		"disk_device_writes",
+		"disk_device_util",
 	}
 	domainFields := []string{
 		"disk_size_capacity",

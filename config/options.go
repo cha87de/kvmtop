@@ -23,6 +23,7 @@ type OptionsType struct {
 	OutputTarget string `long:"target" description:"for output 'file' the location, for 'tcp' or 'udp' the url (host:port) to the server"`
 
 	NetworkDevice string `long:"netdev" description:"The network device used for the virtual traffic"`
+	StorageDevice string `long:"storedev" description:"The storage device used for the virtual block devices"`
 
 	Profiler ProfilerOptionsType `group:"Profiler Options"`
 }
