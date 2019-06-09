@@ -8,7 +8,7 @@ import (
 	"github.com/cha87de/kvmtop/config"
 )
 
-// ProcDiskstats defines the fields of one row (one block device) of a /proc/diskstats file
+// ProcDiskstat defines the fields of one row (one block device) of a /proc/diskstats file
 // cf. https://www.kernel.org/doc/Documentation/ABI/testing/procfs-diskstats
 type ProcDiskstat struct {
 
@@ -21,37 +21,37 @@ type ProcDiskstat struct {
 	// 3 - device name
 	Devicename string
 
-	// 4 - reads completed successfully
+	// 4 - reads completed successfully f1
 	Reads uint64
 
-	// 5 - reads merged
+	// 5 - reads merged f2
 	ReadsMerged uint64
 
-	// 6 - sectors read
+	// 6 - sectors read f3
 	SectorsRead uint64
 
-	// 7 - time spent reading (ms)
+	// 7 - time spent reading (ms) f4
 	TimeReading uint64
 
-	// 8 - writes completed
+	// 8 - writes completed f5
 	Writes uint64
 
-	// 9 - writes merged
+	// 9 - writes merged f6
 	WritesMerged uint64
 
-	//10 - sectors written
+	//10 - sectors written f7
 	SectorsWritten uint64
 
-	//11 - time spent writing (ms)
+	//11 - time spent writing (ms) f8
 	TimeWriting uint64
 
-	//12 - I/Os currently in progress
+	//12 - I/Os currently in progress f9
 	CurrentOps uint64
 
-	//13 - time spent doing I/Os (ms)
+	//13 - time spent doing I/Os (ms) f10
 	TimeForOps uint64
 
-	//14 - weighted time spent doing I/Os (ms)
+	//14 - weighted time spent doing I/Os (ms) f11
 	WeightedTimeForOps uint64
 }
 

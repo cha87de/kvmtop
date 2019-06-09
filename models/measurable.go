@@ -154,9 +154,9 @@ func (measurable *Measurable) GetMetricFloat64(metricName string, measurementInd
 	return output
 }
 
-// GetMetricDiffUint64 computes the diff as Uint64 between the two measurements for given metric and returns it as string
-func (measurable *Measurable) GetMetricDiffUint64(metricName string, perTime bool) string {
-	var output string
+// GetMetricDiffUint64AsFloat computes the diff as Uint64 between the two measurements for given metric and returns it as string
+func (measurable *Measurable) GetMetricDiffUint64AsFloat(metricName string, perTime bool) float64 {
+	var output float64
 	if metric, ok := measurable.GetMetric(metricName); ok {
 		if len(metric.Values) >= 2 {
 			// get first value
@@ -181,9 +181,16 @@ func (measurable *Measurable) GetMetricDiffUint64(metricName string, perTime boo
 				timeDiff := metric.Values[0].Timestamp.Sub(metric.Values[1].Timestamp).Seconds()
 				value = value / timeDiff
 			}
-
-			output = fmt.Sprintf("%.0f", value)
+			output = value
 		}
 	}
+	return output
+}
+
+// GetMetricDiffUint64 computes the diff as Uint64 between the two measurements for given metric and returns it as string
+func (measurable *Measurable) GetMetricDiffUint64(metricName string, perTime bool) string {
+	var output string
+	diff := measurable.GetMetricDiffUint64AsFloat(metricName, perTime)
+	output = fmt.Sprintf("%.0f", diff)
 	return output
 }

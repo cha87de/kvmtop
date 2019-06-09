@@ -1,5 +1,7 @@
 package diskcollector
 
+// cf. https://www.percona.com/doc/percona-toolkit/LATEST/pt-diskstats.html#description
+
 import (
 	"bytes"
 	"encoding/gob"
@@ -127,19 +129,27 @@ func diskPrintHost(host *models.Host) []string {
 	diskDeviceCountStr, _ := host.GetMetricUint64("disk_device_count", 1)
 	//diskDeviceCount, _ := strconv.Atoi(diskDeviceCountStr)
 
-	ioutil := timeToPercent(host, "disk_device_timeforops")
+	// util: total time during which I/Os were in progress, divided by the
+	// sampling interval
+	ioutil := diffInMilliseconds(host, "disk_device_timeforops", true)
+
+	// queueSize: weighted number of milliseconds spent doing I/Os divided by
+	// the milliseconds elapsed
+	queuesize := diffInMilliseconds(host, "disk_device_weightedtimeforops", false)
+
+	queuetime, servicetime := getTimes(host)
 
 	result := append([]string{diskDeviceReads}, diskDeviceWrites, ioutil)
 	if config.Options.Verbose {
 		result = append(result, diskDeviceReadsmerged, diskDeviceSectorsread, diskDeviceTimereading)
 		result = append(result, diskDeviceWritesmerged, diskDeviceSectorswritten, diskDeviceTimewriting, diskDeviceCurrentops, diskDeviceTimeforops)
-		result = append(result, diskDeviceWeightedtimeforops, diskDeviceCountStr)
+		result = append(result, diskDeviceWeightedtimeforops, diskDeviceCountStr, queuesize, queuetime, servicetime)
 	}
 
 	return result
 }
 
-func timeToPercent(host *models.Host, metricName string) string {
+func diffInMilliseconds(host *models.Host, metricName string, inPercent bool) string {
 	var output string
 	var percent float64
 	if metric, ok := host.GetMetric(metricName); ok {
@@ -167,13 +177,60 @@ func timeToPercent(host *models.Host, metricName string) string {
 			diffSeconds := ts1.Sub(ts2).Seconds()
 			valuePerSecond := value / 1000 // since value is in ms
 			ratio := valuePerSecond / diffSeconds
-			percent = ratio * 100 // compute it as percent
 
-			output = fmt.Sprintf("%.0f", percent)
+			if inPercent {
+				percent = ratio * 100 // compute it as percent
+				output = fmt.Sprintf("%.0f", percent)
+			} else {
+				output = fmt.Sprintf("%.0f", ratio)
+			}
 		}
 	}
 	return output
+}
 
+func getTimes(host *models.Host) (string, string) {
+	queueTime := ""
+	serviceTime := ""
+
+	reads := host.GetMetricDiffUint64AsFloat("disk_device_reads", true)
+	readsMerged := host.GetMetricDiffUint64AsFloat("disk_device_readsmerged", true)
+	writes := host.GetMetricDiffUint64AsFloat("disk_device_writes", true)
+	writesMerged := host.GetMetricDiffUint64AsFloat("disk_device_writesmerged", true)
+	timeForOps := host.GetMetricDiffUint64AsFloat("disk_device_timeforops", true)
+	currentOps := host.GetMetricDiffUint64AsFloat("disk_device_currentops", true)
+	weightedTimeForOps := host.GetMetricDiffUint64AsFloat("disk_device_weightedtimeforops", true)
+
+	// serviceTime:
+	// delta[field10] / delta[field1, 2, 5, 6]
+	// => TimeForOps / (Reads, ReadsMerged, Writes, WritesMerged)
+	sum1 := (reads + readsMerged + writes + writesMerged)
+	var stime float64
+	if sum1 > 0 {
+		stime = timeForOps / sum1
+	}
+
+	// queueTime:
+	// delta[field11] / (delta[field1, 2, 5, 6] + delta[field9])
+	// - serviceTime
+	// => WeightedTimeForOps / (Reads, ReadsMerged, Writes, WritesMerged + CurrentOps)
+	sum2 := sum1 + currentOps
+	var qtime float64
+	if sum2 > 0 {
+		qtime = (weightedTimeForOps / sum2) - stime
+	}
+
+	if stime < 0 {
+		stime = 0
+	}
+	if qtime < 0 {
+		qtime = 0
+	}
+
+	serviceTime = fmt.Sprintf("%.0f", stime)
+	queueTime = fmt.Sprintf("%.0f", qtime)
+
+	return queueTime, serviceTime
 }
 
 func clearDuplicateDevices(diskstats map[string]util.ProcDiskstat) map[string]util.ProcDiskstat {
