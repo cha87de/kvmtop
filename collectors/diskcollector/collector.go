@@ -47,7 +47,7 @@ func (collector *Collector) Collect() {
 	models.Collection.Domains.Range(func(key, value interface{}) bool {
 		// uuid := key.(string)
 		domain := value.(models.Domain)
-		diskCollect(&domain)
+		diskCollect(&domain, &models.Collection.Host)
 		return true
 	})
 	diskHostCollect(&models.Collection.Host)
@@ -58,11 +58,12 @@ func (collector *Collector) Print() models.Printable {
 	hostFields := []string{
 		"disk_device_reads",
 		"disk_device_writes",
-		"disk_device_util",
+		"disk_device_ioutil",
 	}
 	domainFields := []string{
 		"disk_size_capacity",
 		"disk_size_allocation",
+		"disk_ioutil",
 	}
 	if config.Options.Verbose {
 		hostFields = append(hostFields,

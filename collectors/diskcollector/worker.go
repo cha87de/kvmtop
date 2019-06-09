@@ -1,7 +1,9 @@
 package diskcollector
 
 import (
+	"fmt"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/cha87de/kvmtop/config"
@@ -149,17 +151,20 @@ func diskLookup(domain *models.Domain, libvirtDomain libvirt.Domain) {
 	domain.AddMetricMeasurement("disk_sources", models.CreateMeasurement(disksources))
 }
 
-func diskCollect(domain *models.Domain) {
+func diskCollect(domain *models.Domain, host *models.Host) {
 	pid := domain.PID
 	stats := util.GetProcPIDStat(pid)
-	// fmt.Printf("\n%v\n", stats)
 	domain.AddMetricMeasurement("disk_delayblkio", models.CreateMeasurement(uint64(stats.DelayacctBlkioTicks)))
+
+	// calculate ioutil as estimation
+	domainIOUtil := estimateIOUtil(domain, host)
+	domain.AddMetricMeasurement("disk_ioutil", models.CreateMeasurement(domainIOUtil))
 }
 
 func diskPrint(domain *models.Domain) []string {
-	capacity,_ := domain.GetMetricUint64("disk_size_capacity", 0)
-	allocation,_ := domain.GetMetricUint64("disk_size_allocation", 0)
-	physical,_ := domain.GetMetricUint64("disk_size_physical", 0)
+	capacity, _ := domain.GetMetricUint64("disk_size_capacity", 0)
+	allocation, _ := domain.GetMetricUint64("disk_size_allocation", 0)
+	physical, _ := domain.GetMetricUint64("disk_size_physical", 0)
 
 	// errs := domain.GetMetricDiffUint64("disk_stats_errs", true)
 	flushreq := domain.GetMetricDiffUint64("disk_stats_flushreq", true)
@@ -173,9 +178,35 @@ func diskPrint(domain *models.Domain) []string {
 
 	delayblkio := domain.GetMetricDiffUint64("disk_delayblkio", true)
 
-	result := append([]string{capacity}, allocation)
+	ioutil, _ := domain.GetMetricUint64("disk_ioutil", 1)
+
+	result := append([]string{capacity}, allocation, ioutil)
 	if config.Options.Verbose {
 		result = append(result, physical, flushreq, flushtotaltimes, rdbytes, rdreq, rdtotaltimes, wrbytes, wrreq, wrtotaltimes, delayblkio)
 	}
 	return result
+}
+
+func estimateIOUtil(domain *models.Domain, host *models.Host) string {
+	hostIOUtilstr, err := host.GetMetricUint64("disk_device_ioutil", 1)
+	if err != nil {
+		return ""
+	}
+	hostIOUtil, errc := strconv.Atoi(hostIOUtilstr)
+	if errc != nil {
+		return ""
+	}
+	hostReads := host.GetMetricDiffUint64AsFloat("disk_device_reads", true)
+	hostWrites := host.GetMetricDiffUint64AsFloat("disk_device_writes", true)
+
+	domainReads := domain.GetMetricDiffUint64AsFloat("disk_stats_rdreq", true)
+	domainWrites := domain.GetMetricDiffUint64AsFloat("disk_stats_wrreq", true)
+
+	hostLoad := hostReads + hostWrites
+	domainLoad := domainReads + domainWrites
+
+	ratio := domainLoad / hostLoad
+	domainIOUtil := ratio * float64(hostIOUtil)
+
+	return fmt.Sprintf("%.0f", domainIOUtil)
 }

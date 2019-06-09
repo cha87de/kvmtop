@@ -111,7 +111,20 @@ func diskHostLookup(host *models.Host) {
 }
 
 func diskHostCollect(host *models.Host) {
+	// util: total time during which I/Os were in progress, divided by the
+	// sampling interval
+	ioutil := diffInMilliseconds(host, "disk_device_timeforops", true)
 
+	// queueSize: weighted number of milliseconds spent doing I/Os divided by
+	// the milliseconds elapsed
+	queuesize := diffInMilliseconds(host, "disk_device_weightedtimeforops", false)
+
+	queuetime, servicetime := getTimes(host)
+
+	host.AddMetricMeasurement("disk_device_ioutil", models.CreateMeasurement(ioutil))
+	host.AddMetricMeasurement("disk_device_queuesize", models.CreateMeasurement(queuesize))
+	host.AddMetricMeasurement("disk_device_queuetime", models.CreateMeasurement(queuetime))
+	host.AddMetricMeasurement("disk_device_servicetime", models.CreateMeasurement(servicetime))
 }
 
 func diskPrintHost(host *models.Host) []string {
@@ -129,15 +142,10 @@ func diskPrintHost(host *models.Host) []string {
 	diskDeviceCountStr, _ := host.GetMetricUint64("disk_device_count", 1)
 	//diskDeviceCount, _ := strconv.Atoi(diskDeviceCountStr)
 
-	// util: total time during which I/Os were in progress, divided by the
-	// sampling interval
-	ioutil := diffInMilliseconds(host, "disk_device_timeforops", true)
-
-	// queueSize: weighted number of milliseconds spent doing I/Os divided by
-	// the milliseconds elapsed
-	queuesize := diffInMilliseconds(host, "disk_device_weightedtimeforops", false)
-
-	queuetime, servicetime := getTimes(host)
+	ioutil, _ := host.GetMetricUint64("disk_device_ioutil", 1)
+	queuesize, _ := host.GetMetricUint64("disk_device_queuesize", 1)
+	queuetime, _ := host.GetMetricUint64("disk_device_queuetime", 1)
+	servicetime, _ := host.GetMetricUint64("disk_device_servicetime", 1)
 
 	result := append([]string{diskDeviceReads}, diskDeviceWrites, ioutil)
 	if config.Options.Verbose {
