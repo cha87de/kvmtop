@@ -202,7 +202,13 @@ func estimateIOUtil(domain *models.Domain, host *models.Host) string {
 	hostLoad := hostReads + hostWrites
 	domainLoad := domainReads + domainWrites
 
-	ratio := domainLoad / hostLoad
+	var ratio float64
+	if hostLoad > 0 {
+		ratio = domainLoad / hostLoad
+	}
+	if ratio > 1 {
+		ratio = 1
+	}
 	domainIOUtil := ratio * float64(hostIOUtil)
 
 	return fmt.Sprintf("%.0f", domainIOUtil)
