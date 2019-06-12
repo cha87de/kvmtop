@@ -139,13 +139,13 @@ func diskPrintHost(host *models.Host) []string {
 	diskDeviceCurrentops := host.GetMetricDiffUint64("disk_device_currentops", true)
 	diskDeviceTimeforops := host.GetMetricDiffUint64("disk_device_timeforops", true)
 	diskDeviceWeightedtimeforops := host.GetMetricDiffUint64("disk_device_weightedtimeforops", true)
-	diskDeviceCountStr, _ := host.GetMetricUint64("disk_device_count", 1)
+	diskDeviceCountStr, _ := host.GetMetricUint64("disk_device_count", 0)
 	//diskDeviceCount, _ := strconv.Atoi(diskDeviceCountStr)
 
-	ioutil, _ := host.GetMetricUint64("disk_device_ioutil", 1)
-	queuesize, _ := host.GetMetricUint64("disk_device_queuesize", 1)
-	queuetime, _ := host.GetMetricUint64("disk_device_queuetime", 1)
-	servicetime, _ := host.GetMetricUint64("disk_device_servicetime", 1)
+	ioutil := host.GetMetricString("disk_device_ioutil", 0)
+	queuesize := host.GetMetricString("disk_device_queuesize", 0)
+	queuetime := host.GetMetricString("disk_device_queuetime", 0)
+	servicetime := host.GetMetricString("disk_device_servicetime", 0)
 
 	result := append([]string{diskDeviceReads}, diskDeviceWrites, ioutil)
 	if config.Options.Verbose {

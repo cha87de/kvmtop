@@ -178,7 +178,7 @@ func diskPrint(domain *models.Domain) []string {
 
 	delayblkio := domain.GetMetricDiffUint64("disk_delayblkio", true)
 
-	ioutil, _ := domain.GetMetricUint64("disk_ioutil", 1)
+	ioutil, _ := domain.GetMetricUint64("disk_ioutil", 0)
 
 	result := append([]string{capacity}, allocation, ioutil)
 	if config.Options.Verbose {
@@ -188,10 +188,7 @@ func diskPrint(domain *models.Domain) []string {
 }
 
 func estimateIOUtil(domain *models.Domain, host *models.Host) string {
-	hostIOUtilstr, err := host.GetMetricUint64("disk_device_ioutil", 1)
-	if err != nil {
-		return ""
-	}
+	hostIOUtilstr := host.GetMetricString("disk_device_ioutil", 0)
 	hostIOUtil, errc := strconv.Atoi(hostIOUtilstr)
 	if errc != nil {
 		return ""
