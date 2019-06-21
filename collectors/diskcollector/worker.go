@@ -178,7 +178,7 @@ func diskPrint(domain *models.Domain) []string {
 
 	delayblkio := domain.GetMetricDiffUint64("disk_delayblkio", true)
 
-	ioutil, _ := domain.GetMetricUint64("disk_ioutil", 0)
+	ioutil := domain.GetMetricString("disk_ioutil", 0)
 
 	result := append([]string{capacity}, allocation, ioutil)
 	if config.Options.Verbose {
@@ -212,8 +212,9 @@ func estimateIOUtil(domain *models.Domain, host *models.Host) string {
 		ratio = 1
 	}
 	domainIOUtil := ratio * float64(hostIOUtil)
+	domainIOUtilStr := fmt.Sprintf("%.0f", domainIOUtil)
 
-	// fmt.Printf("\thost: %.0f MB/s domain: %.0f MB/s - hostio: %d%% domainio: %.0f%%\n", hostLoad/1024/1024, domainLoad/1024/1024, hostIOUtil, domainIOUtil)
+	//fmt.Printf("\thost: %.0f MB/s domain: %.0f MB/s - hostio: %d%% domainio: %s%%\n", hostLoad/1024/1024, domainLoad/1024/1024, hostIOUtil, domainIOUtilStr)
 
-	return fmt.Sprintf("%.0f", domainIOUtil)
+	return domainIOUtilStr
 }
