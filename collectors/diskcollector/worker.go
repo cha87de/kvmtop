@@ -193,14 +193,16 @@ func estimateIOUtil(domain *models.Domain, host *models.Host) string {
 	if errc != nil {
 		return ""
 	}
-	hostReads := host.GetMetricDiffUint64AsFloat("disk_device_reads", true)
-	hostWrites := host.GetMetricDiffUint64AsFloat("disk_device_writes", true)
+	hostReads := host.GetMetricDiffUint64AsFloat("disk_device_sectorsread", true)
+	hostWrites := host.GetMetricDiffUint64AsFloat("disk_device_sectorswritten", true)
+	hostReadBytes := hostReads * 512
+	hostWritesBytes := hostWrites * 512
 
-	domainReads := domain.GetMetricDiffUint64AsFloat("disk_stats_rdreq", true)
-	domainWrites := domain.GetMetricDiffUint64AsFloat("disk_stats_wrreq", true)
+	domainReadBytes := domain.GetMetricDiffUint64AsFloat("disk_stats_rdbytes", true)
+	domainWrittenBytes := domain.GetMetricDiffUint64AsFloat("disk_stats_wrbytes", true)
 
-	hostLoad := hostReads + hostWrites
-	domainLoad := domainReads + domainWrites
+	hostLoad := hostReadBytes + hostWritesBytes
+	domainLoad := domainReadBytes + domainWrittenBytes
 
 	var ratio float64
 	if hostLoad > 0 {
@@ -210,6 +212,8 @@ func estimateIOUtil(domain *models.Domain, host *models.Host) string {
 		ratio = 1
 	}
 	domainIOUtil := ratio * float64(hostIOUtil)
+
+	// fmt.Printf("\thost: %.0f MB/s domain: %.0f MB/s - hostio: %d%% domainio: %.0f%%\n", hostLoad/1024/1024, domainLoad/1024/1024, hostIOUtil, domainIOUtil)
 
 	return fmt.Sprintf("%.0f", domainIOUtil)
 }
