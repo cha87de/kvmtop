@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/2111f329884b41efa85e4556311b1f1b)](https://app.codacy.com/app/cha87de/kvmtop?utm_source=github.com&utm_medium=referral&utm_content=cha87de/kvmtop&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.org/cha87de/kvmtop.svg?branch=master)](https://travis-ci.org/cha87de/kvmtop)
 [![GitHub release](https://img.shields.io/github/release/cha87de/kvmtop.svg)](https://github.com/cha87de/kvmtop/releases)
 [![GitHub stars](https://img.shields.io/github/stars/cha87de/kvmtop.svg?style=social&label=Stars)](https://github.com/cha87de/kvmtop)
