@@ -5,10 +5,10 @@ import (
 	"os"
 	"sync"
 
-	"github.com/cha87de/kvmtop/config"
-	"github.com/cha87de/kvmtop/connector"
-	"github.com/cha87de/kvmtop/profiler"
-	"github.com/cha87de/kvmtop/runners"
+	"kvmtop/config"
+	"kvmtop/connector"
+	"kvmtop/profiler"
+	"kvmtop/runners"
 )
 
 func main() {

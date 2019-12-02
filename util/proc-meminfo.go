@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/cha87de/kvmtop/config"
+	"kvmtop/config"
 )
 
 // ProcMeminfo represents the content of the meminfo proc file

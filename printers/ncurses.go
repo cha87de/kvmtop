@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/cha87de/goncurses"
-	"github.com/cha87de/kvmtop/models"
+	"kvmtop/models"
 )
 
 var screen *goncurses.Window

@@ -5,7 +5,7 @@ import (
 	"net"
 	"os"
 
-	"github.com/cha87de/kvmtop/config"
+	"kvmtop/config"
 )
 
 var conn net.Conn

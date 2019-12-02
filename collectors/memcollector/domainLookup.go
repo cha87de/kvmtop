@@ -1,7 +1,7 @@
 package memcollector
 
 import (
-	"github.com/cha87de/kvmtop/models"
+	"kvmtop/models"
 	libvirt "github.com/libvirt/libvirt-go"
 )
 

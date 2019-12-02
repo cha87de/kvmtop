@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"strconv"
 
-	"github.com/cha87de/kvmtop/config"
+	"kvmtop/config"
 )
 
 // ProcPIDSchedStat defines the fields of a /proc/[pid]/schedstat file

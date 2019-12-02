@@ -8,10 +8,10 @@ import (
 	tsprofilerModels "github.com/cha87de/tsprofiler/models"
 	tsprofiler "github.com/cha87de/tsprofiler/profiler"
 
-	"github.com/cha87de/kvmtop/config"
-	"github.com/cha87de/kvmtop/models"
-	"github.com/cha87de/kvmtop/printers"
-	"github.com/cha87de/kvmtop/util"
+	"kvmtop/config"
+	"kvmtop/models"
+	"kvmtop/printers"
+	"kvmtop/util"
 )
 
 var domainProfiler sync.Map

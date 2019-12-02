@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/cha87de/kvmtop/config"
-	"github.com/cha87de/kvmtop/models"
+	"kvmtop/config"
+	"kvmtop/models"
 
-	"github.com/cha87de/kvmtop/util"
+	"kvmtop/util"
 	"gonum.org/v1/gonum/stat"
 )
 

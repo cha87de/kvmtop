@@ -3,8 +3,8 @@ package diskcollector
 import (
 	"strings"
 
-	"github.com/cha87de/kvmtop/config"
-	"github.com/cha87de/kvmtop/models"
+	"kvmtop/config"
+	"kvmtop/models"
 )
 
 // Collector describes the disk collector

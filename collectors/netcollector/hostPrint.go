@@ -1,8 +1,8 @@
 package netcollector
 
 import (
-	"github.com/cha87de/kvmtop/config"
-	"github.com/cha87de/kvmtop/models"
+	"kvmtop/config"
+	"kvmtop/models"
 )
 
 func hostPrint(host *models.Host) []string {

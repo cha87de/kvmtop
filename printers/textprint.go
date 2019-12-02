@@ -3,7 +3,7 @@ package printers
 import (
 	"fmt"
 
-	"github.com/cha87de/kvmtop/models"
+	"kvmtop/models"
 )
 
 var showheader = true

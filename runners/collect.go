@@ -3,7 +3,7 @@ package runners
 import (
 	"sync"
 
-	"github.com/cha87de/kvmtop/models"
+	"kvmtop/models"
 )
 
 // InitializeCollect starts the periodic collect calls

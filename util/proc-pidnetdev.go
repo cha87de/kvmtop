@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/cha87de/kvmtop/config"
+	"kvmtop/config"
 )
 
 // ProcPIDNetDev represents entries of /proc/<pid>/net/dev file

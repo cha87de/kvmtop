@@ -1,8 +1,8 @@
 package psicollector
 
 import (
-	"github.com/cha87de/kvmtop/config"
-	"github.com/cha87de/kvmtop/models"
+	"kvmtop/config"
+	"kvmtop/models"
 )
 
 // Collector describes the Pressure Stall Information (PSI) collector

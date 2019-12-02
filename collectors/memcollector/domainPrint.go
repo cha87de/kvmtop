@@ -1,8 +1,8 @@
 package memcollector
 
 import (
-	"github.com/cha87de/kvmtop/config"
-	"github.com/cha87de/kvmtop/models"
+	"kvmtop/config"
+	"kvmtop/models"
 )
 
 func domainPrint(domain *models.Domain) []string {

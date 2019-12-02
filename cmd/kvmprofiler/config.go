@@ -6,11 +6,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/cha87de/kvmtop/collectors/cpucollector"
-	"github.com/cha87de/kvmtop/collectors/iocollector"
-	"github.com/cha87de/kvmtop/collectors/netcollector"
-	"github.com/cha87de/kvmtop/config"
-	"github.com/cha87de/kvmtop/models"
+	"kvmtop/collectors/cpucollector"
+	"kvmtop/collectors/iocollector"
+	"kvmtop/collectors/netcollector"
+	"kvmtop/config"
+	"kvmtop/models"
 	flags "github.com/jessevdk/go-flags"
 )
 

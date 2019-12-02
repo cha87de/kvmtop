@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/cha87de/kvmtop/models"
+	"kvmtop/models"
 
-	"github.com/cha87de/kvmtop/collectors/cpucollector"
+	"kvmtop/collectors/cpucollector"
 )
 
 func pickupCPU(host models.Host, domain models.Domain) (int, int, int) {

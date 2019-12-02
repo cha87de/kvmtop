@@ -6,7 +6,7 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/cha87de/kvmtop/config"
+	"kvmtop/config"
 )
 
 // GetCmdLine reads the cmdline for a process from /proc

@@ -1,6 +1,6 @@
 package memcollector
 
-import "github.com/cha87de/kvmtop/models"
+import "kvmtop/models"
 
 func hostLookup(host *models.Host) {
 	// nothing to do

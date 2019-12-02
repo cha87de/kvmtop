@@ -5,16 +5,16 @@ import (
 
 	"fmt"
 
-	"github.com/cha87de/kvmtop/collectors/cpucollector"
-	"github.com/cha87de/kvmtop/collectors/diskcollector"
-	"github.com/cha87de/kvmtop/collectors/hostcollector"
-	"github.com/cha87de/kvmtop/collectors/iocollector"
-	"github.com/cha87de/kvmtop/collectors/memcollector"
-	"github.com/cha87de/kvmtop/collectors/netcollector"
-	"github.com/cha87de/kvmtop/collectors/psicollector"
-	"github.com/cha87de/kvmtop/config"
-	"github.com/cha87de/kvmtop/models"
-	"github.com/cha87de/kvmtop/printers"
+	"kvmtop/collectors/cpucollector"
+	"kvmtop/collectors/diskcollector"
+	"kvmtop/collectors/hostcollector"
+	"kvmtop/collectors/iocollector"
+	"kvmtop/collectors/memcollector"
+	"kvmtop/collectors/netcollector"
+	"kvmtop/collectors/psicollector"
+	"kvmtop/config"
+	"kvmtop/models"
+	"kvmtop/printers"
 	flags "github.com/jessevdk/go-flags"
 )
 

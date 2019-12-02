@@ -8,9 +8,9 @@ import (
 
 	"fmt"
 
-	"github.com/cha87de/kvmtop/config"
-	"github.com/cha87de/kvmtop/models"
-	"github.com/cha87de/kvmtop/util"
+	"kvmtop/config"
+	"kvmtop/models"
+	"kvmtop/util"
 	libvirt "github.com/libvirt/libvirt-go"
 )
 

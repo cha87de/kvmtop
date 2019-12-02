@@ -6,7 +6,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/cha87de/kvmtop/config"
+	"kvmtop/config"
 )
 
 // ProcPIDNetstat represents entries of /proc/<pid>/net/netstat file

@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/cha87de/kvmtop/config"
-	"github.com/cha87de/kvmtop/util"
+	"kvmtop/config"
+	"kvmtop/util"
 
-	"github.com/cha87de/kvmtop/models"
+	"kvmtop/models"
 )
 
 func diskHostLookup(host *models.Host) {

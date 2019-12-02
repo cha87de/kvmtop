@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/cha87de/kvmtop/config"
+	"kvmtop/config"
 )
 
 // ProcMount describes one entry (row) of /proc/mounts

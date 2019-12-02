@@ -1,7 +1,7 @@
 package hostcollector
 
 import (
-	"github.com/cha87de/kvmtop/models"
+	"kvmtop/models"
 )
 
 func domainPrint(domain *models.Domain) []string {

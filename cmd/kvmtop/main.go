@@ -7,10 +7,10 @@ import (
 	"runtime/debug"
 	"syscall"
 
-	"github.com/cha87de/kvmtop/config"
-	"github.com/cha87de/kvmtop/connector"
-	"github.com/cha87de/kvmtop/models"
-	"github.com/cha87de/kvmtop/runners"
+	"kvmtop/config"
+	"kvmtop/connector"
+	"kvmtop/models"
+	"kvmtop/runners"
 )
 
 var version = "devbuild"

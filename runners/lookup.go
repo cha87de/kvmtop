@@ -6,10 +6,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/cha87de/kvmtop/config"
-	"github.com/cha87de/kvmtop/connector"
-	"github.com/cha87de/kvmtop/models"
-	"github.com/cha87de/kvmtop/util"
+	"kvmtop/config"
+	"kvmtop/connector"
+	"kvmtop/models"
+	"kvmtop/util"
 	libvirt "github.com/libvirt/libvirt-go"
 )
 
