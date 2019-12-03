@@ -15,10 +15,9 @@ import (
 
 var processes []int
 
-
 // InitializeLookup starts the periodic lookup calls
 func InitializeLookup(wg *sync.WaitGroup) {
-	
+
 	for n := -1; config.Options.Runs == -1 || n < config.Options.Runs; n++ {
 		// execution, then sleep
 		start := time.Now()

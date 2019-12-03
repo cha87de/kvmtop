@@ -5,6 +5,8 @@ import (
 	"encoding/gob"
 	"fmt"
 	"sync"
+
+	drModels "github.com/disresc/lib/models"
 )
 
 // NewMeasurable instantiates and returns a new Measurable
@@ -47,6 +49,17 @@ func (measurable *Measurable) AddMetricMeasurement(metricName string, measuremen
 
 	// store back
 	measurable.metrics[metricName] = metric
+
+	/*items := make(map[string]*drModels.Item)
+	items["blabla"] = &drModels.Item{
+		Type:  "blabla",
+		Value: "Blubb",
+	}*/
+	SendUpdateEvent(drModels.Event{
+		Name:  "das ist die quelle",
+		Value: "blablabla",
+		//Items:  items,
+	})
 }
 
 // DelMetricMeasurement removes a metric

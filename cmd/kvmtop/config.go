@@ -5,6 +5,7 @@ import (
 
 	"fmt"
 
+	flags "github.com/jessevdk/go-flags"
 	"kvmtop/collectors/cpucollector"
 	"kvmtop/collectors/diskcollector"
 	"kvmtop/collectors/hostcollector"
@@ -15,7 +16,6 @@ import (
 	"kvmtop/config"
 	"kvmtop/models"
 	"kvmtop/printers"
-	flags "github.com/jessevdk/go-flags"
 )
 
 func initializeFlags() {
@@ -85,6 +85,9 @@ func initializeFlags() {
 		models.Collection.Printer = &printer
 	case "json":
 		printer := printers.CreateJSON()
+		models.Collection.Printer = &printer
+	case "msgbus":
+		printer := printers.CreateMsgbus()
 		models.Collection.Printer = &printer
 	default:
 		fmt.Println("unknown printer")
