@@ -14,4 +14,3 @@ require (
 	gonum.org/v1/gonum v0.6.1
 )
 
-replace github.com/disresc/lib v0.0.0-20191202124906-9d73ef7f963f => /home/christopher/Documents/UNI/workspace/kvmtop-modules/github.com/disresc/lib
