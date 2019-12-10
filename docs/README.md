@@ -3,7 +3,8 @@
 Available metrics, their source and description.
 
 Metrics below the **verbose mode** sign are only available when using the
-`--verbose` option.
+`--verbose` option. Metrics below the **internal metrics** sign are not exported
+but only available internally to process the exported metrics.
 
 ## CPU Collector
 
@@ -11,36 +12,51 @@ Enable with parameter `--cpu`.
 
 ### CPU Host Metrics
 
-| Metric | Source | Description |
-| --- | --- | --- |
-| cpu_cores | | |
-| cpu_curfreq | | |
-| cpu_user | | |
-| cpu_system | | |
-| cpu_idle | | |
-| cpu_steal | | |
+| Metric    | Source | Description | Cycle |
+| --- | --- | --- | --- |
+| cpu_cores | proc/cpuinfo | Total number of CPU cores | lookup |
+| cpu_curfreq | /sys/devices/system/cpu/cpu* | Current mean frequency over all CPU cores | lookup |
+| cpu_user  | proc/stat | utilisation in percent spent in user space | collect |
+| cpu_system | proc/stat | utilisation in percent spent in system space | collect |
+| cpu_idle  | proc/stat | utilisation in percent spent in idle | collect |
+| cpu_steal | proc/stat | utilisation in percent stolen due to overbooking | collect |
 | **verbose mode** | | |
-| cpu_minfreq | | |
-| cpu_maxfreq | | |
-| cpu_nice | | |
-| cpu_iowait | | |
-| cpu_irq | | |
-| cpu_softirq | | |
-| cpu_guest | | |
-| cpu_guestnice | | |
+| cpu_minfreq | /sys/devices/system/cpu/cpu* | Minimal frequency the CPU can run on | lookup |
+| cpu_maxfreq | /sys/devices/system/cpu/cpu* | Maximum frequency the CPU can run on | lookup |
+| cpu_nice  | proc/stat | utilisation in percent spent in nice mode | collect |
+| cpu_iowait| proc/stat | utilisation in percent spent waiting for IO | collect |
+| cpu_irq   | proc/stat | time-relative amount of interrupts | collect |
+| cpu_softirq | proc/stat | time-relative amount of soft interrupts | collect |
+| cpu_guest | proc/stat | utilisation in percent spent in guest (VM) space | collect |
+| cpu_guestnice | proc/stat | utilisation in percent spent in guest (VM) space with nice mode | collect |
 
 missing: architecture
 
 ### CPU Virtual Machine Metrics
 
-| Metric | Source | Description |
-| --- | --- | --- |
-| cpu_cores | proc | |
-| cpu_total | proc | |
-| cpu_steal | proc | |
-| **verbose mode** | | |
-| cpu_other_total | proc | |
-| cpu_other_steal | proc | |
+The lookup cycle first reads process IDs from libvirt, then collects process IDs
+from the proc filesystem. From both information, the cpu usage for virtual CPU
+cores and for overhead can be differentiated (processes which are not listed by
+libvirt but assigned to the parent process ID of the virtual machine). The proc
+filesystem then provides utilisation values and steal values from cpu cycle
+queueing from the cpu scheduler statistics, per process.
+
+| Metric | Source | Description | Cycle |
+| --- | --- | --- | --- |
+| cpu_cores | libvirt | Total number of virtual CPU cores | lookup |
+| cpu_total | proc | utilisation in percent over all virtual CPU cores as experienced inside VM | collect |
+| cpu_steal | proc | stolen (reduced) cpu utilisation over all virtual CPU cores | collect |
+| **verbose mode** | | | |
+| cpu_other_total | proc | additional utilisation in percent (runtime overhead) of VM | collect |
+| cpu_other_steal | proc | additional stolen utilisation of VM | collect |
+| **internal metrics** | | | |
+| cpu_threadIDs | libvirt + proc | list of process IDs assigned to virtual CPU cores of a VM | lookup |
+| cpu_otherThreadIDs | libvirt + proc | list of process IDs assigned to VM | lookup |
+| cpu_times_${pid} | proc/${pid}/schedstat | time (counter) spent processing virtual CPU cores | collect |
+| cpu_runqueues_${pid} | proc/${pid}/schedstat | time (counter) spent waiting for processing for virtual CPU cores | collect |
+| cpu_other_times_${pid} | proc/${pid}/schedstat | time (conter) spent for processing runtime overhead | collect |
+| cpu_other_runqueues_${pid} | proc/${pid}/schedstat | time (counter) spent for waiting on processing for runtime overhead | collect |
+
 
 missing: none
 
@@ -50,11 +66,10 @@ Enable with parameter `--mem`.
 
 ### Memory Host Metrics
 
-| Metric | Source | Description |
-| --- | --- | --- |
-| - | - | - |
-| ram_Total | proc | |
-| ram_Free | proc | |
+| Metric | Source | Description | Cycle |
+| --- | --- | --- | --- |
+| ram_Total | proc | Total amount of physical ram available on host |
+| ram_Free | proc | Total amount of free physical ram available on host |
 | ram_Available | proc | |
 | **verbose mode** | | |
 | ram_Buffers | proc | |
