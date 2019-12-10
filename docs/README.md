@@ -2,7 +2,8 @@
 
 Available metrics, their source and description.
 
-Metrics below the **verbose mode** sign are only available when using the `--verbose` option.
+Metrics below the **verbose mode** sign are only available when using the
+`--verbose` option.
 
 ## CPU Collector
 
@@ -12,8 +13,21 @@ Enable with parameter `--cpu`.
 
 | Metric | Source | Description |
 | --- | --- | --- |
-| cpu_meanfreq | proc | |
-| cpu_cores | proc | |
+| cpu_cores | | |
+| cpu_curfreq | | |
+| cpu_user | | |
+| cpu_system | | |
+| cpu_idle | | |
+| cpu_steal | | |
+| **verbose mode** | | |
+| cpu_minfreq | | |
+| cpu_maxfreq | | |
+| cpu_nice | | |
+| cpu_iowait | | |
+| cpu_irq | | |
+| cpu_softirq | | |
+| cpu_guest | | |
+| cpu_guestnice | | |
 
 missing: architecture
 
@@ -88,7 +102,7 @@ Enable with parameter `--mem`.
 | ram_DirectMap2M | proc | |
 | ram_DirectMap1G | proc | |
 
-missing: frequency, ?
+missing: frequency
 
 ### Memory Virtual Machine Metrics
 
@@ -104,7 +118,7 @@ missing: frequency, ?
 | ram_majflt | proc | |
 | ram_cmajflt | proc | |
 
-missing: total, used, faults, frequency, ?
+missing: none
 
 ## Network Collector
 
@@ -116,6 +130,7 @@ Enable with parameter `--net`.
 | --- | --- | --- |
 | net_host_receivedBytes| proc | |
 | net_host_transmittedBytes| proc | |
+| net_host_speed | | |
 | **verbose mode** | | |
 | net_host_receivedPackets| proc | |
 | net_host_receivedErrs| proc | |
@@ -132,7 +147,7 @@ Enable with parameter `--net`.
 | net_host_transmittedCarrier| proc | |
 | net_host_transmittedCompressed| proc | |
 
-missing: total bandwidth, queue sizes, ?
+missing: queue sizes, ?
 
 ### Network Virtual Machine Metrics
 
@@ -168,6 +183,7 @@ Enable with parameter `--disk`.
 | --- | --- | --- |
 | disk_device_reads | proc | reads completed successfully |
 | disk_device_writes | proc | writes completed |
+| disk_device_ioutil | | |
 | **verbose mode** | | |
 | disk_device_readsmerged | proc | reads merged |
 | disk_device_sectorsread | proc | sectors read |
@@ -178,8 +194,13 @@ Enable with parameter `--disk`.
 | disk_device_currentops | proc | I/Os currently in progress |
 | disk_device_timeforops | proc | time spent doing I/Os (ms) |
 | disk_device_weightedtimeforops | proc | weighted time spent doing I/Os (ms) |
+| disk_device_count | | |
+| disk_device_queuesize | | |
+| disk_device_queuetime | | |
+| disk_device_servicetime | | |
 
-missing: capacity, used capacity, fs cache misses, disk scheduler infos?, max bandwidth, ?
+missing: capacity, used capacity, fs cache misses, disk scheduler infos?, max
+bandwidth
 
 ### Disk Virtual Machine Metrics
 
@@ -187,6 +208,7 @@ missing: capacity, used capacity, fs cache misses, disk scheduler infos?, max ba
 | --- | --- | --- |
 | disk_size_capacity | libvirt | Maximum capacity of the virtual block devices (sum if multiple devs.) |
 | disk_size_allocation | libvirt | Allocated space of the virtual block devices (sum if multiple devs.)  |
+| disk_ioutil | | |
 | **verbose mode** | | |
 | disk_size_physical | libvirt | Physical space required to serve the virtual block devices (sum if multiple devs.) |
 | disk_stats_flushreq | libvirt | represents the total flush requests of the block device |
@@ -203,7 +225,9 @@ missing: capacity, used capacity, fs cache misses, disk scheduler infos?, max ba
 
 Enable with parameter `--io`.
 
-The IO Collector extends the disk collector with utilisation metrics from the proc fs instead from libvirt. *Please note: this collector requires root access to /proc on most Linux distributions.*
+The IO Collector extends the disk collector with utilisation metrics from the
+proc fs instead from libvirt. *Please note: this collector requires root access
+to /proc on most Linux distributions.*
 
 ### IO Host Metrics
 
@@ -223,3 +247,73 @@ The IO Collector extends the disk collector with utilisation metrics from the pr
 | io_syscr | proc | number of read-like system call invocations that the process performed |
 | io_syscw | proc | number of write-like system call invocations that the process performed |
 | io_cancelled_write_bytes | proc | number of bytes the process "un-dirtied" - e.g. using an "ftruncate" call that truncated pages from the page-cache |
+
+
+## Host Collector
+
+Enable with parameter `--host´.
+
+The Host Collector extends the metrics by host specific details to identify the
+current host where kvmtop is running on.
+
+### Host Host Metrics
+
+| Metric | Source | Description |
+| --- | --- | --- |
+| host_name | | |
+| **verbose mode** | | |
+| host_uuid | | |
+
+### Host Virtual Machine Metrics
+
+| Metric | Source | Description |
+| --- | --- | --- |
+| no metrics available | | |
+
+
+## PSI Collector
+
+Enable with parameter `--psi.
+
+The PSI Collector extends the metrics by providing the Pressure Stall
+Information (PSI) data from the host. These values indicate a resource
+shortcoming in advance, before it actually occurs, for CPU, IO and memory.
+Pressure Stall Information (PSI) controller works only with kernel 4.20 and
+higher.
+
+### Host Host Metrics
+
+| Metric | Source | Description |
+| --- | --- | --- |
+| psi_some_cpu_avg60
+| psi_some_io_avg60
+| psi_full_io_avg60
+| psi_some_mem_avg60
+| psi_full_mem_avg60
+| **verbose mode** | | |
+| psi_some_cpu_avg10 | | |
+| psi_some_cpu_avg60 | | |
+| psi_some_cpu_avg300 | | |
+| psi_some_cpu_total | | |
+| psi_some_io_avg10 | | |
+| psi_some_io_avg60 | | |
+| psi_some_io_avg300 | | |
+| psi_some_io_total | | |
+| psi_full_io_avg10 | | |
+| psi_full_io_avg60 | | |
+| psi_full_io_avg300 | | |
+| psi_full_io_total | | |
+| psi_some_mem_avg10 | | |
+| psi_some_mem_avg60 | | |
+| psi_some_mem_avg300 | | |
+| psi_some_mem_total | | |
+| psi_full_mem_avg10 | | |
+| psi_full_mem_avg60 | | |
+| psi_full_mem_avg300 | | |
+| psi_full_mem_total | | |
+
+### Host Virtual Machine Metrics
+
+| Metric | Source | Description |
+| --- | --- | --- |
+| no metrics available | | |
