@@ -63,24 +63,27 @@ Usage:
 Monitor virtual machine experience from outside on KVM hypervisor level
 
 Application Options:
-  -v, --version     Show version
-  -f, --frequency=  Frequency (in seconds) for collecting metrics (default: 1)
-  -r, --runs=       Amount of collection runs (default: -1)
-  -c, --connection= connection uri to libvirt daemon (default: qemu:///system)
-      --procfs=     path to the proc filesystem (default: /proc)
-      --verbose     Verbose output, adds more detailed fields
-      --cpu         enable cpu metrics
-      --mem         enable memory metrics
-      --disk        enable disk metrics
-      --net         enable network metrics
-      --io          enable io metrics (requires root)
-  -b, --batch       [DEPRECATED: use --printer=text instead] use simple output
-                    e.g. for scripts
-  -p, --printer=    the output printer to use (valid printers: ncurses, text,
-                    json) (default: ncurses)
+  -v, --version        Show version
+  -f, --frequency=     Frequency (in seconds) for collecting metrics (default: 1)
+  -r, --runs=          Amount of collection runs (default: -1)
+  -c, --connection=    connection uri to libvirt daemon (default: qemu:///system)
+      --procfs=        path to the proc filesystem (default: /proc)
+      --verbose        Verbose output, adds more detailed fields
+      --cpu            enable cpu metrics
+      --mem            enable memory metrics
+      --disk           enable disk metrics
+      --net            enable network metrics
+      --io             enable io metrics (requires root)
+      --pressure       enable pressure metrics (requires kernel 4.20+)
+      --host           enable host metrics
+  -p, --printer=       the output printer to use (valid printers: ncurses, text, json) (default: ncurses)
+  -o, --output=        the output channel to send printer output (valid output: stdout, file, tcp, udp) (default: stdout)
+      --target=        for output 'file' the location, for 'tcp' or 'udp' the url (host:port) to the server
+      --netdev=        The network device used for the virtual traffic
 
 Help Options:
-  -h, --help        Show this help message
+  -h, --help           Show this help message
+
 ```
 
 Exemplary output
@@ -115,7 +118,9 @@ kvmtop --cpu --printer=json --output=tcp --target=127.0.0.1:12345
 | Memory Collector | --mem | Memory stats (host and VMs)  like capacity, allocation, faults |
 | Disk Collector | --disk | Disk stats (host and VMs) like capacity, utilisation, reads/writes, etc. |
 | Network Collector | --net | Network stats (host and VMs) like transmitted and received bytes, packets, errors, etc. |
-| I/O Collector | --io | Disk I/O stats (VMs) like reads/writes |
+| I/O Collector | --io | Disk I/O stats (host and VMs) like reads/writes |
+| PSI Collector | --psi | Pressure Stall Information (PSI) values (host only) |
+| Host | --host | Host details (host only) |
 
 A more detailed list, including all metrics is available here at [./docs/README.md](https://github.com/cha87de/kvmtop/blob/master/docs/README.md).
 
