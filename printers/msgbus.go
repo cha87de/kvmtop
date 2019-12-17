@@ -2,12 +2,13 @@ package printers
 
 import (
 	"fmt"
-	drModels "github.com/disresc/lib/models"
-	transmitter "github.com/disresc/lib/transmitter"
 	"kvmtop/models"
 	"os"
 	"strings"
 	"time"
+
+	drModels "github.com/disresc/lib/models"
+	transmitter "github.com/disresc/lib/transmitter"
 )
 
 // CreateMsgbus creates a new simple text printer
@@ -65,6 +66,27 @@ func (printer *MsgbusPrinter) Open() {
 // this is called every config.Options.Frequency seconds
 func (printer *MsgbusPrinter) Screen(printable models.Printable) {
 	// transform printables into event
+
+	printer.sendHostEvents(printable)
+	printer.sendVEEvents(printable)
+
+}
+
+// Close terminates the printer
+func (printer *MsgbusPrinter) Close() {
+	printer.transmitterService.Close()
+}
+
+func (printer *MsgbusPrinter) listen() {
+	// TODO implement push instead of periodic pull
+
+	//for update := range models.Collection.Updates {
+	//fmt.Printf("going to publish new event %v\n", update.Event)
+	//printer.transmitterService.Publish(update.Event)
+	//}
+}
+
+func (printer *MsgbusPrinter) sendHostEvents(printable models.Printable) {
 	itemsByTransmitter := make(map[string][]*drModels.EventItem)
 	for i, field := range printable.HostFields {
 		metricParts := strings.Split(field, "_")
@@ -97,16 +119,34 @@ func (printer *MsgbusPrinter) Screen(printable models.Printable) {
 	}
 }
 
-// Close terminates the printer
-func (printer *MsgbusPrinter) Close() {
-	printer.transmitterService.Close()
-}
+func (printer *MsgbusPrinter) sendVEEvents(printable models.Printable) {
+	for domID, domvalue := range printable.DomainValues {
+		itemsByTransmitter := make(map[string][]*drModels.EventItem)
+		for i, value := range domvalue {
+			field := printable.DomainFields[i]
 
-func (printer *MsgbusPrinter) listen() {
-	// TODO implement push instead of periodic pull
+			metricParts := strings.Split(field, "_")
+			collector := metricParts[0]
+			transmitter := fmt.Sprintf("kvmtop-%s", collector)
 
-	//for update := range models.Collection.Updates {
-	//fmt.Printf("going to publish new event %v\n", update.Event)
-	//printer.transmitterService.Publish(update.Event)
-	//}
+			item := drModels.EventItem{
+				Transmitter: transmitter,
+				Metric:      field,
+				Value:       value,
+			}
+			itemsByTransmitter[transmitter] = append(itemsByTransmitter[transmitter], &item)
+		}
+		source := fmt.Sprintf("ve-%s", domID)
+		interval := 10
+
+		for _, txItems := range itemsByTransmitter {
+			event := drModels.Event{
+				Source:    source,
+				Timestamp: time.Now().Unix(),
+				Items:     txItems,
+			}
+			printer.transmitterService.Publish(&event, interval)
+		}
+	}
+
 }
