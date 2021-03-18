@@ -41,13 +41,13 @@ func InitializePrinter(wg *sync.WaitGroup) {
 
 // Print runs one printing cycle
 func Print() {
-        if config.Options.Output == "file" && config.Options.OutputTargetTruncate {
-                err := os.Truncate(config.Options.OutputTarget, 0)
-                if err != nil {
-                        fmt.Fprintf(os.Stderr, "failed to truncate the output file")
-                        os.Exit(1)
-                }
-        }
+	if config.Options.Output == "file" && config.Options.OutputTargetTruncate {
+		err := os.Truncate(config.Options.OutputTarget, 0)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "failed to truncate the output file")
+			os.Exit(1)
+		}
+	}
 
 	printable := models.Printable{}
 
